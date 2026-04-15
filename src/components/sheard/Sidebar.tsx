@@ -60,7 +60,11 @@ export default function Sidebar() {
       <div className="px-[20px] pb-8">
         <Link
           href="/admin/settings"
-          className="flex items-center gap-3 px-[10px] py-3 text-[16px] text-[#333] hover:bg-gray-50 rounded-lg transition-colors"
+          className={`flex items-center gap-3 px-[10px] py-3 text-[16px] rounded-[12px] transition-colors ${
+            pathname.startsWith("/admin/settings")
+              ? "bg-[#871dad] text-white backdrop-blur-[10px]"
+              : "text-[#333] hover:bg-gray-50"
+          }`}
         >
           <Settings size={24} />
           <span>Settings</span>

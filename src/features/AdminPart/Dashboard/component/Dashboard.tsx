@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   GraduationCap,
   Briefcase,
@@ -10,6 +11,8 @@ import {
   Search,
   ChevronDown,
 } from "lucide-react";
+import PageHeader from "@/components/sheard/PageHeader";
+import CreateAdminModal from "@/features/AdminPart/Administration/component/CreateAdminModal";
 
 /* ───── Stat Cards ───── */
 const stats = [
@@ -328,6 +331,7 @@ function StudentsDonut() {
 /* ───── Main Dashboard ───── */
 export default function Dashboard() {
   const [admins, setAdmins] = useState(administrators);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const toggleAdmin = (id: number) => {
     setAdmins((prev) =>
@@ -337,6 +341,7 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
+      <PageHeader title="Main Dashboard" showBack={false} />
       {/* Stat Cards */}
       <div className="flex gap-5">
         {stats.map((stat) => (
@@ -371,7 +376,10 @@ export default function Dashboard() {
               />
             </div>
             {/* Add Button */}
-            <button className="rounded-[10px] bg-[#871dad] px-5 py-[18px] text-[16px] font-bold text-white hover:bg-[#751a99] transition-colors">
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="rounded-[10px] bg-[#871dad] cursor-pointer px-5 py-[18px] text-[16px] font-bold text-white hover:bg-[#751a99] transition-colors"
+            >
               Add New Administrator
             </button>
           </div>
@@ -413,9 +421,12 @@ export default function Dashboard() {
                       <div className="h-6 w-6 rounded-full bg-gray-300 overflow-hidden">
                         <div className="h-full w-full bg-gradient-to-br from-purple-300 to-purple-500" />
                       </div>
-                      <span className="text-[16px] font-light text-[#666]">
+                      <Link
+                        href={`/admin/administration/${admin.name.replace(/\s+/g, "-")}`}
+                        className="text-[16px] font-light text-[#666] hover:text-[#871dad] transition-colors"
+                      >
                         {admin.name}
-                      </span>
+                      </Link>
                     </div>
                   </td>
                   <td className="py-4 text-[16px] font-light text-[#666]">
@@ -433,9 +444,12 @@ export default function Dashboard() {
                         active={admin.active}
                         onChange={() => toggleAdmin(admin.id)}
                       />
-                      <button className="rounded-[4px] bg-[#871dad] cursor-pointer px-[6px] py-[8px] text-[16px] font-medium text-white hover:bg-[#751a99] transition-colors">
+                      <Link
+                        href={`/admin/administration/${admin.name.replace(/\s+/g, "-")}`}
+                        className="rounded-[4px] bg-[#871dad] px-[6px] py-[8px] text-[16px] font-medium text-white hover:bg-[#751a99] transition-colors"
+                      >
                         View
-                      </button>
+                      </Link>
                     </div>
                   </td>
                 </tr>
@@ -444,6 +458,11 @@ export default function Dashboard() {
           </table>
         </div>
       </div>
+
+      {/* Create Administrator Modal */}
+      {showCreateModal && (
+        <CreateAdminModal onClose={() => setShowCreateModal(false)} />
+      )}
     </div>
   );
 }

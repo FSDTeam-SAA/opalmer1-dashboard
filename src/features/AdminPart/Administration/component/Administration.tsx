@@ -4,6 +4,7 @@ import { useState } from "react";
 import AdminCard from "./AdminCard";
 import CreateAdminModal from "./CreateAdminModal";
 import EditAdminModal from "./EditAdminModal";
+import PageHeader from "@/components/sheard/PageHeader";
 
 /* ───── Admin Type ───── */
 export type Admin = {
@@ -69,6 +70,7 @@ export default function Administration() {
 
   return (
     <div className="space-y-8 pt-10 mt-32">
+      <PageHeader title="Administration" showBack={false} />
       {/* Admin Cards Grid */}
       <div className="grid grid-cols-2 gap-6">
         {admins.map((admin) => (

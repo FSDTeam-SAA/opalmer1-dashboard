@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Trash2, MapPin, Copy } from "lucide-react";
+import PageHeader from "@/components/sheard/PageHeader";
 import ToggleSwitch from "./ToggleSwitch";
 import EditAdminModal from "./EditAdminModal";
 import StudentCard, { Student } from "./StudentCard";
@@ -114,6 +115,7 @@ export default function AdminProfile({ slug }: { slug: string }) {
 
   return (
     <div className="space-y-8 pt-10 mt-16">
+      <PageHeader title="Administrator" />
       {/* Admin Profile Card */}
       <div className="flex gap-5 rounded-[20px] bg-white p-5 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
         {/* Profile Image */}
