@@ -97,13 +97,13 @@ function ToggleSwitch({
   return (
     <button
       onClick={onChange}
-      className={`relative h-[19px] w-[41px] rounded-full transition-colors ${
+      className={`relative h-[19px] w-[41px] rounded-full cursor-pointer transition-colors ${
         active ? "bg-[#871dad]" : "bg-[#c7c7c7]"
       }`}
     >
       <span
         className={`absolute top-[1px] h-[17px] w-[17px] rounded-full bg-white shadow transition-transform ${
-          active ? "translate-x-[22px]" : "translate-x-[2px]"
+          active ? "left-[24px]" : "left-[4px]"
         }`}
       />
     </button>
@@ -114,7 +114,7 @@ function ToggleSwitch({
 function StatCard({ stat }: { stat: (typeof stats)[0] }) {
   const Icon = stat.icon;
   return (
-    <div className="flex-1 rounded-[12px] bg-white p-5 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
+    <div className="flex-1 rounded-[12px] mt-10 bg-white p-5 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
       <div className="flex items-start justify-between">
         <div className="flex items-start gap-3">
           <div
@@ -433,7 +433,7 @@ export default function Dashboard() {
                         active={admin.active}
                         onChange={() => toggleAdmin(admin.id)}
                       />
-                      <button className="rounded-[4px] bg-[#871dad] px-[6px] py-[8px] text-[16px] font-medium text-white hover:bg-[#751a99] transition-colors">
+                      <button className="rounded-[4px] bg-[#871dad] cursor-pointer px-[6px] py-[8px] text-[16px] font-medium text-white hover:bg-[#751a99] transition-colors">
                         View
                       </button>
                     </div>

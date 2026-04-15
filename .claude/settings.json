@@ -7,6 +7,9 @@
       "mcp__claude_ai_Figma__get_screenshot",
       "Bash(curl -sL \"https://www.figma.com/api/mcp/asset/e69733d0-9d6e-49c6-9dce-bec6dadf362f\" -o public/images/login-header-shape.png)",
       "Bash(grep -E \"\\\\.\\(ts|js|mjs\\)$\")"
+    ],
+    "additionalDirectories": [
+      "/home/rasel/Rasel/FSD/opalmer1-dashboard/src/app/(admin-part)/admin/administration"
     ]
   }
 }

@@ -12,9 +12,9 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "sktch Labs",
+  title: "Education App Dashboard",
   description:
-    "Design amazing digital experiences that create more happy in the world.",
+    "A modern dashboard for managing educational content, users, and analytics. Built with Next.js, Tailwind CSS, and React.",
 };
 
 export default function RootLayout({
