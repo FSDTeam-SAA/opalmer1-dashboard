@@ -9,7 +9,11 @@
       "Bash(grep -E \"\\\\.\\(ts|js|mjs\\)$\")"
     ],
     "additionalDirectories": [
-      "/home/rasel/Rasel/FSD/opalmer1-dashboard/src/app/(admin-part)/admin/administration"
+      "/home/rasel/Rasel/FSD/opalmer1-dashboard/src/app/(admin-part)/admin/administration",
+      "/home/rasel/Rasel/FSD/opalmer1-dashboard/src/app/(admin-part)/admin/administration/[slug]",
+      "/home/rasel/Rasel/FSD/opalmer1-dashboard/src/app/(admin-part)/admin/administration/[slug]/students",
+      "/home/rasel/Rasel/FSD/opalmer1-dashboard/src/app/(admin-part)/admin/administration/[slug]/students/[studentSlug]",
+      "/home/rasel/Rasel/FSD/opalmer1-dashboard/src/app/(admin-part)/admin/administration/[slug]/students/[studentSlug]/[subjectSlug]"
     ]
   }
 }

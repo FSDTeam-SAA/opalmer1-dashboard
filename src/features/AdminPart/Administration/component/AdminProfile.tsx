@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Trash2, MapPin, Copy } from "lucide-react";
 import ToggleSwitch from "./ToggleSwitch";
 import EditAdminModal from "./EditAdminModal";
@@ -194,9 +195,12 @@ export default function AdminProfile({ slug }: { slug: string }) {
       <div>
         <div className="flex items-center justify-between">
           <h2 className="text-[30px] font-semibold text-[#333]">Students</h2>
-          <button className="cursor-pointer text-[20px] text-[#871dad] underline hover:text-[#751a99] transition-colors">
+          <Link
+            href={`/admin/administration/${slug}/students`}
+            className="cursor-pointer text-[20px] text-[#871dad] underline hover:text-[#751a99] transition-colors"
+          >
             View All
-          </button>
+          </Link>
         </div>
         <div className="mt-4 grid grid-cols-3 gap-5">
           {studentsData.map((student) => (
