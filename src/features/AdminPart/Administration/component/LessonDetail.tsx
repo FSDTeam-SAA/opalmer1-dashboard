@@ -1,6 +1,7 @@
 "use client";
 
 import { FileText, Download } from "lucide-react";
+import PageHeader from "@/components/sheard/PageHeader";
 
 export default function LessonDetail({
   slug,
@@ -15,6 +16,7 @@ export default function LessonDetail({
 }) {
   return (
     <div className="space-y-8 pt-10 mt-32">
+      <PageHeader title="Lessons Overview" />
       {/* Topic */}
       <div>
         <h2 className="text-[30px] font-semibold text-[#333]">Topic</h2>

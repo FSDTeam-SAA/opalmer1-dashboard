@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Copy } from "lucide-react";
+import PageHeader from "@/components/sheard/PageHeader";
 import SubjectCard, { Subject } from "./SubjectCard";
 
 /* ───── Mock Data ───── */
@@ -103,6 +104,7 @@ export default function StudentProfile({
 }) {
   return (
     <div className="space-y-8 pt-10 mt-16">
+      <PageHeader title="Students" />
       {/* Student Info Card */}
       <div className="flex items-center gap-5 rounded-[20px] bg-white p-5 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
         {/* Student Image */}

@@ -1,5 +1,7 @@
 "use client";
 
+import PageHeader from "@/components/sheard/PageHeader";
+
 /* ───── Accent Colors (rotating pattern from Figma) ───── */
 const accentColors = ["#4aa678", "#febd43", "#3f99b4", "#8854c0"];
 
@@ -72,6 +74,7 @@ export default function GradingProgressPage({
 }) {
   return (
     <div className="pt-10 mt-32">
+      <PageHeader title="Grading Progress" />
       <div className="grid grid-cols-2 gap-5">
         {gradingRecords.map((record, index) => (
           <GradingCard

@@ -1,6 +1,7 @@
 "use client";
 
 import { CalendarDays } from "lucide-react";
+import PageHeader from "@/components/sheard/PageHeader";
 
 /* ───── Attendance Data ───── */
 const attendanceData = Array.from({ length: 16 }, (_, i) => ({
@@ -21,6 +22,7 @@ export default function AttendancePage({
 }) {
   return (
     <div className="pt-10 mt-32">
+      <PageHeader title="Attendance" />
       <div className="overflow-hidden rounded-[20px] bg-white shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
         {/* Table Header */}
         <div className="flex items-center bg-[#febd43] px-5 py-3">

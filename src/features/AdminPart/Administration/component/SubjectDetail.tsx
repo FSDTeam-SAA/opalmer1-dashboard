@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight, ChevronDown } from "lucide-react";
+import PageHeader from "@/components/sheard/PageHeader";
 
 /* ───── Class Info Items ───── */
 const classInfoItems = [
@@ -136,6 +137,7 @@ export default function SubjectDetail({
 
   return (
     <div className="space-y-8 pt-10 mt-16">
+      <PageHeader title={subjectName} />
       {/* Progress Chart */}
       <ProgressChart />
 

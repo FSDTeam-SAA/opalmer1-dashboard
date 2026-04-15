@@ -1,6 +1,7 @@
 "use client";
 
 import { CalendarDays } from "lucide-react";
+import PageHeader from "@/components/sheard/PageHeader";
 
 /* ───── Homework Data ───── */
 const todaysHomework = {
@@ -46,6 +47,7 @@ export default function HomeworkPage({
 }) {
   return (
     <div className="space-y-8 pt-10 mt-32">
+      <PageHeader title="Homework" />
       {/* Today's Homework */}
       <div>
         <h2 className="text-[30px] font-semibold text-[#333]">

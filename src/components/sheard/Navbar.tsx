@@ -1,12 +1,11 @@
 "use client";
 
 import { Bell } from "lucide-react";
+import { useNavbarTitle } from "./NavbarContext";
 
-interface NavbarProps {
-  title?: string;
-}
+export default function Navbar() {
+  const { title } = useNavbarTitle();
 
-export default function Navbar({ title = "Main Dashboard" }: NavbarProps) {
   return (
     <header className="relative h-[200px] px-8 pt-8 flex items-start justify-between">
       {/* Page Title */}

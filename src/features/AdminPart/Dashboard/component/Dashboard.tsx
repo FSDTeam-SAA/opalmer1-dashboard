@@ -10,6 +10,7 @@ import {
   Search,
   ChevronDown,
 } from "lucide-react";
+import PageHeader from "@/components/sheard/PageHeader";
 
 /* ───── Stat Cards ───── */
 const stats = [
@@ -337,6 +338,7 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
+      <PageHeader title="Main Dashboard" showBack={false} />
       {/* Stat Cards */}
       <div className="flex gap-5">
         {stats.map((stat) => (

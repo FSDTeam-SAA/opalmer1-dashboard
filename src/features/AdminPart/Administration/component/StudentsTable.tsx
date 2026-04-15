@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Search } from "lucide-react";
+import PageHeader from "@/components/sheard/PageHeader";
 
 /* ───── Student Table Data ───── */
 const studentsTableData = Array.from({ length: 14 }, (_, i) => ({
@@ -27,6 +28,7 @@ export default function StudentsTable({ slug }: { slug: string }) {
 
   return (
     <div className="mt-32 pt-10">
+      <PageHeader title="Students" />
       <div className="rounded-[20px] bg-white p-8 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">

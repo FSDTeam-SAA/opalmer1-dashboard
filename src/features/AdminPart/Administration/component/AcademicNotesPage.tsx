@@ -1,6 +1,7 @@
 "use client";
 
 import { FileText, Download } from "lucide-react";
+import PageHeader from "@/components/sheard/PageHeader";
 
 const academicNotes = Array.from({ length: 14 }, (_, i) => ({
   id: i + 1,
@@ -18,6 +19,7 @@ export default function AcademicNotesPage({
 }) {
   return (
     <div className="pt-10 mt-32">
+      <PageHeader title="Academic Documents" />
       <div className="grid grid-cols-2 gap-5">
         {academicNotes.map((note) => (
           <div

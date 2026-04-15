@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { CalendarDays } from "lucide-react";
+import PageHeader from "@/components/sheard/PageHeader";
 
 /* ───── Lesson Data ───── */
 const todaysLesson = {
@@ -57,6 +58,7 @@ export default function LessonsPage({
 }) {
   return (
     <div className="space-y-8 pt-10 mt-32">
+      <PageHeader title="Lessons" />
       {/* Today's Lesson */}
       <div>
         <h2 className="text-[30px] font-semibold text-[#333]">
