@@ -40,7 +40,7 @@ declare module "next-auth/jwt" {
   }
 }
 
-import { refreshAccessToken } from "@/features/auth/api/refresh-token.api";
+import { refreshAccessToken } from "@/features/auth/api/auth.api";
 
 const handler = NextAuth({
   providers: [
