@@ -6,6 +6,7 @@ import PageHeader from "@/components/sheard/PageHeader";
 import NotificationSettings from "./NotificationSettings";
 import DisputeCenter from "./DisputeCenter";
 import AboutUs from "./AboutUs";
+import TermsConditions from "./TermsConditions";
 
 /* ───── Settings Menu Items ───── */
 const menuItems = [
@@ -53,11 +54,7 @@ export default function SettingsPage() {
           {activeMenu === "notifications" && <NotificationSettings />}
           {activeMenu === "dispute" && <DisputeCenter />}
           {activeMenu === "about" && <AboutUs />}
-          {activeMenu === "terms" && (
-            <p className="text-[20px] text-[#666]">
-              Terms & Conditions content coming soon.
-            </p>
-          )}
+          {activeMenu === "terms" && <TermsConditions />}
         </div>
       </div>
     </div>

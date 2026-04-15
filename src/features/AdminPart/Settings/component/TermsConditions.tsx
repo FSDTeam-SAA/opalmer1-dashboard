@@ -22,8 +22,8 @@ Key Features Include:
 Why It Matters
 We're Here To Reduce Administrative Burden, Foster Deeper Engagement, And Make Education More Personal And Impactful. Our Platform Empowers Teachers To Focus On Teaching, Students To Take Ownership Of Their Learning, And Parents To Stay Actively Involved—Building A Stronger, More Supportive Academic Community.`;
 
-/* ───── Edit About Us Modal ───── */
-function EditAboutModal({
+/* ───── Edit Modal ───── */
+function EditTermsModal({
   content,
   onClose,
   onSave,
@@ -43,7 +43,6 @@ function EditAboutModal({
         className="relative max-h-[90vh] w-[629px] overflow-hidden rounded-[20px] bg-white shadow-[0px_0px_20px_0px_rgba(6,51,54,0.1)]"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close */}
         <button
           onClick={onClose}
           className="absolute right-5 top-5 z-10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-[#666] hover:bg-gray-100 transition-colors"
@@ -52,20 +51,17 @@ function EditAboutModal({
         </button>
 
         <div className="flex flex-col p-10">
-          {/* Title */}
           <h2 className="text-center text-[24px] font-bold text-[#333]">
-            Edit About Us
+            Edit Terms & Conditions
           </h2>
 
-          {/* Textarea */}
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
             className="mt-6 h-[500px] w-full resize-none rounded-[10px] border border-[#c7c7c7] bg-white p-5 text-[16px] leading-[1.6] text-[#333] outline-none placeholder:text-[#999]"
-            placeholder="Write about us content..."
+            placeholder="Write terms & conditions content..."
           />
 
-          {/* Save Button */}
           <button
             onClick={() => onSave(text)}
             className="mt-6 h-[50px] w-full cursor-pointer rounded-[10px] bg-[#871dad] text-[18px] font-bold uppercase text-white hover:bg-[#751a99] transition-colors"
@@ -79,7 +75,7 @@ function EditAboutModal({
 }
 
 /* ───── Render Content ───── */
-function RenderAboutContent({ content }: { content: string }) {
+function RenderContent({ content }: { content: string }) {
   const paragraphs = content.split("\n\n");
 
   return (
@@ -131,7 +127,7 @@ function RenderAboutContent({ content }: { content: string }) {
   );
 }
 
-export default function AboutUs() {
+export default function TermsConditions() {
   const [content, setContent] = useState(defaultContent);
   const [showEditModal, setShowEditModal] = useState(false);
 
@@ -140,7 +136,7 @@ export default function AboutUs() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-[24px] font-semibold tracking-[0.3px] text-[#121212]">
-          About Us
+          Term & Conditions
         </h2>
         <button
           onClick={() => setShowEditModal(true)}
@@ -151,11 +147,11 @@ export default function AboutUs() {
       </div>
 
       {/* Content */}
-      <RenderAboutContent content={content} />
+      <RenderContent content={content} />
 
       {/* Edit Modal */}
       {showEditModal && (
-        <EditAboutModal
+        <EditTermsModal
           content={content}
           onClose={() => setShowEditModal(false)}
           onSave={(newContent) => {
