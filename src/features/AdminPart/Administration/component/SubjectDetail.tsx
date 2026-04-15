@@ -173,6 +173,7 @@ export default function SubjectDetail({
               Lessons: `${basePath}/lessons`,
               "Behavior Record": `${basePath}/behavior-record`,
               "Academic Notes": `${basePath}/academic-notes`,
+              "Grading Progress": `${basePath}/grading-progress`,
             };
             const href = hrefMap[item];
 
