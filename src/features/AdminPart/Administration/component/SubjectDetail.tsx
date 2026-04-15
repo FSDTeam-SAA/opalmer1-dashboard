@@ -171,6 +171,8 @@ export default function SubjectDetail({
               "Home Work": `${basePath}/homework`,
               Attendance: `${basePath}/attendance`,
               Lessons: `${basePath}/lessons`,
+              "Behavior Record": `${basePath}/behavior-record`,
+              "Academic Notes": `${basePath}/academic-notes`,
             };
             const href = hrefMap[item];
 
