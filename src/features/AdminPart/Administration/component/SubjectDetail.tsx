@@ -166,10 +166,13 @@ export default function SubjectDetail({
         <div className="mt-4 grid grid-cols-2 gap-5">
           {classInfoItems.map((item) => {
             const itemSlug = item.replace(/\s+/g, "-").toLowerCase();
-            const href =
-              item === "Home Work"
-                ? `/admin/administration/${slug}/students/${studentSlug}/${subjectSlug}/homework`
-                : undefined;
+            const basePath = `/admin/administration/${slug}/students/${studentSlug}/${subjectSlug}`;
+            const hrefMap: Record<string, string> = {
+              "Home Work": `${basePath}/homework`,
+              Attendance: `${basePath}/attendance`,
+              Lessons: `${basePath}/lessons`,
+            };
+            const href = hrefMap[item];
 
             if (href) {
               return (
