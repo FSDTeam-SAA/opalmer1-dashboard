@@ -22,7 +22,7 @@ export default function NotFound() {
             <br />
             Looks like you took a wrong turn.
           </p>
-          <Link href="/" className="flex justify-center">
+          <Link href="/login" className="flex justify-center">
             <Button
               variant="default"
               className="bg-[#db1a1a] text-white hover:bg-red-600 px-6 py-3 text-lg font-medium cursor-pointer flex items-center gap-2 transition-transform hover:scale-105 "
