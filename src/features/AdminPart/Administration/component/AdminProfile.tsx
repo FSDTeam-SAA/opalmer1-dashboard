@@ -18,23 +18,29 @@ const adminsData: (Admin & {
   adminPassword: string;
 })[] = [
   {
-    id: 1,
-    name: "Olivia Carter",
-    email: "oliviacarter@gmail.com",
-    username: "eriny1234",
-    image: "/images/12043465729ab7c8ceffce00749e7c71df0c9e25.jpg",
-    active: true,
+    _id: "1",
+    username: "Olivia Carter",
+    phoneNumber: "9876543210",
+    state: "active",
+    avatar: {
+      public_id: "olivia",
+      url: "/images/12043465729ab7c8ceffce00749e7c71df0c9e25.jpg",
+    },
+    created_at: new Date().toISOString(),
     location: "6103, Dr drive, Laurel MD",
     adminId: "mia_johnson",
     adminPassword: "mia123456",
   },
   {
-    id: 2,
-    name: "Erin Yaeger",
-    email: "erinyaeger@gmail.com",
-    username: "eriny1234",
-    image: "/images/4f8da1b70693c4fcf9e01b9293706aed5cd4e34d.jpg",
-    active: true,
+    _id: "2",
+    username: "Erin Yaeger",
+    phoneNumber: "9876543210",
+    state: "active",
+    avatar: {
+      public_id: "erin",
+      url: "/images/4f8da1b70693c4fcf9e01b9293706aed5cd4e34d.jpg",
+    },
+    created_at: new Date().toISOString(),
     location: "6103, Dr drive, Laurel MD",
     adminId: "erin_yaeger",
     adminPassword: "erin123456",
@@ -105,12 +111,9 @@ const teachersData: Teacher[] = [
 ];
 
 export default function AdminProfile({ slug }: { slug: string }) {
-  const adminName = slug.replace(/-/g, " ");
-  const admin =
-    adminsData.find((a) => a.name.toLowerCase() === adminName.toLowerCase()) ??
-    adminsData[0];
+  const admin = adminsData.find((a) => a._id === slug) ?? adminsData[0];
 
-  const [active, setActive] = useState(admin.active);
+  const [active, setActive] = useState(admin.state === "active");
   const [editingAdmin, setEditingAdmin] = useState<Admin | null>(null);
 
   return (
@@ -121,8 +124,8 @@ export default function AdminProfile({ slug }: { slug: string }) {
         {/* Profile Image */}
         <div className="h-[200px] w-[200px] flex-shrink-0 overflow-hidden rounded-[6px]">
           <Image
-            src={admin.image}
-            alt={admin.name}
+            src={admin.avatar.url}
+            alt={admin.username}
             width={200}
             height={200}
             className="h-full w-full object-cover"
@@ -133,10 +136,12 @@ export default function AdminProfile({ slug }: { slug: string }) {
         <div className="flex flex-1 flex-col justify-between py-3">
           <div>
             <h3 className="text-[32px] font-semibold text-black tracking-[0.3px]">
-              {admin.name}
+              {admin.username}
             </h3>
-            <p className="mt-3 text-[20px] text-[#666]">{admin.email}</p>
-            <p className="mt-2 text-[20px] text-[#666]">{admin.username}</p>
+            <p className="mt-3 text-[20px] text-[#666]">{admin.phoneNumber}</p>
+            <p className="mt-2 text-[20px] text-[#666] capitalize">
+              {admin.state}
+            </p>
           </div>
 
           {/* Actions Row */}

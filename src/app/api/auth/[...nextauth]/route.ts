@@ -9,22 +9,22 @@ declare module "next-auth" {
     user: {
       id: string;
       name: string;
-      email: string;
+      userId: string;
       image: string;
       role: string;
+      state: string;
     };
     accessToken: string;
-    refreshToken: string;
   }
 
   interface User {
     id: string;
     name: string;
-    email: string;
+    userId: string;
     image: string;
     role: string;
+    state: string;
     token: string;
-    refreshToken: string;
   }
 }
 
@@ -32,69 +32,69 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string;
     name: string;
-    email: string;
+    userId: string;
     image: string;
     role: string;
+    state: string;
     accessToken: string;
-    refreshToken: string;
   }
 }
-
-import { refreshAccessToken } from "@/features/auth/api/auth.api";
 
 const handler = NextAuth({
   providers: [
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email" },
+        Id: { label: "Admin Id", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error("Email and password are required");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      async authorize(credentials): Promise<any> {
+        if (!credentials?.Id || !credentials?.password) {
+          throw new Error("Id and password are required");
         }
 
         try {
-          const res = await fetch(`${baseUrl}/auth/login`, {
+          const res = await fetch(`${baseUrl}/users/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              email: credentials.email,
+              Id: credentials.Id,
               password: credentials.password,
             }),
           });
 
-          const data = await res.json();
-          console.log("API Login Response:", JSON.stringify(data, null, 2));
+          console.log("Login response status:", res.status);
 
-          if (!res.ok) {
+          const data = await res.json();
+
+          if (!res.ok || !data.success) {
             throw new Error(data.message || "Login failed");
           }
 
           const user = data.data?.user;
-          const accessToken = data.data?.accessToken;
+          const token = data.data?.token;
 
-          console.log("User details:", user);
-          console.log("Token:", accessToken);
-
-          if (!user || !accessToken) {
+          if (!user || !token) {
             throw new Error("Invalid response from server");
           }
+          console.log(user);
 
-          // Return the object that NextAuth will use as 'user' in the jwt callback
           return {
-            id: user._id || user.id, // Ensure we get the ID
-            name: user.name,
-            email: user.email,
-            image: user.profileImage, // Map profileImage to image
+            id: user.id,
+            name: user.username,
+            userId: user.Id,
+            image: user.avatar?.url || "",
             role: user.role,
-            token: accessToken, // We attach the token here as a property of the user
-            refreshToken: user.refreshToken,
+            state: user.state,
+            token: token,
           };
         } catch (error) {
           console.error("Authorize error:", error);
-          throw new Error("Invalid email or password");
+          if (error instanceof Error) {
+            throw new Error(error.message);
+          }
+          throw new Error("Invalid credentials");
         }
       },
     }),
@@ -106,52 +106,24 @@ const handler = NextAuth({
 
   callbacks: {
     async jwt({ token, user, trigger, session }) {
-      // Initial sign in
       if (user) {
         return {
           ...token,
           id: user.id,
           name: user.name,
-          email: user.email,
+          userId: user.userId,
           image: user.image,
           role: user.role,
+          state: user.state,
           accessToken: user.token,
-          refreshToken: user.refreshToken,
-          accessTokenExpires: Date.now() + 60 * 60 * 1000, // Default 1 hour expiry
         };
       }
 
-      // Update session trigger
       if (trigger === "update" && session) {
         return { ...token, ...session.user };
       }
 
-      // Return previous token if the access token has not expired yet
-      if (Date.now() < token.accessTokenExpires) {
-        return token;
-      }
-
-      // Access token has expired, try to update it
-      try {
-        const refreshedTokens = await refreshAccessToken(token.refreshToken);
-
-        if (!refreshedTokens.status) {
-          throw refreshedTokens;
-        }
-
-        return {
-          ...token,
-          accessToken: refreshedTokens.data.accessToken,
-          accessTokenExpires: Date.now() + 60 * 60 * 1000, // Update expiration
-          refreshToken: refreshedTokens.data.refreshToken || token.refreshToken, // Fallback to old refresh token
-        };
-      } catch (error) {
-        console.error("Error refreshing access token", error);
-        return {
-          ...token,
-          error: "RefreshAccessTokenError",
-        };
-      }
+      return token;
     },
 
     async session({ session, token }) {
@@ -160,13 +132,12 @@ const handler = NextAuth({
           ...session.user,
           id: token.id,
           name: token.name,
-          email: token.email,
+          userId: token.userId,
           image: token.image,
           role: token.role,
+          state: token.state,
         };
         session.accessToken = token.accessToken;
-        session.refreshToken = token.refreshToken;
-        session.error = token.error;
       }
       return session;
     },

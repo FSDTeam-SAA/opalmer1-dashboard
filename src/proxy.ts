@@ -2,25 +2,48 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
+const PUBLIC_PATHS = ["/login", "/api/auth"];
+
 export async function proxy(request: NextRequest) {
-  const token = await getToken({ req: request });
   const { pathname } = request.nextUrl;
 
-  const userRole = (token?.role as string)?.toUpperCase();
-  const isAdmin = userRole === "ADMIN";
-  const isGuest = !token;
+  // Allow public paths — login page and auth API are accessible to everyone
+  if (PUBLIC_PATHS.some((path) => pathname.startsWith(path))) {
+    return NextResponse.next();
+  }
 
-  // Example: Block guests from /dashboard
-  if (isGuest && pathname.startsWith("/dashboard")) {
-    const callbackUrl = encodeURIComponent(pathname);
+  // Get the token for protected routes
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
+
+  // No token → redirect to login
+  if (!token) {
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  const role = token.role as string;
+
+  // Root path → redirect to appropriate dashboard
+  if (pathname === "/") {
+    const dashboardUrl =
+      role === "admin" ? "/admin/dashboard" : "/administrator/dashboard";
+    return NextResponse.redirect(new URL(dashboardUrl, request.url));
+  }
+
+  // Admin routes: only "admin" role
+  if (pathname.startsWith("/admin") && role !== "admin") {
     return NextResponse.redirect(
-      new URL(`/login?callbackUrl=${callbackUrl}`, request.url),
+      new URL("/administrator/dashboard", request.url),
     );
   }
 
-  // Example: Block non-admins from /dashboard
-  if (!isAdmin && pathname.startsWith("/dashboard")) {
-    return NextResponse.redirect(new URL("/", request.url));
+  // Administrator routes: only "administrator" role
+  if (pathname.startsWith("/administrator") && role !== "administrator") {
+    return NextResponse.redirect(new URL("/admin/dashboard", request.url));
   }
 
   return NextResponse.next();
@@ -28,6 +51,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|assets|favicon.ico|sitemap.xml|robots.txt).*)",
+    "/((?!_next/static|_next/image|favicon.ico|images|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };

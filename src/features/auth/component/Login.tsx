@@ -2,13 +2,13 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, CheckCircle2 } from "lucide-react";
 
 export default function Login() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const [adminId, setAdminId] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -21,15 +21,20 @@ export default function Login() {
 
     try {
       const result = await signIn("credentials", {
-        email,
+        Id: adminId,
         password,
         redirect: false,
       });
 
       if (result?.error) {
-        setError("Invalid email or password");
+        setError(result.error || "Invalid credentials");
       } else {
-        router.push("/dashboard");
+        const session = await getSession();
+        if (session?.user?.role === "admin") {
+          router.push("/admin/dashboard");
+        } else {
+          router.push("/administrator/dashboard");
+        }
       }
     } catch {
       setError("Something went wrong. Please try again.");
@@ -89,21 +94,21 @@ export default function Login() {
             </div>
           )}
 
-          {/* Admin Id / Email field */}
+          {/* Admin Id field */}
           <div className="mb-5 sm:mb-6">
             <label className="block text-[#333] text-[15px] sm:text-[17px] lg:text-[18px] font-semibold capitalize mb-2">
               Admin Id
             </label>
             <div className="relative">
               <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter you admin Id"
+                type="text"
+                value={adminId}
+                onChange={(e) => setAdminId(e.target.value)}
+                placeholder="Enter your admin Id"
                 required
                 className="w-full h-[48px] sm:h-[52px] lg:h-[56px] bg-[#f9f9f9] border border-[#08374d] rounded-[8px] px-4 pr-11 text-[14px] sm:text-[15px] lg:text-[16px] text-[#333] placeholder:text-[#999] outline-none focus:border-[#871dad] transition-colors"
               />
-              {email && (
+              {adminId && (
                 <CheckCircle2
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-[#871dad]"
                   size={20}

@@ -7,7 +7,22 @@
       "mcp__claude_ai_Figma__get_screenshot",
       "Bash(curl -sL \"https://www.figma.com/api/mcp/asset/e69733d0-9d6e-49c6-9dce-bec6dadf362f\" -o public/images/login-header-shape.png)",
       "Bash(grep -E \"\\\\.\\(ts|js|mjs\\)$\")",
-      "mcp__claude_ai_Figma__get_metadata"
+      "mcp__claude_ai_Figma__get_metadata",
+      "Bash(ls -la /home/rasel/Rasel/FSD/opalmer1-dashboard/src/app/*/)",
+      "Bash(cat /home/rasel/Rasel/FSD/opalmer1-dashboard/src/app/api/auth/*/route.ts)",
+      "Bash(cat \"/home/rasel/Rasel/FSD/opalmer1-dashboard/src/Providers\"/*.tsx)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/login)",
+      "Bash(curl -v http://localhost:3000/login)",
+      "Bash(lsof -i :3000 -sTCP:LISTEN)",
+      "Bash(disown)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3001/login)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" --max-time 30 http://localhost:3001/login)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" --max-time 60 http://localhost:3000/login)",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" --max-time 120 http://localhost:3000/login)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" --max-time 30 http://localhost:3000/admin/dashboard)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} %{redirect_url}\" --max-time 30 -L0 http://localhost:3000/admin/dashboard)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" --max-time 30 http://localhost:3000/login)"
     ],
     "additionalDirectories": [
       "/home/rasel/Rasel/FSD/opalmer1-dashboard/src/app/(admin-part)/admin/administration",
@@ -15,7 +30,8 @@
       "/home/rasel/Rasel/FSD/opalmer1-dashboard/src/app/(admin-part)/admin/administration/[slug]/students",
       "/home/rasel/Rasel/FSD/opalmer1-dashboard/src/app/(admin-part)/admin/administration/[slug]/students/[studentSlug]",
       "/home/rasel/Rasel/FSD/opalmer1-dashboard/src/app/(admin-part)/admin/administration/[slug]/students/[studentSlug]/[subjectSlug]",
-      "/home/rasel/Rasel/FSD/opalmer1-dashboard/src/app/(admin-part)/admin/administration/[slug]/students/[studentSlug]/[subjectSlug]/lessons"
+      "/home/rasel/Rasel/FSD/opalmer1-dashboard/src/app/(admin-part)/admin/administration/[slug]/students/[studentSlug]/[subjectSlug]/lessons",
+      "/home/rasel/Rasel/FSD/opalmer1-dashboard/src"
     ]
   }
 }

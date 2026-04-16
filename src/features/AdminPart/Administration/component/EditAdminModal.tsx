@@ -12,12 +12,12 @@ export default function EditAdminModal({
   admin: Admin;
   onClose: () => void;
 }) {
-  const [name, setName] = useState(admin.name);
+  const [name, setName] = useState(admin.username);
   const [adminId, setAdminId] = useState(admin.username);
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(
-    admin.image,
+    admin.avatar?.url ?? null,
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
 

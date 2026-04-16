@@ -1,0 +1,2379 @@
+{
+  "info": {
+    "_postman_id": "291f9a17-52ea-452f-a80f-f2c8fb82b056",
+    "name": "Opalmer Backend API (Complete)",
+    "description": "Complete collection generated from src/routes and mounted module paths in /api/v1.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "41288319"
+  },
+  "item": [
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "username",
+                  "value": "John Doe",
+                  "type": "text"
+                },
+                {
+                  "key": "phoneNumber",
+                  "value": "01700000000",
+                  "type": "text"
+                },
+                {
+                  "key": "type",
+                  "value": "student",
+                  "type": "text"
+                },
+                {
+                  "key": "gradeLevel",
+                  "value": "8",
+                  "type": "text"
+                },
+                {
+                  "key": "Id",
+                  "value": "S-1001",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "value": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "register"]
+            }
+          },
+          "response": [
+            {
+              "name": "Untitled Response",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "username",
+                      "value": "John Doe",
+                      "type": "text"
+                    },
+                    {
+                      "key": "phoneNumber",
+                      "value": "01700000000",
+                      "type": "text"
+                    },
+                    {
+                      "key": "type",
+                      "value": "student",
+                      "type": "text"
+                    },
+                    {
+                      "key": "gradeLevel",
+                      "value": "8",
+                      "type": "text"
+                    },
+                    {
+                      "key": "Id",
+                      "value": "S-1001",
+                      "type": "text"
+                    },
+                    {
+                      "key": "image",
+                      "type": "file",
+                      "value": ""
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/users/register",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users", "register"]
+                }
+              },
+              "_postman_previewlanguage": "Text",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"User registered successfully\",\n  \"data\": { \"_id\": \"...\" }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phoneNumber\": \"01700000000\",\n  \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "login"]
+            }
+          },
+          "response": [
+            {
+              "name": "Untitled Response",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phoneNumber\": \"01700000000\",\n  \"password\": \"123456\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/users/login",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users", "login"]
+                }
+              },
+              "_postman_previewlanguage": "Text",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Login successful\",\n  \"data\": { \"token\": \"jwt-token\" }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Administrators",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/administrators",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "administrators"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My School Students",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/my-students",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "my-students"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My School Teachers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/my-teachers",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "my-teachers"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"Updated Name\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "USER_ID"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Features & Questions",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docType\": \"AppFeatures\",\n  \"title\": \"Feature\",\n  \"description\": \"Description\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/featuresAndQuestions/create",
+              "host": ["{{baseUrl}}"],
+              "path": ["featuresAndQuestions", "create"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get App Features",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/featuresAndQuestions/AppFeatures",
+              "host": ["{{baseUrl}}"],
+              "path": ["featuresAndQuestions", "AppFeatures"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get FAQ Questions",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/featuresAndQuestions/FAQquestions",
+              "host": ["{{baseUrl}}"],
+              "path": ["featuresAndQuestions", "FAQquestions"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated title\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/featuresAndQuestions/update/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["featuresAndQuestions", "update", ":id"],
+              "variable": [
+                {
+                  "key": "id"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "About & Terms",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docType\": \"about\",\n  \"content\": \"About us text\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/aboutAndTerm/create",
+              "host": ["{{baseUrl}}"],
+              "path": ["aboutAndTerm", "create"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get About",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/aboutAndTerm/about",
+              "host": ["{{baseUrl}}"],
+              "path": ["aboutAndTerm", "about"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Terms",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/aboutAndTerm/terms",
+              "host": ["{{baseUrl}}"],
+              "path": ["aboutAndTerm", "terms"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Updated content\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/aboutAndTerm/update/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["aboutAndTerm", "update", ":id"],
+              "variable": [
+                {
+                  "key": "id"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Student Assign To Class",
+      "item": [
+        {
+          "name": "Assign Student",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"STUDENT_ID\",\n  \"classId\": \"CLASS_ID\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/student-assign-to-class",
+              "host": ["{{baseUrl}}"],
+              "path": ["student-assign-to-class"]
+            }
+          },
+          "response": [
+            {
+              "name": "Untitled Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"studentId\": \"STUDENT_ID\",\n  \"classId\": \"CLASS_ID\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/student-assign-to-class",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["student-assign-to-class"]
+                }
+              },
+              "_postman_previewlanguage": "Text",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Student assigned successfully\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Classes by Student",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/student-assign-to-class/student/:studentId",
+              "host": ["{{baseUrl}}"],
+              "path": ["student-assign-to-class", "student", ":studentId"],
+              "variable": [
+                {
+                  "key": "studentId"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Students by Class",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/student-assign-to-class/class/:classId",
+              "host": ["{{baseUrl}}"],
+              "path": ["student-assign-to-class", "class", ":classId"],
+              "variable": [
+                {
+                  "key": "classId"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Assignment",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/student-assign-to-class/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["student-assign-to-class", ":id"],
+              "variable": [
+                {
+                  "key": "id"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Classes",
+      "item": [
+        {
+          "name": "Create Class",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"teacherId\": \"TEACHER_ID\",\n  \"grade\": \"8\",\n  \"subject\": \"Math\",\n  \"section\": \"A\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/classes",
+              "host": ["{{baseUrl}}"],
+              "path": ["classes"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Classes",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/classes",
+              "host": ["{{baseUrl}}"],
+              "path": ["classes"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Classes by Teacher",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/classes/teacher/:teacherId",
+              "host": ["{{baseUrl}}"],
+              "path": ["classes", "teacher", ":teacherId"],
+              "variable": [
+                {
+                  "key": "teacherId"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Class",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subject\": \"Physics\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/classes/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["classes", ":id"],
+              "variable": [
+                {
+                  "key": "id"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Class",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/classes/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["classes", ":id"],
+              "variable": [
+                {
+                  "key": "id"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Grade Wise Classes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/classes/grade",
+              "host": ["{{baseUrl}}"],
+              "path": ["classes", "grade"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Classes by Student",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/classes/student/:studentId",
+              "host": ["{{baseUrl}}"],
+              "path": ["classes", "student", ":studentId"],
+              "variable": [
+                {
+                  "key": "studentId"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Lessons",
+      "item": [
+        {
+          "name": "Create Lesson",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "studentId",
+                  "value": "STUDENT_ID",
+                  "type": "text"
+                },
+                {
+                  "key": "title",
+                  "value": "Lesson 1",
+                  "type": "text"
+                },
+                {
+                  "key": "document",
+                  "type": "file",
+                  "value": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/lessons/create",
+              "host": ["{{baseUrl}}"],
+              "path": ["lessons", "create"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Teacher Lessons",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lessons/teacher-lessons",
+              "host": ["{{baseUrl}}"],
+              "path": ["lessons", "teacher-lessons"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Student Lessons",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lessons/student-lessons",
+              "host": ["{{baseUrl}}"],
+              "path": ["lessons", "student-lessons"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Lessons",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lessons",
+              "host": ["{{baseUrl}}"],
+              "path": ["lessons"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Lesson",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lessons/:lessonId",
+              "host": ["{{baseUrl}}"],
+              "path": ["lessons", ":lessonId"],
+              "variable": [
+                {
+                  "key": "lessonId"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Lesson",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Updated Lesson",
+                  "type": "text"
+                },
+                {
+                  "key": "document",
+                  "type": "file",
+                  "value": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/lessons/update/:lessonId",
+              "host": ["{{baseUrl}}"],
+              "path": ["lessons", "update", ":lessonId"],
+              "variable": [
+                {
+                  "key": "lessonId"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Lesson",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lessons/delete/:lessonId",
+              "host": ["{{baseUrl}}"],
+              "path": ["lessons", "delete", ":lessonId"],
+              "variable": [
+                {
+                  "key": "lessonId"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Attendances",
+      "item": [
+        {
+          "name": "Create Class Attendance",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"classId\": \"CLASS_ID\",\n  \"date\": \"2026-04-16\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/attendances/class",
+              "host": ["{{baseUrl}}"],
+              "path": ["attendances", "class"]
+            }
+          },
+          "response": [
+            {
+              "name": "Untitled Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"classId\": \"CLASS_ID\",\n  \"date\": \"2026-04-16\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/attendances/class",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["attendances", "class"]
+                }
+              },
+              "_postman_previewlanguage": "Text",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Attendance created successfully\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Change Attendance Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"present\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/attendances/class/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["attendances", "class", ":id"],
+              "variable": [
+                {
+                  "key": "id"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Attendance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/attendances/class",
+              "host": ["{{baseUrl}}"],
+              "path": ["attendances", "class"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Student Attendance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/attendances/student",
+              "host": ["{{baseUrl}}"],
+              "path": ["attendances", "student"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Behavior",
+      "item": [
+        {
+          "name": "Create Behavior",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"STUDENT_ID\",\n  \"note\": \"Good behavior\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/behavior/create",
+              "host": ["{{baseUrl}}"],
+              "path": ["behavior", "create"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Teacher Behaviors",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/behavior/teacher-behaviors",
+              "host": ["{{baseUrl}}"],
+              "path": ["behavior", "teacher-behaviors"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Student Behaviors",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/behavior/student-behaviors",
+              "host": ["{{baseUrl}}"],
+              "path": ["behavior", "student-behaviors"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Behaviors",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/behavior",
+              "host": ["{{baseUrl}}"],
+              "path": ["behavior"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Behavior",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/behavior/:behaviorId",
+              "host": ["{{baseUrl}}"],
+              "path": ["behavior", ":behaviorId"],
+              "variable": [
+                {
+                  "key": "behaviorId"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Behavior",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Updated note\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/behavior/update/:behaviorId",
+              "host": ["{{baseUrl}}"],
+              "path": ["behavior", "update", ":behaviorId"],
+              "variable": [
+                {
+                  "key": "behaviorId"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Behavior",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/behavior/delete/:behaviorId",
+              "host": ["{{baseUrl}}"],
+              "path": ["behavior", "delete", ":behaviorId"],
+              "variable": [
+                {
+                  "key": "behaviorId"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "School",
+      "item": [
+        {
+          "name": "Create School",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"My School\",\n  \"address\": \"Dhaka\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/school/create",
+              "host": ["{{baseUrl}}"],
+              "path": ["school", "create"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My School",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/school/my-school",
+              "host": ["{{baseUrl}}"],
+              "path": ["school", "my-school"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Schools",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/school",
+              "host": ["{{baseUrl}}"],
+              "path": ["school"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single School",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/school/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["school", ":id"],
+              "variable": [
+                {
+                  "key": "id"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update School",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated School\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/school/update/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["school", "update", ":id"],
+              "variable": [
+                {
+                  "key": "id"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Learning Tips",
+      "item": [
+        {
+          "name": "Create Learning Tip",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"administratorId\": \"ADMIN_ID\",\n  \"title\": \"Tip title\",\n  \"description\": \"Tip details\",\n  \"schoolId\": \"SCHOOL_ID\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/learning-tips",
+              "host": ["{{baseUrl}}"],
+              "path": ["learning-tips"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get by Admin",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/learning-tips/by-admin?administratorId=ADMIN_ID&page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["learning-tips", "by-admin"],
+              "query": [
+                {
+                  "key": "administratorId",
+                  "value": "ADMIN_ID"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get by School",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/learning-tips/by-school?schoolId=SCHOOL_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["learning-tips", "by-school"],
+              "query": [
+                {
+                  "key": "schoolId",
+                  "value": "SCHOOL_ID"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/learning-tips/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["learning-tips", ":id"],
+              "variable": [
+                {
+                  "key": "id"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Tip\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/learning-tips/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["learning-tips", ":id"],
+              "variable": [
+                {
+                  "key": "id"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/learning-tips/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["learning-tips", ":id"],
+              "variable": [
+                {
+                  "key": "id"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Message",
+      "item": [
+        {
+          "name": "Create Message",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "message",
+                  "value": "Hello",
+                  "type": "text"
+                },
+                {
+                  "key": "roomId",
+                  "value": "ROOM_ID",
+                  "type": "text"
+                },
+                {
+                  "key": "userId",
+                  "value": "USER_ID",
+                  "type": "text"
+                },
+                {
+                  "key": "files",
+                  "type": "file",
+                  "value": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/message",
+              "host": ["{{baseUrl}}"],
+              "path": ["message"]
+            }
+          },
+          "response": [
+            {
+              "name": "Untitled Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "message",
+                      "value": "Hello",
+                      "type": "text"
+                    },
+                    {
+                      "key": "roomId",
+                      "value": "ROOM_ID",
+                      "type": "text"
+                    },
+                    {
+                      "key": "userId",
+                      "value": "USER_ID",
+                      "type": "text"
+                    },
+                    {
+                      "key": "files",
+                      "type": "file",
+                      "value": ""
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/message",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["message"]
+                }
+              },
+              "_postman_previewlanguage": "Text",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Message sent successfully\",\n  \"data\": { \"_id\": \"...\" }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Messages by Room",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/message/:roomId",
+              "host": ["{{baseUrl}}"],
+              "path": ["message", ":roomId"],
+              "variable": [
+                {
+                  "key": "roomId"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Message",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Updated message\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/message/:messageId",
+              "host": ["{{baseUrl}}"],
+              "path": ["message", ":messageId"],
+              "variable": [
+                {
+                  "key": "messageId"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Message",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/message/:messageId",
+              "host": ["{{baseUrl}}"],
+              "path": ["message", ":messageId"],
+              "variable": [
+                {
+                  "key": "messageId"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "Get User Notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notifications/:userId",
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications", ":userId"],
+              "variable": [
+                {
+                  "key": "userId"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mark All As Read",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notifications/read/:userId",
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications", "read", ":userId"],
+              "variable": [
+                {
+                  "key": "userId"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Rooms",
+      "item": [
+        {
+          "name": "Create Room",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Class Group",
+                  "type": "text"
+                },
+                {
+                  "key": "participants",
+                  "value": "[\"USER1\",\"USER2\"]",
+                  "type": "text"
+                },
+                {
+                  "key": "avatar",
+                  "type": "file",
+                  "value": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/rooms",
+              "host": ["{{baseUrl}}"],
+              "path": ["rooms"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Edit Room",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Room\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/rooms/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["rooms", ":id"],
+              "variable": [
+                {
+                  "key": "id"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Rooms by User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rooms/user/:userId",
+              "host": ["{{baseUrl}}"],
+              "path": ["rooms", "user", ":userId"],
+              "variable": [
+                {
+                  "key": "userId"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Academic Documents",
+      "item": [
+        {
+          "name": "Create Academic Document",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "studentId",
+                  "value": "STUDENT_ID",
+                  "type": "text"
+                },
+                {
+                  "key": "title",
+                  "value": "Document title",
+                  "type": "text"
+                },
+                {
+                  "key": "document",
+                  "type": "file",
+                  "value": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/academicDocument/create",
+              "host": ["{{baseUrl}}"],
+              "path": ["academicDocument", "create"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Student Documents",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/academicDocument/student-documents",
+              "host": ["{{baseUrl}}"],
+              "path": ["academicDocument", "student-documents"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Teacher Documents",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/academicDocument/teacher-documents",
+              "host": ["{{baseUrl}}"],
+              "path": ["academicDocument", "teacher-documents"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Document",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/academicDocument/:academicDocumentId",
+              "host": ["{{baseUrl}}"],
+              "path": ["academicDocument", ":academicDocumentId"],
+              "variable": [
+                {
+                  "key": "academicDocumentId"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Academic Document",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Updated title",
+                  "type": "text"
+                },
+                {
+                  "key": "document",
+                  "type": "file",
+                  "value": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/academicDocument/update/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["academicDocument", "update", ":id"],
+              "variable": [
+                {
+                  "key": "id"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Academic Document",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/academicDocument/delete/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["academicDocument", "delete", ":id"],
+              "variable": [
+                {
+                  "key": "id"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Homework",
+      "item": [
+        {
+          "name": "Create Homework",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "classId",
+                  "value": "CLASS_ID",
+                  "type": "text"
+                },
+                {
+                  "key": "userId",
+                  "value": "TEACHER_ID",
+                  "type": "text"
+                },
+                {
+                  "key": "title",
+                  "value": "Homework title",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "value": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/homework/create",
+              "host": ["{{baseUrl}}"],
+              "path": ["homework", "create"]
+            }
+          },
+          "response": [
+            {
+              "name": "Untitled Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "classId",
+                      "value": "CLASS_ID",
+                      "type": "text"
+                    },
+                    {
+                      "key": "userId",
+                      "value": "TEACHER_ID",
+                      "type": "text"
+                    },
+                    {
+                      "key": "title",
+                      "value": "Homework title",
+                      "type": "text"
+                    },
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "value": ""
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/homework/create",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["homework", "create"]
+                }
+              },
+              "_postman_previewlanguage": "Text",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Homework created successfully\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Homework by Class",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/homework/class/:classId",
+              "host": ["{{baseUrl}}"],
+              "path": ["homework", "class", ":classId"],
+              "variable": [
+                {
+                  "key": "classId"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Homework by User",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/homework/user/:userId",
+              "host": ["{{baseUrl}}"],
+              "path": ["homework", "user", ":userId"],
+              "variable": [
+                {
+                  "key": "userId"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Homework",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/homework/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["homework", ":id"],
+              "variable": [
+                {
+                  "key": "id"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Homework",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Updated Homework",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "value": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/homework/update/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["homework", "update", ":id"],
+              "variable": [
+                {
+                  "key": "id"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Homework",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/homework/delete/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["homework", "delete", ":id"],
+              "variable": [
+                {
+                  "key": "id"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Archive Homework",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/homework/archive/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["homework", "archive", ":id"],
+              "variable": [
+                {
+                  "key": "id"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Parent Child",
+      "item": [
+        {
+          "name": "Create Relation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"parentId\": \"PARENT_ID\",\n  \"childId\": \"CHILD_ID\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/parent/child",
+              "host": ["{{baseUrl}}"],
+              "path": ["parent", "child"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Relation",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/parent/child/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["parent", "child", ":id"],
+              "variable": [
+                {
+                  "key": "id"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Children by Parent",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/parent/child/parent/:parentId",
+              "host": ["{{baseUrl}}"],
+              "path": ["parent", "child", "parent", ":parentId"],
+              "variable": [
+                {
+                  "key": "parentId"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Parents by Child",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/parent/child/child/:childId",
+              "host": ["{{baseUrl}}"],
+              "path": ["parent", "child", "child", ":childId"],
+              "variable": [
+                {
+                  "key": "childId"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Quizzes",
+      "item": [
+        {
+          "name": "Create Quiz",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "teacherId",
+                  "value": "TEACHER_ID",
+                  "type": "text"
+                },
+                {
+                  "key": "classId",
+                  "value": "CLASS_ID",
+                  "type": "text"
+                },
+                {
+                  "key": "title",
+                  "value": "Quiz 1",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Description",
+                  "type": "text"
+                },
+                {
+                  "key": "time",
+                  "value": "30",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "value": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/quizzes",
+              "host": ["{{baseUrl}}"],
+              "path": ["quizzes"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Quiz",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Updated Quiz",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "value": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/quizzes/:quizId",
+              "host": ["{{baseUrl}}"],
+              "path": ["quizzes", ":quizId"],
+              "variable": [
+                {
+                  "key": "quizId"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Quizzes",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/quizzes",
+              "host": ["{{baseUrl}}"],
+              "path": ["quizzes"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Quizzes by Class",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/quizzes/class/:classId",
+              "host": ["{{baseUrl}}"],
+              "path": ["quizzes", "class", ":classId"],
+              "variable": [
+                {
+                  "key": "classId"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Quizzes by Teacher",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/quizzes/teacher/:teacherId",
+              "host": ["{{baseUrl}}"],
+              "path": ["quizzes", "teacher", ":teacherId"],
+              "variable": [
+                {
+                  "key": "teacherId"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Quiz",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/quizzes/:quizId",
+              "host": ["{{baseUrl}}"],
+              "path": ["quizzes", ":quizId"],
+              "variable": [
+                {
+                  "key": "quizId"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Quiz QA",
+      "item": [
+        {
+          "name": "Generate AI Questions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quizId\": \"QUIZ_ID\",\n  \"topic\": \"Algebra\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/quiz/qa/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["quiz", "qa", "generate"]
+            }
+          },
+          "response": [
+            {
+              "name": "Untitled Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"quizId\": \"QUIZ_ID\",\n  \"topic\": \"Algebra\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/quiz/qa/generate",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["quiz", "qa", "generate"]
+                }
+              },
+              "_postman_previewlanguage": "Text",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Questions generated successfully\",\n  \"data\": { \"questions\": [] }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Quiz Result / Test",
+      "item": [
+        {
+          "name": "Start Quiz",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quizId\": \"QUIZ_ID\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/test/quizzes/start",
+              "host": ["{{baseUrl}}"],
+              "path": ["test", "quizzes", "start"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Save Progress",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quizId\": \"QUIZ_ID\",\n  \"answers\": []\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/test/quizzes/save-progress",
+              "host": ["{{baseUrl}}"],
+              "path": ["test", "quizzes", "save-progress"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Quiz",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quizId\": \"QUIZ_ID\",\n  \"answers\": []\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/test/quizzes/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["test", "quizzes", "submit"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Answers by Student",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/test/quizzes/answers/:studentId",
+              "host": ["{{baseUrl}}"],
+              "path": ["test", "quizzes", "answers", ":studentId"],
+              "variable": [
+                {
+                  "key": "studentId"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "User Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["dashboard", "stats"]
+            }
+          },
+          "response": [
+            {
+              "name": "Untitled Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/dashboard/stats",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["dashboard", "stats"]
+                }
+              },
+              "_postman_previewlanguage": "Text",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"User stats fetched successfully\",\n  \"data\": {\n    \"totalStudents\": 100,\n    \"totalParents\": 80,\n    \"totalTeachers\": 20\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Student Gender Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/stats/student-gender",
+              "host": ["{{baseUrl}}"],
+              "path": ["dashboard", "stats", "student-gender"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api/v1"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ]
+}

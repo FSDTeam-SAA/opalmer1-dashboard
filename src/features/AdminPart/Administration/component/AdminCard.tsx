@@ -6,6 +6,8 @@ import { Trash2 } from "lucide-react";
 import ToggleSwitch from "./ToggleSwitch";
 import { Admin } from "./Administration";
 
+const FALLBACK_AVATAR = "/images/12043465729ab7c8ceffce00749e7c71df0c9e25.jpg";
+
 export default function AdminCard({
   admin,
   onToggle,
@@ -17,14 +19,16 @@ export default function AdminCard({
   onDelete: () => void;
   onEdit: () => void;
 }) {
+  const avatarUrl = admin.avatar?.url || FALLBACK_AVATAR;
+
   return (
     <div>
       <div className="flex gap-5 rounded-[20px] bg-white p-5 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
         {/* Profile Image */}
         <div className="h-[200px] w-[200px] flex-shrink-0 overflow-hidden rounded-[6px]">
           <Image
-            src={admin.image}
-            alt={admin.name}
+            src={avatarUrl}
+            alt={admin.username}
             width={200}
             height={200}
             className="h-full w-full object-cover"
@@ -35,18 +39,23 @@ export default function AdminCard({
         <div className="flex flex-1 flex-col justify-between py-3">
           <div>
             <Link
-              href={`/admin/administration/${admin.name.replace(/\s+/g, "-")}`}
+              href={`/admin/administration/${admin._id}`}
               className="text-[28px] font-semibold text-black tracking-[0.3px] hover:text-[#871dad] transition-colors"
             >
-              {admin.name}
+              {admin.username}
             </Link>
-            <p className="mt-3 text-[18px] text-[#666]">{admin.email}</p>
-            <p className="mt-2 text-[18px] text-[#666]">{admin.username}</p>
+            <p className="mt-3 text-[18px] text-[#666]">{admin.phoneNumber}</p>
+            <p className="mt-2 text-[14px] text-[#999] capitalize">
+              {admin.state}
+            </p>
           </div>
 
           {/* Actions Row */}
           <div className="flex items-center gap-8">
-            <ToggleSwitch active={admin.active} onChange={onToggle} />
+            <ToggleSwitch
+              active={admin.state === "active"}
+              onChange={onToggle}
+            />
 
             {/* Delete Button */}
             <button
