@@ -59,7 +59,7 @@ export default function Login() {
         <div className="relative h-[220px] sm:h-[260px] lg:h-[295px] overflow-hidden">
           {/* Background image shape */}
           <Image
-            src="/images/login-header.jpeg"
+            src="/images/login-header.png"
             alt=""
             fill
             sizes="(max-width: 440px) 440px, (max-width: 540px) 540px, 658px"
