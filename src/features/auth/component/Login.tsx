@@ -141,7 +141,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-[48px] sm:h-[52px] lg:h-[56px] bg-[#871dad] hover:bg-[#6e17a0] active:bg-[#5c1387] text-white text-[16px] sm:text-[18px] lg:text-[20px] font-bold uppercase tracking-[2px] rounded-[10px] transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full h-[48px] sm:h-[52px] lg:h-[56px] bg-[#871dad] hover:bg-[#6e17a0] active:bg-[#5c1387] text-white text-[16px] sm:text-[18px] lg:text-[20px] font-bold uppercase tracking-[2px] rounded-[10px] transition-colors disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
           >
             {loading ? "Signing in..." : "Sign In"}
           </button>
