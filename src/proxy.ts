@@ -34,15 +34,19 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(dashboardUrl, request.url));
   }
 
+  const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
+  const isAdministratorRoute =
+    pathname === "/administrator" || pathname.startsWith("/administrator/");
+
   // Admin routes: only "admin" role
-  if (pathname.startsWith("/admin") && role !== "admin") {
+  if (isAdminRoute && role !== "admin") {
     return NextResponse.redirect(
       new URL("/administrator/dashboard", request.url),
     );
   }
 
   // Administrator routes: only "administrator" role
-  if (pathname.startsWith("/administrator") && role !== "administrator") {
+  if (isAdministratorRoute && role !== "administrator") {
     return NextResponse.redirect(new URL("/admin/dashboard", request.url));
   }
 

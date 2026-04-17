@@ -22,7 +22,12 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" --max-time 120 http://localhost:3000/login)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" --max-time 30 http://localhost:3000/admin/dashboard)",
       "Bash(curl -s -o /dev/null -w \"%{http_code} %{redirect_url}\" --max-time 30 -L0 http://localhost:3000/admin/dashboard)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" --max-time 30 http://localhost:3000/login)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" --max-time 30 http://localhost:3000/login)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(npx eslint *)",
+      "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")",
+      "Bash(echo \"tsc exit: $?\")",
+      "Bash(echo \"lint exit: $?\")"
     ],
     "additionalDirectories": [
       "/home/rasel/Rasel/FSD/opalmer1-dashboard/src/app/(admin-part)/admin/administration",

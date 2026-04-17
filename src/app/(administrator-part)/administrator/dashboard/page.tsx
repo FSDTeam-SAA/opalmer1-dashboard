@@ -1,3 +1,5 @@
+import { DashboardView } from "@/features/AdministratorPart/components/DashboardView";
+
 export default function AdministratorDashboardPage() {
-  return <div>Administrator Dashboard</div>;
+  return <DashboardView />;
 }
