@@ -4,7 +4,6 @@ import { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Search } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
 import {
   useReactTable,
   getCoreRowModel,
@@ -14,7 +13,7 @@ import {
   createColumnHelper,
 } from "@tanstack/react-table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fetchTeachers } from "../api/teacher.api";
+import { useTeachers } from "../hooks/useTeachers";
 import type { TeacherListItem } from "@/types/teacher.types";
 
 const columnHelper = createColumnHelper<TeacherListItem>();
@@ -45,14 +44,7 @@ function TableSkeleton() {
 export default function TeachersTable({ slug }: { slug: string }) {
   const [globalFilter, setGlobalFilter] = useState("");
 
-  const {
-    data: teachers = [],
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["teachers", slug],
-    queryFn: fetchTeachers,
-  });
+  const { data: teachers = [], isLoading, isError } = useTeachers();
 
   const columns = useMemo(
     () => [

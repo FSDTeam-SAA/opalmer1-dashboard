@@ -1,3 +1,4 @@
+import { api } from "@/lib/api";
 import type {
   TeacherListItem,
   TeacherProfile,
@@ -6,19 +7,57 @@ import type {
   QuizAttempt,
 } from "@/types/teacher.types";
 
-// TODO: backend — replace mock data with real API calls using `api` from "@/lib/api"
+/* ─────────────────────────────────────────────
+ * Real backend integrations
+ * ───────────────────────────────────────────── */
 
-/* ───── Mock Data ───── */
+/**
+ * Raw teacher record returned by GET /users/my-teachers.
+ * Backend: user.controller.ts → getMySchoolAllTeachers
+ * (authorizeRoles("administrator")).
+ */
+type MyTeacherRecord = {
+  _id: string;
+  username: string;
+  Id: string;
+  phoneNumber?: string;
+  gradeLevel?: string | number;
+  age?: number;
+  avatar?: { url?: string; public_id?: string };
+  state?: string;
+};
 
-const mockTeachers: TeacherListItem[] = Array.from({ length: 25 }, (_, i) => ({
-  id: i + 1,
-  name: "Eren Yaeger",
-  teacherId: "eren_yaeger",
-  gradeLevel: "06",
-  subjects: "Math, English",
-  state: i === 0 ? "MD" : "Tx",
-  image: "/images/4f8da1b70693c4fcf9e01b9293706aed5cd4e34d.jpg",
-}));
+type MyTeachersResponse = {
+  success: boolean;
+  message: string;
+  data: MyTeacherRecord[];
+};
+
+const FALLBACK_IMAGE = "/images/4f8da1b70693c4fcf9e01b9293706aed5cd4e34d.jpg";
+
+/**
+ * GET /users/my-teachers
+ * Returns the teachers of the authenticated administrator's school.
+ * The UI component `TeacherListItem` uses a slightly different shape,
+ * so we adapt the backend payload here.
+ */
+export async function fetchTeachers(): Promise<TeacherListItem[]> {
+  const { data } = await api.get<MyTeachersResponse>("/users/my-teachers");
+  return data.data.map((t, idx) => ({
+    id: idx + 1,
+    name: t.username,
+    teacherId: t.Id,
+    gradeLevel: String(t.gradeLevel ?? "—"),
+    subjects: "—",
+    state: t.state ?? "—",
+    image: t.avatar?.url || FALLBACK_IMAGE,
+  }));
+}
+
+/* ─────────────────────────────────────────────
+ * Mock-backed endpoints — no backend route exists yet.
+ * Replace once corresponding backend endpoints are implemented.
+ * ───────────────────────────────────────────── */
 
 const mockTeacherProfile: TeacherProfile = {
   id: 1,
@@ -309,43 +348,39 @@ const mockTeacherGrades: TeacherGradesData = {
   ],
 };
 
-/* ───── API Functions ───── */
-
-// TODO: backend — GET /api/admin/{adminId}/teachers
-export async function fetchTeachers(): Promise<TeacherListItem[]> {
-  await new Promise((r) => setTimeout(r, 800));
-  return mockTeachers;
-}
-
-// TODO: backend — GET /api/admin/{adminId}/teachers/{teacherId}
+// TODO: backend — no endpoint yet. When available, replace with:
+//   GET /users/:teacherId  (or a dedicated GET /teachers/:teacherId profile)
 export async function fetchTeacherProfile(
   teacherId: string,
 ): Promise<TeacherProfile> {
-  await new Promise((r) => setTimeout(r, 800));
+  await new Promise((r) => setTimeout(r, 400));
   return { ...mockTeacherProfile, id: Number(teacherId) || 1 };
 }
 
-// TODO: backend — GET /api/admin/{adminId}/teachers/{teacherId}/grades
+// TODO: backend — no aggregate teacher-grades endpoint yet.
+// Candidates to compose once available: GET /classes/teacher/:teacherId + attendance/quiz summaries.
 export async function fetchTeacherGrades(
-  teacherId: string,
+  _teacherId: string,
 ): Promise<TeacherGradesData> {
-  await new Promise((r) => setTimeout(r, 800));
+  await new Promise((r) => setTimeout(r, 400));
   return mockTeacherGrades;
 }
 
-// TODO: backend — GET /api/admin/{adminId}/teachers/{teacherId}/quizzes/{quizId}/students
+// TODO: backend — no endpoint for quiz attendees yet.
+// When implemented, likely: GET /test/quizzes/:quizId/attendees
 export async function fetchAttendedStudents(
-  quizId: string,
+  _quizId: string,
 ): Promise<AttendedStudent[]> {
-  await new Promise((r) => setTimeout(r, 800));
+  await new Promise((r) => setTimeout(r, 400));
   return mockAttendedStudents;
 }
 
-// TODO: backend — GET /api/admin/{adminId}/teachers/{teacherId}/quizzes/{quizId}/students/{studentId}
+// TODO: backend — no endpoint for individual student quiz attempts yet.
+// When implemented, likely: GET /test/quizzes/:quizId/students/:studentId
 export async function fetchQuizAttempt(
-  quizId: string,
-  studentId: string,
+  _quizId: string,
+  _studentId: string,
 ): Promise<QuizAttempt> {
-  await new Promise((r) => setTimeout(r, 800));
+  await new Promise((r) => setTimeout(r, 400));
   return mockQuizAttempt;
 }

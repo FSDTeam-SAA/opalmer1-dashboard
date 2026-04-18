@@ -1,18 +1,30 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
-import { signIn, getSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { signIn, signOut, getSession } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, CheckCircle2 } from "lucide-react";
+
+const ROLE_FORBIDDEN_MESSAGE =
+  "This dashboard is for admins and administrators only. Your account doesn't have access.";
 
 export default function Login() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [adminId, setAdminId] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // The proxy redirects forbidden roles here with ?error=role-forbidden after
+  // clearing their session cookie. Surface that as a readable message.
+  useEffect(() => {
+    if (searchParams.get("error") === "role-forbidden") {
+      setError(ROLE_FORBIDDEN_MESSAGE);
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,13 +40,22 @@ export default function Login() {
 
       if (result?.error) {
         setError(result.error || "Invalid credentials");
+        return;
+      }
+
+      const session = await getSession();
+      const role = session?.user?.role;
+
+      if (role === "admin") {
+        router.push("/admin/dashboard");
+      } else if (role === "administrator") {
+        router.push("/administrator/dashboard");
       } else {
-        const session = await getSession();
-        if (session?.user?.role === "admin") {
-          router.push("/admin/dashboard");
-        } else {
-          router.push("/administrator/dashboard");
-        }
+        // Teachers/students/parents authenticate successfully but have no
+        // dashboard. Sign them out so we don't leave a stranded session that
+        // would trip the proxy's role guard on every request.
+        await signOut({ redirect: false });
+        setError(ROLE_FORBIDDEN_MESSAGE);
       }
     } catch {
       setError("Something went wrong. Please try again.");

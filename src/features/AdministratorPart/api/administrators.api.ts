@@ -5,7 +5,7 @@ import type {
   AdministratorsResponse,
   CreateAdministratorPayload,
   UpdateAdministratorPayload,
-} from "../types/administrator.types";
+} from "../types/administrators.types";
 
 /**
  * GET /users/administrators
@@ -21,7 +21,7 @@ export async function fetchAdministrators(): Promise<Administrator[]> {
 
 /**
  * POST /users/register (role=administrator)
- * Creates a new administrator. Uses multipart/form-data to allow avatar upload.
+ * Creates a new administrator. Multipart/form-data so an avatar can be uploaded.
  * Backend: user.controller.ts → registerUser
  */
 export async function createAdministrator(
@@ -48,8 +48,7 @@ export async function createAdministrator(
 
 /**
  * PUT /users/:id
- * Updates a user (used for administrators). Restricted fields
- * (password, role, refreshToken) are stripped server-side.
+ * Updates a user. Restricted fields (password, role, refreshToken) are stripped server-side.
  * Backend: user.controller.ts → updateUser
  */
 export async function updateAdministrator(
@@ -63,10 +62,7 @@ export async function updateAdministrator(
   return data.data;
 }
 
-/**
- * Convenience wrapper for toggling an administrator's active state.
- * Internally calls PUT /users/:id with { state }.
- */
+/** Convenience wrapper for toggling the active state. */
 export async function setAdministratorState(
   id: string,
   state: "active" | "inactive",

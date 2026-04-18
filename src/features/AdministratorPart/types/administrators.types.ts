@@ -3,25 +3,25 @@
  *
  * Backend sources:
  *   - GET  /users/administrators  → user.controller.ts:getAllAdministrators
- *   - POST /users/register        → user.controller.ts:registerUser
- *                                   (used with role="administrator" to create admin)
+ *   - POST /users/register        → user.controller.ts:registerUser  (role="administrator")
  *   - PUT  /users/:id             → user.controller.ts:updateUser
  */
 
 export type AdministratorAvatar = {
-  public_id: string;
-  url: string;
+  public_id?: string;
+  url?: string;
 };
 
 export type Administrator = {
   _id: string;
   username: string;
-  phoneNumber: string;
+  phoneNumber?: string;
   email?: string;
   type?: string;
-  state: "active" | "inactive" | string;
-  avatar: AdministratorAvatar;
-  created_at: string;
+  role?: string;
+  state?: "active" | "inactive" | string;
+  avatar?: AdministratorAvatar;
+  created_at?: string;
 };
 
 export type AdministratorsResponse = {
@@ -36,10 +36,7 @@ export type AdministratorResponse = {
   data: Administrator;
 };
 
-/**
- * Payload for creating a new administrator via POST /users/register.
- * The backend expects multipart/form-data when an avatar file is included.
- */
+/** Payload for POST /users/register (multipart/form-data when image present). */
 export type CreateAdministratorPayload = {
   username: string;
   Id: string;
@@ -52,10 +49,7 @@ export type CreateAdministratorPayload = {
   image?: File | null;
 };
 
-/**
- * Payload for updating an administrator via PUT /users/:id.
- * Restricted fields (password, role, refreshToken) are stripped by the backend.
- */
+/** Payload for PUT /users/:id. Restricted fields are stripped server-side. */
 export type UpdateAdministratorPayload = Partial<{
   username: string;
   phoneNumber: string;

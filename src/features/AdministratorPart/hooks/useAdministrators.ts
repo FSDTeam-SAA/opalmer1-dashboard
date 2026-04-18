@@ -4,47 +4,38 @@ import {
   fetchAdministrators,
   setAdministratorState,
   updateAdministrator,
-} from "../api/administrator.api";
+} from "../api/administrators.api";
 import type {
   CreateAdministratorPayload,
   UpdateAdministratorPayload,
-} from "../types/administrator.types";
+} from "../types/administrators.types";
 
-const ADMIN_QUERY_KEY = ["administrators"] as const;
+export const administratorsKeys = {
+  all: ["administrator", "administrators"] as const,
+};
 
-/**
- * useAdministrators
- * Query hook for the administrators list.
- * Endpoint: GET /users/administrators
- */
+/** GET /users/administrators */
 export function useAdministrators() {
   return useQuery({
-    queryKey: ADMIN_QUERY_KEY,
+    queryKey: administratorsKeys.all,
     queryFn: fetchAdministrators,
+    staleTime: 30_000,
   });
 }
 
-/**
- * useCreateAdministrator
- * Mutation hook for creating a new administrator.
- * Endpoint: POST /users/register (multipart/form-data)
- */
+/** POST /users/register (multipart) */
 export function useCreateAdministrator() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: CreateAdministratorPayload) =>
       createAdministrator(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: administratorsKeys.all });
     },
   });
 }
 
-/**
- * useUpdateAdministrator
- * Mutation hook for updating an administrator's profile fields.
- * Endpoint: PUT /users/:id
- */
+/** PUT /users/:id */
 export function useUpdateAdministrator() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -56,23 +47,19 @@ export function useUpdateAdministrator() {
       payload: UpdateAdministratorPayload;
     }) => updateAdministrator(id, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: administratorsKeys.all });
     },
   });
 }
 
-/**
- * useToggleAdministratorState
- * Mutation hook for flipping an administrator's active state.
- * Endpoint: PUT /users/:id with { state }
- */
+/** PUT /users/:id with { state }. Used by the row toggles. */
 export function useToggleAdministratorState() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, state }: { id: string; state: "active" | "inactive" }) =>
       setAdministratorState(id, state),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: administratorsKeys.all });
     },
   });
 }
