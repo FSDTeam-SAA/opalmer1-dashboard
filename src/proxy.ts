@@ -3,6 +3,29 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 const PUBLIC_PATHS = ["/login", "/api/auth"];
+const ALLOWED_ROLES = new Set(["admin", "administrator"]);
+
+/**
+ * NextAuth.js stores its session under one of two cookies depending on
+ * whether the request is over https. We clear both on a forbidden role so
+ * the user lands on /login fresh instead of bouncing between dashboards.
+ */
+const SESSION_COOKIES = [
+  "next-auth.session-token",
+  "__Secure-next-auth.session-token",
+];
+
+function dashboardFor(role: string): string {
+  return role === "admin" ? "/admin/dashboard" : "/administrator/dashboard";
+}
+
+function clearSessionAndRedirect(url: URL): NextResponse {
+  const res = NextResponse.redirect(url);
+  for (const name of SESSION_COOKIES) {
+    res.cookies.delete(name);
+  }
+  return res;
+}
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -25,13 +48,21 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  const role = token.role as string;
+  const role = (token.role as string) ?? "";
+
+  // Roles like "user" (teachers/students/parents) have no dashboard yet.
+  // Without this guard the two role checks below would ping-pong forever
+  // (admin route bounces to /administrator → administrator route bounces
+  // to /admin → ERR_TOO_MANY_REDIRECTS).
+  if (!ALLOWED_ROLES.has(role)) {
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("error", "role-forbidden");
+    return clearSessionAndRedirect(loginUrl);
+  }
 
   // Root path → redirect to appropriate dashboard
   if (pathname === "/") {
-    const dashboardUrl =
-      role === "admin" ? "/admin/dashboard" : "/administrator/dashboard";
-    return NextResponse.redirect(new URL(dashboardUrl, request.url));
+    return NextResponse.redirect(new URL(dashboardFor(role), request.url));
   }
 
   const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");

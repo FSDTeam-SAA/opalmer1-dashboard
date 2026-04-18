@@ -1,80 +1,163 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
+import type { ColumnDef } from "@tanstack/react-table";
 import PageHeader from "@/components/sheard/PageHeader";
-
-const teachers = [
-  {
-    id: 1,
-    name: "Sarah Daniels",
-    teacherId: "TCH-001",
-    subject: "Mathematics",
-    classes: 4,
-    email: "sarah.d@school.io",
-    active: true,
-  },
-  {
-    id: 2,
-    name: "Michael Carter",
-    teacherId: "TCH-002",
-    subject: "Physics",
-    classes: 3,
-    email: "michael.c@school.io",
-    active: true,
-  },
-  {
-    id: 3,
-    name: "Priya Raman",
-    teacherId: "TCH-003",
-    subject: "Biology",
-    classes: 5,
-    email: "priya.r@school.io",
-    active: false,
-  },
-  {
-    id: 4,
-    name: "David Kim",
-    teacherId: "TCH-004",
-    subject: "History",
-    classes: 2,
-    email: "david.k@school.io",
-    active: true,
-  },
-  {
-    id: 5,
-    name: "Lucy Thompson",
-    teacherId: "TCH-005",
-    subject: "English",
-    classes: 4,
-    email: "lucy.t@school.io",
-    active: true,
-  },
-  {
-    id: 6,
-    name: "Hassan Ali",
-    teacherId: "TCH-006",
-    subject: "Computer Science",
-    classes: 3,
-    email: "hassan.a@school.io",
-    active: true,
-  },
-];
+import {
+  useMyTeachers,
+  useToggleTeacherState,
+  useUpdateTeacher,
+} from "../hooks/useTeachers";
+import type { TeacherRow } from "../types/teachers.types";
+import { DataTable } from "./shared/DataTable";
+import { ToggleSwitch } from "./shared/ToggleSwitch";
+import EditUserModal from "./shared/EditUserModal";
+import CreateTeacherModal from "./CreateTeacherModal";
 
 export function TeachersView() {
+  const router = useRouter();
   const [query, setQuery] = useState("");
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editing, setEditing] = useState<TeacherRow | null>(null);
 
-  const filtered = useMemo(() => {
-    const q = query.toLowerCase().trim();
-    if (!q) return teachers;
-    return teachers.filter(
-      (t) =>
-        t.name.toLowerCase().includes(q) ||
-        t.teacherId.toLowerCase().includes(q) ||
-        t.subject.toLowerCase().includes(q) ||
-        t.email.toLowerCase().includes(q),
-    );
-  }, [query]);
+  const { data, isLoading, isError, error, refetch } = useMyTeachers();
+  const toggleState = useToggleTeacherState();
+  const updateTeacher = useUpdateTeacher();
+
+  const columns = useMemo<ColumnDef<TeacherRow, unknown>[]>(
+    () => [
+      {
+        id: "no",
+        header: "No",
+        size: 60,
+        cell: ({ row }) => (
+          <span className="text-[16px] font-light text-[#666]">
+            {row.index + 1}
+          </span>
+        ),
+      },
+      {
+        id: "name",
+        header: "Teacher Name",
+        accessorFn: (row) => row.name,
+        cell: ({ row }) => {
+          const t = row.original;
+          return (
+            <div className="flex items-center gap-2">
+              <div className="h-6 w-6 rounded-full bg-gray-300 overflow-hidden">
+                {t.image ? (
+                  <Image
+                    src={t.image}
+                    alt={t.name}
+                    width={24}
+                    height={24}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="h-full w-full bg-gradient-to-br from-purple-300 to-purple-500" />
+                )}
+              </div>
+              <span className="text-[16px] font-light text-[#666]">
+                {t.name}
+              </span>
+            </div>
+          );
+        },
+      },
+      {
+        id: "teacherId",
+        header: "Teacher I'd",
+        accessorFn: (row) => row.teacherId,
+        cell: ({ getValue }) => (
+          <span className="text-[16px] font-light text-[#666]">
+            {String(getValue() ?? "—")}
+          </span>
+        ),
+      },
+      {
+        id: "subject",
+        header: "Subject / Grade",
+        accessorFn: (row) => row.subject,
+        cell: ({ getValue }) => (
+          <span className="text-[16px] font-light text-[#666]">
+            {String(getValue() ?? "—")}
+          </span>
+        ),
+      },
+      {
+        id: "phone",
+        header: "Phone",
+        accessorFn: (row) => row.phoneNumber,
+        cell: ({ getValue }) => (
+          <span className="text-[16px] font-light text-[#666]">
+            {String(getValue() ?? "—")}
+          </span>
+        ),
+      },
+      {
+        id: "status",
+        header: "Status",
+        accessorFn: (row) => (row.active ? "active" : "inactive"),
+        cell: ({ row }) => {
+          const active = row.original.active;
+          return (
+            <span
+              className={`inline-flex items-center gap-1.5 text-[14px] font-medium ${
+                active ? "text-[#5fb892]" : "text-[#ef3c50]"
+              }`}
+            >
+              <span
+                className={`h-2 w-2 rounded-full ${
+                  active ? "bg-[#5fb892]" : "bg-[#ef3c50]"
+                }`}
+              />
+              {active ? "Active" : "Inactive"}
+            </span>
+          );
+        },
+      },
+      {
+        id: "action",
+        header: () => <span className="block text-center">Action</span>,
+        size: 220,
+        cell: ({ row }) => {
+          const t = row.original;
+          return (
+            <div className="flex items-center justify-center gap-3">
+              <ToggleSwitch
+                active={t.active}
+                disabled={toggleState.isPending}
+                onChange={() =>
+                  toggleState.mutate({
+                    id: t._id,
+                    state: t.active ? "inactive" : "active",
+                  })
+                }
+              />
+              <button
+                type="button"
+                onClick={() => setEditing(t)}
+                className="rounded-[4px] border border-[#871dad] px-[10px] py-[6px] text-[14px] font-medium text-[#871dad] hover:bg-[#faf2f9] transition-colors cursor-pointer"
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push(`/administrator/teachers/${t._id}`)}
+                className="rounded-[4px] bg-[#871dad] px-[10px] py-[6px] text-[14px] font-medium text-white hover:bg-[#751a99] transition-colors cursor-pointer"
+              >
+                View
+              </button>
+            </div>
+          );
+        },
+      },
+    ],
+    [toggleState, router],
+  );
 
   return (
     <div className="space-y-6">
@@ -84,7 +167,12 @@ export function TeachersView() {
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
           <h2 className="text-[20px] sm:text-[24px] font-semibold text-[#333]">
-            All Teachers
+            All Teachers{" "}
+            {!isLoading && data && (
+              <span className="text-[14px] font-normal text-[#666]">
+                ({data.length})
+              </span>
+            )}
           </h2>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
             <div className="relative">
@@ -100,102 +188,52 @@ export function TeachersView() {
                 className="h-[48px] w-full sm:w-[350px] rounded-[8px] border border-[#08374d] bg-[#f9f9f9] pl-10 pr-4 text-[16px] text-[#666] outline-none placeholder:text-[#666]"
               />
             </div>
-            <button className="rounded-[10px] bg-[#871dad] cursor-pointer px-5 py-[14px] sm:py-[18px] text-[14px] sm:text-[16px] font-bold text-white hover:bg-[#751a99] transition-colors whitespace-nowrap">
+            <button
+              type="button"
+              onClick={() => setShowCreateModal(true)}
+              className="rounded-[10px] bg-[#871dad] cursor-pointer px-5 py-[14px] sm:py-[18px] text-[14px] sm:text-[16px] font-bold text-white hover:bg-[#751a99] transition-colors whitespace-nowrap"
+            >
               Add New Teacher
             </button>
           </div>
         </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[780px]">
-            <thead>
-              <tr className="border-b-2 border-[#871dad]">
-                <th className="pb-3 text-left text-[14px] font-light text-[#666] w-[60px]">
-                  No
-                </th>
-                <th className="pb-3 text-left text-[14px] font-light text-[#666]">
-                  Teacher Name
-                </th>
-                <th className="pb-3 text-left text-[14px] font-light text-[#666]">
-                  Teacher I&apos;d
-                </th>
-                <th className="pb-3 text-left text-[14px] font-light text-[#666]">
-                  Subject
-                </th>
-                <th className="pb-3 text-left text-[14px] font-light text-[#666]">
-                  Classes
-                </th>
-                <th className="pb-3 text-left text-[14px] font-light text-[#666]">
-                  Status
-                </th>
-                <th className="pb-3 text-center text-[14px] font-light text-[#666] w-[120px]">
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((t, idx) => (
-                <tr key={t.id} className="border-b border-gray-100">
-                  <td className="py-4 text-[16px] font-light text-[#666]">
-                    {idx + 1}
-                  </td>
-                  <td className="py-4">
-                    <div className="flex items-center gap-2">
-                      <div className="h-6 w-6 rounded-full bg-gray-300 overflow-hidden">
-                        <div className="h-full w-full bg-gradient-to-br from-purple-300 to-purple-500" />
-                      </div>
-                      <span className="text-[16px] font-light text-[#666]">
-                        {t.name}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="py-4 text-[16px] font-light text-[#666]">
-                    {t.teacherId}
-                  </td>
-                  <td className="py-4 text-[16px] font-light text-[#666]">
-                    {t.subject}
-                  </td>
-                  <td className="py-4 text-[16px] font-light text-[#666]">
-                    {t.classes}
-                  </td>
-                  <td className="py-4">
-                    <span
-                      className={`inline-flex items-center gap-1.5 text-[14px] font-medium ${
-                        t.active ? "text-[#5fb892]" : "text-[#ef3c50]"
-                      }`}
-                    >
-                      <span
-                        className={`h-2 w-2 rounded-full ${
-                          t.active ? "bg-[#5fb892]" : "bg-[#ef3c50]"
-                        }`}
-                      />
-                      {t.active ? "Active" : "Inactive"}
-                    </span>
-                  </td>
-                  <td className="py-4">
-                    <div className="flex items-center justify-center">
-                      <button className="rounded-[4px] bg-[#871dad] px-[6px] py-[8px] text-[16px] font-medium text-white hover:bg-[#751a99] transition-colors cursor-pointer">
-                        View
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {filtered.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="py-10 text-center text-[14px] text-[#666]"
-                  >
-                    No teachers match your search.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <DataTable<TeacherRow>
+          data={data}
+          columns={columns}
+          isLoading={isLoading}
+          isError={isError}
+          error={error}
+          onRetry={() => refetch()}
+          globalFilter={query}
+          minWidth={780}
+          emptyMessage="No teachers match your search."
+          errorMessage="We couldn't load the teachers list."
+        />
       </div>
+
+      {showCreateModal && (
+        <CreateTeacherModal onClose={() => setShowCreateModal(false)} />
+      )}
+
+      {editing && (
+        <EditUserModal
+          title="Edit Teacher"
+          user={{
+            _id: editing._id,
+            name: editing.name,
+            Id: editing.teacherId,
+            phoneNumber: editing.phoneNumber === "—" ? "" : editing.phoneNumber,
+            email: editing.email === "—" ? "" : editing.email,
+            state: editing.active ? "active" : "inactive",
+          }}
+          isPending={updateTeacher.isPending}
+          onSubmit={(payload) =>
+            updateTeacher.mutateAsync({ id: editing._id, payload })
+          }
+          onClose={() => setEditing(null)}
+        />
+      )}
     </div>
   );
 }

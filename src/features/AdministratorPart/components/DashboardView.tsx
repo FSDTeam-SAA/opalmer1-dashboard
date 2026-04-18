@@ -1,115 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
-  GraduationCap,
-  Briefcase,
-  Users,
-  ArrowUp,
   ArrowDown,
-  Search,
+  ArrowUp,
+  Briefcase,
   ChevronDown,
+  GraduationCap,
+  Search,
+  Users,
 } from "lucide-react";
+import type { ColumnDef } from "@tanstack/react-table";
 import PageHeader from "@/components/sheard/PageHeader";
+import { useStudentGenderStats, useUserStats } from "../hooks/useDashboard";
+import {
+  useAdministrators,
+  useToggleAdministratorState,
+} from "../hooks/useAdministrators";
+import type { Administrator } from "../types/administrators.types";
+import { DataTable } from "./shared/DataTable";
+import { DonutSkeleton, StatCardSkeleton } from "./shared/Skeletons";
+import { ErrorFallback } from "./shared/ErrorFallback";
+import { ToggleSwitch } from "./shared/ToggleSwitch";
 
-const stats = [
-  {
-    label: "Students",
-    value: "1,02,456",
-    icon: GraduationCap,
-    color: "#3f99b4",
-    bgColor: "rgba(63,153,180,0.1)",
-    change: "+6.5%",
-    changeType: "up" as const,
-  },
-  {
-    label: "Teachers",
-    value: "$3,456",
-    icon: Briefcase,
-    color: "#4aa678",
-    bgColor: "rgba(74,166,120,0.1)",
-    change: "-0.10%",
-    changeType: "down" as const,
-  },
-  {
-    label: "Parents",
-    value: "10%",
-    icon: Users,
-    color: "#febd43",
-    bgColor: "rgba(254,189,67,0.1)",
-    change: "-0.10%",
-    changeType: "down" as const,
-  },
-];
+type StatDisplay = {
+  label: string;
+  value: string;
+  icon: typeof GraduationCap;
+  color: string;
+  bgColor: string;
+  change: string;
+  changeType: "up" | "down";
+};
 
-const administrators = [
-  {
-    id: 1,
-    name: "Eren Yaeger",
-    adminId: "eren_yaeger",
-    students: 155,
-    teachers: 25,
-    active: false,
-  },
-  {
-    id: 2,
-    name: "Eren Yaeger",
-    adminId: "eren_yaeger",
-    students: 155,
-    teachers: 25,
-    active: false,
-  },
-  {
-    id: 3,
-    name: "Eren Yaeger",
-    adminId: "eren_yaeger",
-    students: 155,
-    teachers: 25,
-    active: true,
-  },
-  {
-    id: 4,
-    name: "Eren Yaeger",
-    adminId: "eren_yaeger",
-    students: 155,
-    teachers: 25,
-    active: true,
-  },
-  {
-    id: 5,
-    name: "Eren Yaeger",
-    adminId: "eren_yaeger",
-    students: 155,
-    teachers: 25,
-    active: true,
-  },
-];
-
-function ToggleSwitch({
-  active,
-  onChange,
-}: {
-  active: boolean;
-  onChange: () => void;
-}) {
-  return (
-    <button
-      onClick={onChange}
-      className={`relative h-[19px] w-[41px] rounded-full cursor-pointer transition-colors ${
-        active ? "bg-[#871dad]" : "bg-[#c7c7c7]"
-      }`}
-    >
-      <span
-        className={`absolute top-[1px] h-[17px] w-[17px] rounded-full bg-white shadow transition-transform ${
-          active ? "left-[24px]" : "left-[4px]"
-        }`}
-      />
-    </button>
-  );
-}
-
-function StatCard({ stat }: { stat: (typeof stats)[0] }) {
+function StatCard({ stat }: { stat: StatDisplay }) {
   const Icon = stat.icon;
   return (
     <div className="flex-1 rounded-[12px] mt-10 bg-white p-5 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
@@ -260,10 +185,42 @@ function GrowthChart() {
 }
 
 function StudentsDonut() {
-  const male = 70;
+  const {
+    data: genderStats,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useStudentGenderStats();
+
+  const { malePct, femalePct } = useMemo(() => {
+    const male = genderStats?.male ?? 0;
+    const female = genderStats?.female ?? 0;
+    const other = genderStats?.other ?? 0;
+    const total = male + female + other;
+    if (total === 0) return { malePct: 0, femalePct: 0 };
+    return {
+      malePct: Math.round((male / total) * 100),
+      femalePct: Math.round((female / total) * 100),
+    };
+  }, [genderStats]);
+
+  if (isLoading) return <DonutSkeleton />;
+  if (isError) {
+    return (
+      <div className="w-full lg:w-[274px]">
+        <ErrorFallback
+          title="Couldn't load gender stats"
+          error={error}
+          onRetry={() => refetch()}
+        />
+      </div>
+    );
+  }
+
   const radius = 60;
   const circumference = 2 * Math.PI * radius;
-  const maleArc = (male / 100) * circumference;
+  const maleArc = (malePct / 100) * circumference;
 
   return (
     <div className="w-full lg:w-[274px] rounded-[20px] bg-white p-6 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
@@ -299,14 +256,18 @@ function StudentsDonut() {
             <span className="h-4 w-4 rounded-full bg-[#871dad]" />
             <span className="text-[12px] text-[#666]">Male</span>
           </div>
-          <span className="text-[14px] font-medium text-[#333]">70%</span>
+          <span className="text-[14px] font-medium text-[#333]">
+            {malePct}%
+          </span>
         </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <span className="h-4 w-4 rounded-full bg-[#c084fc]" />
             <span className="text-[12px] text-[#666]">Female</span>
           </div>
-          <span className="text-[14px] font-medium text-[#333]">30%</span>
+          <span className="text-[14px] font-medium text-[#333]">
+            {femalePct}%
+          </span>
         </div>
       </div>
     </div>
@@ -314,13 +275,154 @@ function StudentsDonut() {
 }
 
 export function DashboardView() {
-  const [admins, setAdmins] = useState(administrators);
+  const [search, setSearch] = useState("");
 
-  const toggleAdmin = (id: number) => {
-    setAdmins((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, active: !a.active } : a)),
-    );
-  };
+  const {
+    data: userStats,
+    isLoading: statsLoading,
+    isError: statsError,
+    error: statsErrorObj,
+    refetch: refetchStats,
+  } = useUserStats();
+
+  const {
+    data: admins,
+    isLoading: adminsLoading,
+    isError: adminsError,
+    error: adminsErrorObj,
+    refetch: refetchAdmins,
+  } = useAdministrators();
+
+  const toggleState = useToggleAdministratorState();
+
+  const stats: StatDisplay[] = useMemo(
+    () => [
+      {
+        label: "Students",
+        value: (userStats?.totalStudents ?? 0).toLocaleString(),
+        icon: GraduationCap,
+        color: "#3f99b4",
+        bgColor: "rgba(63,153,180,0.1)",
+        change: "+6.5%",
+        changeType: "up",
+      },
+      {
+        label: "Teachers",
+        value: (userStats?.totalTeachers ?? 0).toLocaleString(),
+        icon: Briefcase,
+        color: "#4aa678",
+        bgColor: "rgba(74,166,120,0.1)",
+        change: "-0.10%",
+        changeType: "down",
+      },
+      {
+        label: "Parents",
+        value: (userStats?.totalParents ?? 0).toLocaleString(),
+        icon: Users,
+        color: "#febd43",
+        bgColor: "rgba(254,189,67,0.1)",
+        change: "-0.10%",
+        changeType: "down",
+      },
+    ],
+    [userStats],
+  );
+
+  const columns = useMemo<ColumnDef<Administrator, unknown>[]>(
+    () => [
+      {
+        id: "no",
+        header: "No",
+        size: 60,
+        cell: ({ row }) => (
+          <span className="text-[16px] font-light text-[#666]">
+            {row.index + 1}
+          </span>
+        ),
+      },
+      {
+        id: "name",
+        header: "Administrator Name",
+        accessorFn: (row) => row.username,
+        cell: ({ row }) => {
+          const admin = row.original;
+          return (
+            <div className="flex items-center gap-2">
+              <div className="h-6 w-6 rounded-full bg-gray-300 overflow-hidden">
+                <div className="h-full w-full bg-gradient-to-br from-purple-300 to-purple-500" />
+              </div>
+              <Link
+                href={`/administrator/administration/${admin._id}`}
+                className="text-[16px] font-light text-[#666] hover:text-[#871dad] transition-colors"
+              >
+                {admin.username}
+              </Link>
+            </div>
+          );
+        },
+      },
+      {
+        id: "adminId",
+        header: "Administrator I'd",
+        accessorFn: (row) => row._id,
+        cell: ({ getValue }) => (
+          <span className="text-[16px] font-light text-[#666]">
+            {String(getValue() ?? "—")}
+          </span>
+        ),
+      },
+      {
+        id: "phone",
+        header: "Phone",
+        accessorFn: (row) => row.phoneNumber ?? "—",
+        cell: ({ getValue }) => (
+          <span className="text-[16px] font-light text-[#666]">
+            {String(getValue() ?? "—")}
+          </span>
+        ),
+      },
+      {
+        id: "state",
+        header: "State",
+        accessorFn: (row) => row.state ?? "—",
+        cell: ({ getValue }) => (
+          <span className="text-[16px] font-light text-[#666] capitalize">
+            {String(getValue() ?? "—")}
+          </span>
+        ),
+      },
+      {
+        id: "action",
+        header: () => <span className="block text-center">Action</span>,
+        size: 160,
+        cell: ({ row }) => {
+          const admin = row.original;
+          const active = admin.state === "active";
+          return (
+            <div className="flex items-center justify-center gap-3">
+              <ToggleSwitch
+                active={active}
+                disabled={toggleState.isPending}
+                onChange={() =>
+                  toggleState.mutate({
+                    id: admin._id,
+                    state: active ? "inactive" : "active",
+                  })
+                }
+              />
+              <Link
+                href={`/administrator/administration/${admin._id}`}
+                className="rounded-[4px] bg-[#871dad] px-[6px] py-[8px] text-[16px] font-medium text-white hover:bg-[#751a99] transition-colors"
+              >
+                View
+              </Link>
+            </div>
+          );
+        },
+      },
+    ],
+    [toggleState],
+  );
 
   return (
     <div className="space-y-6">
@@ -328,9 +430,22 @@ export function DashboardView() {
 
       {/* Stat Cards */}
       <div className="flex flex-col md:flex-row gap-5">
-        {stats.map((stat) => (
-          <StatCard key={stat.label} stat={stat} />
-        ))}
+        {statsLoading &&
+          Array.from({ length: 3 }).map((_, i) => <StatCardSkeleton key={i} />)}
+
+        {!statsLoading && statsError && (
+          <div className="flex-1 mt-10">
+            <ErrorFallback
+              title="Couldn't load dashboard stats"
+              error={statsErrorObj}
+              onRetry={() => refetchStats()}
+            />
+          </div>
+        )}
+
+        {!statsLoading &&
+          !statsError &&
+          stats.map((stat) => <StatCard key={stat.label} stat={stat} />)}
       </div>
 
       {/* Charts Row */}
@@ -353,87 +468,33 @@ export function DashboardView() {
               />
               <input
                 type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 placeholder="Enter administrator Id"
                 className="h-[48px] w-full sm:w-[350px] rounded-[8px] border border-[#08374d] bg-[#f9f9f9] pl-10 pr-4 text-[16px] text-[#666] outline-none placeholder:text-[#666]"
               />
             </div>
-            <button className="rounded-[10px] bg-[#871dad] cursor-pointer px-5 py-[14px] sm:py-[18px] text-[14px] sm:text-[16px] font-bold text-white hover:bg-[#751a99] transition-colors whitespace-nowrap">
-              Add New Administrator
-            </button>
+            <Link
+              href="/administrator/administration"
+              className="rounded-[10px] bg-[#871dad] cursor-pointer px-5 py-[14px] sm:py-[18px] text-[14px] sm:text-[16px] font-bold text-white hover:bg-[#751a99] transition-colors whitespace-nowrap text-center"
+            >
+              Manage Administrators
+            </Link>
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[700px]">
-            <thead>
-              <tr className="border-b-2 border-[#871dad]">
-                <th className="pb-3 text-left text-[14px] font-light text-[#666] w-[60px]">
-                  No
-                </th>
-                <th className="pb-3 text-left text-[14px] font-light text-[#666]">
-                  Administrator Name
-                </th>
-                <th className="pb-3 text-left text-[14px] font-light text-[#666]">
-                  Administrator I&apos;d
-                </th>
-                <th className="pb-3 text-left text-[14px] font-light text-[#666]">
-                  Total Students
-                </th>
-                <th className="pb-3 text-left text-[14px] font-light text-[#666]">
-                  Total Teachers
-                </th>
-                <th className="pb-3 text-center text-[14px] font-light text-[#666] w-[120px]">
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {admins.map((admin) => (
-                <tr key={admin.id} className="border-b border-gray-100">
-                  <td className="py-4 text-[16px] font-light text-[#666]">
-                    {admin.id}
-                  </td>
-                  <td className="py-4">
-                    <div className="flex items-center gap-2">
-                      <div className="h-6 w-6 rounded-full bg-gray-300 overflow-hidden">
-                        <div className="h-full w-full bg-gradient-to-br from-purple-300 to-purple-500" />
-                      </div>
-                      <Link
-                        href={`/administrator/administration/${admin.name.replace(/\s+/g, "-")}`}
-                        className="text-[16px] font-light text-[#666] hover:text-[#871dad] transition-colors"
-                      >
-                        {admin.name}
-                      </Link>
-                    </div>
-                  </td>
-                  <td className="py-4 text-[16px] font-light text-[#666]">
-                    {admin.adminId}
-                  </td>
-                  <td className="py-4 text-[16px] font-light text-[#666]">
-                    {admin.students}
-                  </td>
-                  <td className="py-4 text-[16px] font-light text-[#666]">
-                    {admin.teachers}
-                  </td>
-                  <td className="py-4">
-                    <div className="flex items-center justify-center gap-3">
-                      <ToggleSwitch
-                        active={admin.active}
-                        onChange={() => toggleAdmin(admin.id)}
-                      />
-                      <Link
-                        href={`/administrator/administration/${admin.name.replace(/\s+/g, "-")}`}
-                        className="rounded-[4px] bg-[#871dad] px-[6px] py-[8px] text-[16px] font-medium text-white hover:bg-[#751a99] transition-colors"
-                      >
-                        View
-                      </Link>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <DataTable<Administrator>
+          data={admins}
+          columns={columns}
+          isLoading={adminsLoading}
+          isError={adminsError}
+          error={adminsErrorObj}
+          onRetry={() => refetchAdmins()}
+          globalFilter={search}
+          minWidth={780}
+          emptyMessage="No administrators match your search."
+          errorMessage="We couldn't load the administrators list."
+        />
       </div>
     </div>
   );

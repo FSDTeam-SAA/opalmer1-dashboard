@@ -5,14 +5,17 @@ import AdminCard from "./AdminCard";
 import CreateAdminModal from "./CreateAdminModal";
 import EditAdminModal from "./EditAdminModal";
 import PageHeader from "@/components/sheard/PageHeader";
-import { useAdministrators } from "../hooks/useAdministrators";
+import {
+  useAdministrators,
+  useToggleAdministratorState,
+} from "../hooks/useAdministrators";
 import type { Administrator } from "../types/administrator.types";
 
 export type Admin = Administrator;
 
-/* ───── Main Administration ───── */
 export default function Administration() {
   const { data: admins, isLoading, isError, error } = useAdministrators();
+  const toggleState = useToggleAdministratorState();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingAdmin, setEditingAdmin] = useState<Admin | null>(null);
 
@@ -33,18 +36,22 @@ export default function Administration() {
         </div>
       )}
 
-      {/* Admin Cards Grid */}
       {!isLoading && !isError && (
         <div className="grid grid-cols-2 gap-6">
           {admins?.map((admin) => (
             <AdminCard
               key={admin._id}
               admin={admin}
-              onToggle={() => {
-                /* TODO: backend — PATCH /users/administrators/:id state */
-              }}
+              onToggle={() =>
+                toggleState.mutate({
+                  id: admin._id,
+                  state: admin.state === "active" ? "inactive" : "active",
+                })
+              }
               onDelete={() => {
-                /* TODO: backend — DELETE /users/administrators/:id */
+                // Backend currently has no dedicated delete endpoint for users.
+                // Soft-delete by marking inactive until DELETE /users/:id exists.
+                toggleState.mutate({ id: admin._id, state: "inactive" });
               }}
               onEdit={() => setEditingAdmin(admin)}
             />
@@ -52,7 +59,6 @@ export default function Administration() {
         </div>
       )}
 
-      {/* Create New Administrator Button */}
       <div className="flex justify-center pt-4 mt-4">
         <button
           onClick={() => setShowCreateModal(true)}
@@ -62,12 +68,10 @@ export default function Administration() {
         </button>
       </div>
 
-      {/* Create Administrator Modal */}
       {showCreateModal && (
         <CreateAdminModal onClose={() => setShowCreateModal(false)} />
       )}
 
-      {/* Edit Administrator Modal */}
       {editingAdmin && (
         <EditAdminModal
           admin={editingAdmin}
