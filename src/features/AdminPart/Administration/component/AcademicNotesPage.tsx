@@ -13,7 +13,7 @@ export default function AcademicNotesPage({
   studentSlug,
   subjectSlug,
 }: {
-  slug: string;
+  slug?: string;
   studentSlug: string;
   subjectSlug: string;
 }) {

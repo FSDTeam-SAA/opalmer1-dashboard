@@ -51,14 +51,19 @@ export default function LessonsPage({
   slug,
   studentSlug,
   subjectSlug,
+  basePath = "/admin/administration",
 }: {
-  slug: string;
+  slug?: string;
   studentSlug: string;
   subjectSlug: string;
+  basePath?: string;
 }) {
+  const prefix = slug ? `${basePath}/${slug}` : `${basePath}`;
+
   return (
     <div className="space-y-8 pt-10 mt-32">
       <PageHeader title="Lessons" />
+
       {/* Today's Lesson */}
       <div>
         <h2 className="text-[30px] font-semibold text-[#333]">
@@ -67,7 +72,7 @@ export default function LessonsPage({
         <div className="mt-4 max-w-[529px]">
           <LessonCard
             lesson={todaysLesson}
-            href={`/admin/administration/${slug}/students/${studentSlug}/${subjectSlug}/lessons/${todaysLesson.id}`}
+            href={`${prefix}/students/${studentSlug}/${subjectSlug}/lessons/${todaysLesson.id}`}
           />
         </div>
       </div>
@@ -82,12 +87,13 @@ export default function LessonsPage({
             <CalendarDays size={32} />
           </button>
         </div>
+
         <div className="mt-4 grid grid-cols-2 gap-5">
           {archivedLessons.map((lesson) => (
             <LessonCard
               key={lesson.id}
               lesson={lesson}
-              href={`/admin/administration/${slug}/students/${studentSlug}/${subjectSlug}/lessons/${lesson.id}`}
+              href={`${prefix}/students/${studentSlug}/${subjectSlug}/lessons/${lesson.id}`}
             />
           ))}
         </div>

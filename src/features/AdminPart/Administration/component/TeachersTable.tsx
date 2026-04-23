@@ -41,7 +41,14 @@ function TableSkeleton() {
   );
 }
 
-export default function TeachersTable({ slug }: { slug: string }) {
+export default function TeachersTable({
+  slug,
+  basePath = "/admin/administration",
+}: {
+  slug?: string;
+  basePath?: string;
+}) {
+  const prefix = slug ? `${basePath}/${slug}` : `${basePath}`;
   const [globalFilter, setGlobalFilter] = useState("");
 
   const { data: teachers = [], isLoading, isError } = useTeachers();
@@ -94,7 +101,7 @@ export default function TeachersTable({ slug }: { slug: string }) {
         cell: (info) => (
           <div className="flex items-center justify-center">
             <Link
-              href={`/admin/administration/${slug}/teachers/${info.row.original.id}`}
+              href={`${prefix}/teachers/${info.row.original.id}`}
               className="cursor-pointer rounded-[4px] bg-[#871dad] px-[6px] py-[8px] text-[16px] font-medium text-white hover:bg-[#751a99] transition-colors"
             >
               View

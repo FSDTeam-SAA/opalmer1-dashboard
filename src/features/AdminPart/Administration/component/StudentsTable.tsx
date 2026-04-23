@@ -8,7 +8,14 @@ import PageHeader from "@/components/sheard/PageHeader";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useStudents } from "../hooks/useStudents";
 
-export default function StudentsTable({ slug }: { slug: string }) {
+export default function StudentsTable({
+  slug,
+  basePath = "/admin/administration",
+}: {
+  slug?: string;
+  basePath?: string;
+}) {
+  const prefix = slug ? `${basePath}/${slug}` : `${basePath}`;
   const [searchQuery, setSearchQuery] = useState("");
   const { data: students = [], isLoading, isError } = useStudents();
 
@@ -148,7 +155,7 @@ export default function StudentsTable({ slug }: { slug: string }) {
                     <td className="py-4">
                       <div className="flex items-center justify-center">
                         <Link
-                          href={`/admin/administration/${slug}/students/${student._id}`}
+                          href={`${prefix}/students/${student._id}`}
                           className="cursor-pointer rounded-[4px] bg-[#871dad] px-[6px] py-[8px] text-[16px] font-medium text-white hover:bg-[#751a99] transition-colors"
                         >
                           View

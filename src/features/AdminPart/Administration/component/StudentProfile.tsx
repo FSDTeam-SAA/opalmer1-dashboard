@@ -98,9 +98,11 @@ const subjectsData: Subject[] = [
 export default function StudentProfile({
   slug,
   studentSlug,
+  basePath = "/admin/administration",
 }: {
-  slug: string;
+  slug?: string;
   studentSlug: string;
+  basePath?: string;
 }) {
   return (
     <div className="space-y-8 pt-10 mt-16">
@@ -198,6 +200,7 @@ export default function StudentProfile({
               subject={subject}
               slug={slug}
               studentSlug={studentSlug}
+              basePath={basePath}
             />
           ))}
         </div>

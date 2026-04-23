@@ -41,7 +41,7 @@ const FALLBACK_IMAGE = "/images/4f8da1b70693c4fcf9e01b9293706aed5cd4e34d.jpg";
  * Returns the students of the authenticated administrator's school.
  */
 export async function fetchStudents(): Promise<StudentListItem[]> {
-  const { data } = await api.get<MyStudentsResponse>("/users/my-students");
+  const { data } = await api.get<MyStudentsResponse>("/users/students");
   return data.data.map((s, idx) => ({
     id: idx + 1,
     _id: s._id,

@@ -18,11 +18,17 @@ export default function SubjectCard({
   subject,
   slug,
   studentSlug,
+  basePath = "/admin/administration",
 }: {
   subject: Subject;
-  slug: string;
+  slug?: string;
   studentSlug: string;
+  basePath?: string;
 }) {
+  const subjectSlug = subject.name.replace(/\s+/g, "-");
+  const prefix = slug ? `${basePath}/${slug}` : `${basePath}`;
+  const href = `${prefix}/students/${studentSlug}/${subjectSlug}`;
+
   return (
     <div className="rounded-[12px] bg-white p-5 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
       {/* Top: Subject name + stats */}
@@ -70,7 +76,7 @@ export default function SubjectCard({
           </div>
         </div>
         <Link
-          href={`/admin/administration/${slug}/students/${studentSlug}/${subject.name.replace(/\s+/g, "-")}`}
+          href={href}
           className="cursor-pointer rounded-[6px] bg-[#871dad] px-[15px] py-[10px] text-[20px] text-white hover:bg-[#751a99] transition-colors"
         >
           View

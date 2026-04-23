@@ -9,77 +9,11 @@ import ToggleSwitch from "./ToggleSwitch";
 import EditAdminModal from "./EditAdminModal";
 import StudentCard, { Student } from "./StudentCard";
 import TeacherCard, { Teacher } from "./TeacherCard";
-import { Admin } from "./Administration";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useAdministratorDetails } from "../hooks/useAdministrators";
+import type { Administrator } from "../types/administrator.types";
 
-/* ───── Mock Data ───── */
-const adminsData: (Admin & {
-  location: string;
-  adminId: string;
-  adminPassword: string;
-})[] = [
-  {
-    _id: "1",
-    username: "Olivia Carter",
-    phoneNumber: "9876543210",
-    state: "active",
-    avatar: {
-      public_id: "olivia",
-      url: "/images/12043465729ab7c8ceffce00749e7c71df0c9e25.jpg",
-    },
-    created_at: new Date().toISOString(),
-    location: "6103, Dr drive, Laurel MD",
-    adminId: "mia_johnson",
-    adminPassword: "mia123456",
-  },
-  {
-    _id: "2",
-    username: "Erin Yaeger",
-    phoneNumber: "9876543210",
-    state: "active",
-    avatar: {
-      public_id: "erin",
-      url: "/images/4f8da1b70693c4fcf9e01b9293706aed5cd4e34d.jpg",
-    },
-    created_at: new Date().toISOString(),
-    location: "6103, Dr drive, Laurel MD",
-    adminId: "erin_yaeger",
-    adminPassword: "erin123456",
-  },
-];
-
-const studentsData: Student[] = [
-  {
-    id: 1,
-    name: "Mia Johnson",
-    grade: "Grade 6",
-    age: 12,
-    attendance: "92%",
-    progress: "75%",
-    status: "Excellent",
-    image: "/images/12043465729ab7c8ceffce00749e7c71df0c9e25.jpg",
-  },
-  {
-    id: 2,
-    name: "Mia Johnson",
-    grade: "Grade 6",
-    age: 12,
-    attendance: "92%",
-    progress: "75%",
-    status: "Excellent",
-    image: "/images/12043465729ab7c8ceffce00749e7c71df0c9e25.jpg",
-  },
-  {
-    id: 3,
-    name: "Mia Johnson",
-    grade: "Grade 6",
-    age: 12,
-    attendance: "92%",
-    progress: "75%",
-    status: "Excellent",
-    image: "/images/12043465729ab7c8ceffce00749e7c71df0c9e25.jpg",
-  },
-];
-
+/* ───── Mock Data for Teachers (Fallback) ───── */
 const teachersData: Teacher[] = [
   {
     id: 1,
@@ -111,21 +45,63 @@ const teachersData: Teacher[] = [
 ];
 
 export default function AdminProfile({ slug }: { slug: string }) {
-  const admin = adminsData.find((a) => a._id === slug) ?? adminsData[0];
+  const { data, isLoading, isError } = useAdministratorDetails(slug);
+  const [active, setActive] = useState(true);
+  const [editingAdmin, setEditingAdmin] = useState<Administrator | null>(null);
 
-  const [active, setActive] = useState(admin.state === "active");
-  const [editingAdmin, setEditingAdmin] = useState<Admin | null>(null);
+  if (isLoading) {
+    return (
+      <div className="space-y-8 pt-10 mt-16">
+        <PageHeader title="Administrator" />
+        <Skeleton className="h-[200px] w-full rounded-[20px]" />
+      </div>
+    );
+  }
+
+  if (isError || !data) {
+    return (
+      <div className="space-y-8 pt-10 mt-16">
+        <PageHeader title="Administrator" />
+        <div className="rounded-[20px] bg-white p-10 text-center shadow-[0px_0px_20px_0px_rgba(0,0,0,0.08)]">
+          <p className="text-[18px] font-medium text-[#e64540]">
+            Failed to load administrator profile
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const { admin, school, students } = data;
+  const fallbackImage =
+    "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=400&auto=format&fit=crop";
+  const avatarUrl = admin.avatar?.url || fallbackImage;
+  const locationStr = school
+    ? `${school.address}, ${school.city}, ${school.state}`
+    : "Location N/A";
+
+  // Map API students to StudentCard format
+  const mappedStudents: Student[] = students.map((s, idx) => ({
+    id: s._id as unknown as number,
+    name: s.username || "Unknown Student",
+    grade: `Grade ${s.gradeLevel}`,
+    age: 0, // Fallback
+    attendance: "N/A", // Fallback
+    progress: "N/A", // Fallback
+    status: "N/A", // Fallback
+    image: s.avatar?.url || fallbackImage,
+  }));
 
   return (
     <div className="space-y-8 pt-10 mt-16">
       <PageHeader title="Administrator" />
+
       {/* Admin Profile Card */}
       <div className="flex gap-5 rounded-[20px] bg-white p-5 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
         {/* Profile Image */}
         <div className="h-[200px] w-[200px] flex-shrink-0 overflow-hidden rounded-[6px]">
           <Image
-            src={admin.avatar.url}
-            alt={admin.username}
+            src={avatarUrl}
+            alt={admin.username || "Administrator"}
             width={200}
             height={200}
             className="h-full w-full object-cover"
@@ -136,11 +112,13 @@ export default function AdminProfile({ slug }: { slug: string }) {
         <div className="flex flex-1 flex-col justify-between py-3">
           <div>
             <h3 className="text-[32px] font-semibold text-black tracking-[0.3px]">
-              {admin.username}
+              {admin.username || "Administrator"}
             </h3>
-            <p className="mt-3 text-[20px] text-[#666]">{admin.phoneNumber}</p>
+            <p className="mt-3 text-[20px] text-[#666]">
+              {admin.phoneNumber || "No Phone Number"}
+            </p>
             <p className="mt-2 text-[20px] text-[#666] capitalize">
-              {admin.state}
+              {admin.state || "active"}
             </p>
           </div>
 
@@ -172,7 +150,7 @@ export default function AdminProfile({ slug }: { slug: string }) {
               <MapPin size={36} className="text-[#3f99b4]" />
             </div>
             <p className="text-[28px] font-semibold text-[#333]">
-              {admin.location}
+              {locationStr}
             </p>
           </div>
         </div>
@@ -185,11 +163,9 @@ export default function AdminProfile({ slug }: { slug: string }) {
           <div className="mt-4 flex items-center justify-between rounded-[20px] bg-[rgba(254,189,67,0.1)] px-5 py-7">
             <div>
               <p className="text-[28px] font-semibold text-[#333] tracking-[0.3px]">
-                {admin.adminId}
+                {admin.Id || "N/A"}
               </p>
-              <p className="mt-1 text-[20px] text-[#666]">
-                {admin.adminPassword}
-              </p>
+              <p className="mt-1 text-[20px] text-[#666]">{"*******"}</p>
             </div>
             <button className="cursor-pointer text-[#871dad] hover:text-[#751a99] transition-colors">
               <Copy size={32} />
@@ -210,9 +186,12 @@ export default function AdminProfile({ slug }: { slug: string }) {
           </Link>
         </div>
         <div className="mt-4 grid grid-cols-3 gap-5">
-          {studentsData.map((student) => (
+          {mappedStudents.slice(0, 3).map((student) => (
             <StudentCard key={student.id} student={student} />
           ))}
+          {mappedStudents.length === 0 && (
+            <p className="text-gray-500 text-lg">No students found.</p>
+          )}
         </div>
       </div>
 

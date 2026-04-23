@@ -41,7 +41,7 @@ export default function HomeworkPage({
   studentSlug,
   subjectSlug,
 }: {
-  slug: string;
+  slug?: string;
   studentSlug: string;
   subjectSlug: string;
 }) {

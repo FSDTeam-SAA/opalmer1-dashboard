@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createAdministrator,
   fetchAdministrators,
+  fetchAdministratorDetails,
   setAdministratorState,
   updateAdministrator,
 } from "../api/administrator.api";
@@ -10,7 +11,10 @@ import type {
   UpdateAdministratorPayload,
 } from "../types/administrator.types";
 
-const ADMIN_QUERY_KEY = ["administrators"] as const;
+export const ADMIN_QUERY_KEYS = {
+  all: ["administrators"] as const,
+  detail: (id: string) => ["administrators", "detail", id] as const,
+};
 
 /**
  * useAdministrators
@@ -19,7 +23,7 @@ const ADMIN_QUERY_KEY = ["administrators"] as const;
  */
 export function useAdministrators() {
   return useQuery({
-    queryKey: ADMIN_QUERY_KEY,
+    queryKey: ADMIN_QUERY_KEYS.all,
     queryFn: fetchAdministrators,
   });
 }
@@ -35,7 +39,7 @@ export function useCreateAdministrator() {
     mutationFn: (payload: CreateAdministratorPayload) =>
       createAdministrator(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.all });
     },
   });
 }
@@ -56,7 +60,7 @@ export function useUpdateAdministrator() {
       payload: UpdateAdministratorPayload;
     }) => updateAdministrator(id, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.all });
     },
   });
 }
@@ -72,7 +76,20 @@ export function useToggleAdministratorState() {
     mutationFn: ({ id, state }: { id: string; state: "active" | "inactive" }) =>
       setAdministratorState(id, state),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.all });
     },
+  });
+}
+
+/**
+ * useAdministratorDetails
+ * Query hook for a specific administrator's details.
+ * Endpoint: GET /users/administrators/:id
+ */
+export function useAdministratorDetails(id: string) {
+  return useQuery({
+    queryKey: ADMIN_QUERY_KEYS.detail(id),
+    queryFn: () => fetchAdministratorDetails(id),
+    enabled: !!id,
   });
 }

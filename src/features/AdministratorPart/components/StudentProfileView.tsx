@@ -1,323 +1,254 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { BookOpen, Calendar, Mail, Phone, User } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Copy, Clock3 } from "lucide-react";
+
+import { useStudentDetails } from "../hooks/useStudents";
 import PageHeader from "@/components/sheard/PageHeader";
-import {
-  useMyStudents,
-  useToggleStudentState,
-  useUpdateStudent,
-} from "../hooks/useStudents";
-import { useClassesByStudent } from "../hooks/useClasses";
-import type { StudentRow } from "../types/students.types";
-import { ToggleSwitch } from "./shared/ToggleSwitch";
-import EditUserModal from "./shared/EditUserModal";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const FALLBACK_IMAGE = "/images/4f8da1b70693c4fcf9e01b9293706aed5cd4e34d.jpg";
+type SubjectItem = {
+  classId: string;
+  subject: string;
+  teacher?: string;
+  date?: string;
+  attendance: number;
+  progress: number;
+};
 
-const subjectChipColors = [
-  "bg-[#3f99b4]",
-  "bg-[#e64540]",
-  "bg-[#4aa678]",
-  "bg-[#febd43]",
-  "bg-[#871dad]",
-];
-
-function describeError(err: unknown): string {
-  if (err instanceof Error) return err.message;
-  return "Unable to load this information.";
+function StatCard({
+  title,
+  value,
+  bg,
+}: {
+  title: string;
+  value: string;
+  bg: string;
+}) {
+  return (
+    <div
+      className={`rounded-xl px-5 py-4 text-white shadow-sm min-w-[140px] ${bg}`}
+    >
+      <p className="text-sm font-medium opacity-95">{title}</p>
+      <h3 className="mt-1 text-3xl font-bold leading-none">{value}</h3>
+    </div>
+  );
 }
 
-function ProfileCardSkeleton() {
+function SubjectCard({ item }: { item: SubjectItem }) {
   return (
-    <div className="flex flex-col items-center">
-      <Skeleton className="h-[180px] w-[180px] rounded-[12px] z-10" />
-      <div className="-mt-10 w-full max-w-[500px] rounded-[20px] bg-white pt-14 pb-6 px-8 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
-        <div className="flex flex-col items-center gap-3">
-          <Skeleton className="h-7 w-[200px]" />
-          <Skeleton className="h-5 w-[220px]" />
-          <Skeleton className="h-5 w-[140px]" />
-          <div className="mt-2 flex items-center gap-4">
-            <Skeleton className="h-[20px] w-[42px] rounded-full" />
-            <Skeleton className="h-[34px] w-[80px] rounded-[6px]" />
+    <div className="rounded-2xl bg-white p-4 shadow-sm border border-gray-100">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#9C27D8] text-[#9C27D8]">
+            <Clock3 size={16} />
+          </div>
+
+          <div>
+            <h3 className="text-[18px] font-semibold text-gray-800">
+              {item.subject}
+            </h3>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4 pt-1 text-xs text-gray-500">
+          <div className="flex items-center gap-1">
+            <span className="text-green-500">🗒</span>
+            <span>{item.attendance}%</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-orange-400">📈</span>
+            <span>{item.progress}%</span>
           </div>
         </div>
       </div>
-    </div>
-  );
-}
 
-function ClassesGrid({ studentId }: { studentId: string }) {
-  const { data, isLoading, isError, error, refetch } =
-    useClassesByStudent(studentId);
+      <div className="my-3 border-t border-gray-200" />
 
-  if (isLoading) {
-    return (
-      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <Skeleton key={i} className="h-[120px] w-full rounded-[16px]" />
-        ))}
-      </div>
-    );
-  }
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <Image
+            src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop"
+            alt="teacher"
+            width={34}
+            height={34}
+            className="h-[34px] w-[34px] rounded-full object-cover"
+          />
+          <div>
+            <p className="text-sm font-medium text-gray-700">
+              {item.teacher || "N/A"}
+            </p>
+            <p className="text-xs text-gray-400">{item.date || "N/A"}</p>
+          </div>
+        </div>
 
-  if (isError) {
-    return (
-      <div className="mt-4 rounded-[12px] border border-[#fbd0d0] bg-[#fff5f5] p-5 text-center">
-        <p className="text-[14px] text-[#e64540]">{describeError(error)}</p>
-        <button
-          type="button"
-          onClick={() => refetch()}
-          className="mt-2 text-[14px] font-medium text-[#871dad] underline hover:text-[#751a99]"
-        >
-          Try again
+        <button className="rounded-md bg-[#9C27D8] px-4 py-2 text-sm font-medium text-white transition hover:opacity-90">
+          View
         </button>
       </div>
-    );
-  }
-
-  if (!data || data.length === 0) {
-    return (
-      <div className="mt-4 rounded-[12px] border border-dashed border-[#c7c7c7] bg-[#f9f9f9] p-8 text-center">
-        <p className="text-[15px] text-[#666]">
-          No classes scheduled for this student&apos;s grade yet.
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {data.map((cls, idx) => {
-        const color = subjectChipColors[idx % subjectChipColors.length];
-        const teacherName =
-          typeof cls.teacherId === "object" && cls.teacherId !== null
-            ? cls.teacherId.username
-            : undefined;
-        return (
-          <div
-            key={cls._id}
-            className="rounded-[16px] bg-white p-5 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.08)]"
-          >
-            <div className="flex items-center gap-3">
-              <div
-                className={`flex h-[40px] w-[40px] items-center justify-center rounded-full text-white ${color}`}
-              >
-                <BookOpen size={18} />
-              </div>
-              <div>
-                <p className="text-[16px] font-semibold text-[#333]">
-                  {cls.subject}
-                </p>
-                <p className="text-[13px] text-[#666]">
-                  Grade {String(cls.grade)}
-                  {cls.section ? ` · Section ${cls.section}` : ""}
-                </p>
-              </div>
-            </div>
-            {teacherName && (
-              <p className="mt-3 flex items-center gap-2 text-[13px] text-[#666]">
-                <User size={14} />
-                {teacherName}
-              </p>
-            )}
-            {cls.schedule && (
-              <p className="mt-1 flex items-center gap-2 text-[13px] text-[#666]">
-                <Calendar size={14} />
-                {cls.schedule}
-              </p>
-            )}
-          </div>
-        );
-      })}
     </div>
   );
 }
-
-type StudentProfileViewProps = {
-  studentId: string;
-};
 
 export default function StudentProfileView({
   studentId,
-}: StudentProfileViewProps) {
-  const { data: students, isLoading, isError } = useMyStudents();
-  const toggleState = useToggleStudentState();
-  const updateStudent = useUpdateStudent();
-  const [editing, setEditing] = useState(false);
-
-  // Backend exposes no GET /users/:id, so we look the student up from the
-  // cached /users/my-students list. Same warm-cache trick as the teacher
-  // profile — see TeacherProfileView for context.
-  const student: StudentRow | undefined = useMemo(
-    () => students?.find((s) => s._id === studentId),
-    [students, studentId],
-  );
+}: {
+  studentId: string;
+}) {
+  const { data, isLoading, isError } = useStudentDetails(studentId);
 
   if (isLoading) {
     return (
-      <div className="space-y-8">
+      <div className="space-y-8 pt-10 mt-16">
         <PageHeader title="Student Profile" />
-        <ProfileCardSkeleton />
+        <Skeleton className="h-[200px] w-full rounded-[20px]" />
       </div>
     );
   }
 
-  if (isError || !students) {
+  if (isError || !data) {
     return (
-      <div className="space-y-8">
+      <div className="space-y-8 pt-10 mt-16">
         <PageHeader title="Student Profile" />
-        <div className="rounded-[20px] bg-white p-10 text-center shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
+        <div className="rounded-[20px] bg-white p-10 text-center shadow-[0px_0px_20px_0px_rgba(0,0,0,0.08)]">
           <p className="text-[18px] font-medium text-[#e64540]">
-            Failed to load students list
-          </p>
-          <p className="mt-2 text-[14px] text-[#666]">
-            Please try again from the students page.
+            Failed to load student details
           </p>
         </div>
       </div>
     );
   }
 
-  if (!student) {
-    return (
-      <div className="space-y-8">
-        <PageHeader title="Student Profile" />
-        <div className="rounded-[20px] bg-white p-10 text-center shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
-          <p className="text-[18px] font-medium text-[#333]">
-            Student not found
-          </p>
-          <p className="mt-2 text-[14px] text-[#666]">
-            This student may have been removed or doesn&apos;t belong to your
-            school.
-          </p>
-          <Link
-            href="/administrator/students"
-            className="mt-4 inline-block rounded-[8px] bg-[#871dad] px-5 py-2 text-[14px] font-medium text-white hover:bg-[#751a99] transition-colors"
-          >
-            Back to students
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  const { student, overall, parent, subjects } = data;
+
+  const name = student.username || "Unknown";
+  const grade = student.gradeLevel
+    ? `Grade ${student.gradeLevel}`
+    : "Grade N/A";
+  const age = student.age ? `Age ${student.age}` : "Age N/A";
+  const phone = student.phoneNumber || "N/A";
+  const fallbackImage =
+    "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=400&auto=format&fit=crop";
 
   return (
-    <div className="space-y-8">
-      <PageHeader title="Student Profile" />
+    <div className="mt-20">
+      {/* top purple area */}
+      <div className="" />
 
-      {/* ── Profile Card ── */}
-      <div className="flex flex-col items-center">
-        <div className="relative z-10 h-[180px] w-[180px] overflow-hidden rounded-[12px] shadow-lg">
-          <Image
-            src={student.image || FALLBACK_IMAGE}
-            alt={student.name}
-            width={180}
-            height={180}
-            className="h-full w-full object-cover"
-          />
-        </div>
+      <div className="">
+        {/* top card */}
+        <div className="rounded-2xl bg-[#f3f3f3] p-4 shadow-md">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-center gap-4">
+              <Image
+                src={student.avatar?.url || fallbackImage}
+                alt="student"
+                width={92}
+                height={92}
+                className="h-[92px] w-[92px] rounded-md object-cover"
+              />
 
-        <div className="-mt-10 w-full max-w-[560px] rounded-[20px] bg-white pt-14 pb-6 px-8 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
-          <div className="flex flex-col items-center">
-            <h3 className="text-[24px] font-semibold text-black tracking-[0.3px]">
-              {student.name}
-            </h3>
-            <p className="mt-1 text-[14px] text-[#999]">
-              Student Id: {student.studentId}
-            </p>
+              <div>
+                <h1 className="text-[34px] font-bold leading-none text-gray-900">
+                  {name}
+                </h1>
+                <p className="mt-2 text-[18px] text-gray-500">
+                  {grade} - {age}
+                </p>
+                <p className="mt-1 text-[18px] text-gray-500">{phone}</p>
 
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[14px] text-[#666]">
-              {student.email && student.email !== "—" && (
-                <span className="inline-flex items-center gap-1.5">
-                  <Mail size={14} />
-                  {student.email}
-                </span>
-              )}
-              {student.phoneNumber && student.phoneNumber !== "—" && (
-                <span className="inline-flex items-center gap-1.5">
-                  <Phone size={14} />
-                  {student.phoneNumber}
-                </span>
-              )}
-              {student.grade && student.grade !== "—" && (
-                <span className="inline-flex items-center gap-1.5">
-                  <BookOpen size={14} />
-                  Grade {student.grade}
-                </span>
-              )}
+                <div className="mt-3 flex items-center gap-3">
+                  <button className="relative h-6 w-11 rounded-full bg-[#9C27D8] transition">
+                    <span className="absolute left-[22px] top-1 h-4 w-4 rounded-full bg-white shadow" />
+                  </button>
+
+                  <button className="rounded-md bg-[#9C27D8] px-5 py-2 text-sm font-medium text-white">
+                    Edit
+                  </button>
+                </div>
+              </div>
             </div>
 
-            <div className="mt-5 flex items-center gap-4">
-              <span
-                className={`inline-flex items-center gap-1.5 text-[14px] font-medium ${
-                  student.active ? "text-[#5fb892]" : "text-[#ef3c50]"
-                }`}
-              >
-                <span
-                  className={`h-2 w-2 rounded-full ${
-                    student.active ? "bg-[#5fb892]" : "bg-[#ef3c50]"
-                  }`}
-                />
-                {student.active ? "Active" : "Inactive"}
-              </span>
-              <ToggleSwitch
-                active={student.active}
-                disabled={toggleState.isPending}
-                onChange={() =>
-                  toggleState.mutate({
-                    id: student._id,
-                    state: student.active ? "inactive" : "active",
-                  })
-                }
+            <div className="flex flex-wrap gap-3">
+              <StatCard
+                title="Attendance"
+                value={`${overall?.attendance ?? 0}%`}
+                bg="bg-[#4EAE7C]"
               />
-              <button
-                type="button"
-                onClick={() => setEditing(true)}
-                className="rounded-[6px] bg-[#871dad] cursor-pointer px-[15px] py-[8px] text-[15px] font-medium text-white hover:bg-[#751a99] transition-colors"
-              >
-                Edit
+              <StatCard
+                title="Progress"
+                value={`${overall?.progress ?? 0}%`}
+                bg="bg-[#F4B73F]"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* profile section */}
+        <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <div>
+            <h2 className="mb-3 text-[20px] font-semibold text-gray-800">
+              Parent Profile
+            </h2>
+
+            <div className="rounded-2xl bg-[#dfe9ef] p-4 shadow-sm">
+              <div className="flex items-center gap-3">
+                <Image
+                  src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=300&auto=format&fit=crop"
+                  alt="parent"
+                  width={52}
+                  height={52}
+                  className="h-[52px] w-[52px] rounded-full object-cover"
+                />
+                <p className="text-[18px] font-semibold text-gray-800">
+                  {parent ? parent.name || "Parent Name" : "N/A"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h2 className="mb-3 text-[20px] font-semibold text-gray-800">
+              Student Id
+            </h2>
+
+            <div className="flex items-center justify-between rounded-2xl bg-[#eee9dc] p-4 shadow-sm">
+              <div>
+                <p className="text-[18px] font-semibold text-gray-800">
+                  {student.username
+                    ? student.username.toLowerCase().replace(/\s+/g, "_")
+                    : "N/A"}
+                </p>
+                <p className="text-sm text-gray-500">{student.Id}</p>
+              </div>
+
+              <button className="text-[#9C27D8]">
+                <Copy size={20} />
               </button>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* ── Classes Section ── */}
-      <div>
-        <div className="flex items-center justify-between">
-          <h2 className="text-[24px] sm:text-[28px] font-semibold text-[#333]">
-            Classes
+        {/* subjects */}
+        <div className="mt-6">
+          <h2 className="mb-4 text-[22px] font-semibold text-gray-800">
+            Subjects
           </h2>
-        </div>
-        <ClassesGrid studentId={student._id} />
-      </div>
 
-      {editing && (
-        <EditUserModal
-          title="Edit Student"
-          user={{
-            _id: student._id,
-            name: student.name,
-            Id: student.studentId,
-            phoneNumber: student.phoneNumber === "—" ? "" : student.phoneNumber,
-            email: student.email === "—" ? "" : student.email,
-            gradeLevel:
-              student.grade && student.grade !== "—"
-                ? Number(student.grade) || undefined
-                : undefined,
-            state: student.active ? "active" : "inactive",
-          }}
-          isPending={updateStudent.isPending}
-          onSubmit={(payload) =>
-            updateStudent.mutateAsync({ id: student._id, payload })
-          }
-          onClose={() => setEditing(false)}
-        />
-      )}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {subjects &&
+              subjects.map((item, idx) => (
+                <SubjectCard
+                  key={item.classId || idx}
+                  item={item as unknown as SubjectItem}
+                />
+              ))}
+            {(!subjects || subjects.length === 0) && (
+              <p className="text-gray-500 mt-4">No subjects found.</p>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

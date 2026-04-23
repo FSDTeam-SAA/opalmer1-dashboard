@@ -13,7 +13,10 @@ import {
 } from "lucide-react";
 import PageHeader from "@/components/sheard/PageHeader";
 import CreateAdminModal from "@/features/AdminPart/Administration/component/CreateAdminModal";
-import { useAdministrators } from "@/features/AdminPart/Administration/hooks/useAdministrators";
+import {
+  useAdministrators,
+  useToggleAdministratorState,
+} from "@/features/AdminPart/Administration/hooks/useAdministrators";
 import { useStudentGenderStats, useUserStats } from "../hooks/useDashboard";
 import type { Administrator } from "@/features/AdminPart/Administration/types/administrator.types";
 
@@ -278,6 +281,8 @@ export default function Dashboard() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [search, setSearch] = useState("");
 
+  const toggleState = useToggleAdministratorState();
+
   const { data: userStats, isLoading: statsLoading } = useUserStats();
   const {
     data: admins,
@@ -325,14 +330,26 @@ export default function Dashboard() {
   );
 
   const filteredAdmins = useMemo(() => {
-    const list = admins ?? [];
-    if (!search) return list;
-    const q = search.toLowerCase();
-    return list.filter(
-      (a) =>
-        a.username.toLowerCase().includes(q) ||
-        a.phoneNumber?.toLowerCase().includes(q),
-    );
+    let list = [...(admins ?? [])];
+
+    // Sort by created_at (latest first)
+    list.sort((a, b) => {
+      const dateA = a.created_at ? new Date(a.created_at) : new Date(0);
+      const dateB = b.created_at ? new Date(b.created_at) : new Date(0);
+      return dateB.getTime() - dateA.getTime();
+    });
+
+    if (search) {
+      const q = search.toLowerCase();
+      list = list.filter(
+        (a) =>
+          a.username.toLowerCase().includes(q) ||
+          a.phoneNumber?.toLowerCase().includes(q) ||
+          a._id.toLowerCase().includes(q),
+      );
+    }
+
+    return list.slice(0, 5);
   }, [admins, search]);
 
   return (
@@ -454,9 +471,15 @@ export default function Dashboard() {
                       <div className="flex items-center justify-center gap-3">
                         <ToggleSwitch
                           active={admin.state === "active"}
-                          onChange={() => {
-                            /* TODO: wire to PUT /users/:id with { state } */
-                          }}
+                          onChange={() =>
+                            toggleState.mutate({
+                              id: admin._id,
+                              state:
+                                admin.state === "active"
+                                  ? "inactive"
+                                  : "active",
+                            })
+                          }
                         />
                         <Link
                           href={`/admin/administration/${admin._id}`}

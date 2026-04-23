@@ -68,7 +68,7 @@ export default function GradingProgressPage({
   studentSlug,
   subjectSlug,
 }: {
-  slug: string;
+  slug?: string;
   studentSlug: string;
   subjectSlug: string;
 }) {

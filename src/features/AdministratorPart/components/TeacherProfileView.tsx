@@ -1,9 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { BookOpen, Calendar, Mail, Phone } from "lucide-react";
+import { BookOpen, Calendar, TrendingUp, FileQuestion } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import PageHeader from "@/components/sheard/PageHeader";
 import {
@@ -13,11 +12,16 @@ import {
 } from "../hooks/useTeachers";
 import { useClassesByTeacher } from "../hooks/useClasses";
 import type { TeacherRow } from "../types/teachers.types";
-import { ToggleSwitch } from "./shared/ToggleSwitch";
+import {
+  UserProfileCard,
+  ProfileCardSkeleton,
+  type ProfileUser,
+} from "./shared/UserProfileCard";
 import EditUserModal from "./shared/EditUserModal";
 
-const FALLBACK_IMAGE = "/images/4f8da1b70693c4fcf9e01b9293706aed5cd4e34d.jpg";
-
+/* ──────────────────────────────────────────────
+   Constants
+─────────────────────────────────────────────── */
 const subjectChipColors = [
   "bg-[#3f99b4]",
   "bg-[#e64540]",
@@ -31,34 +35,18 @@ function describeError(err: unknown): string {
   return "Unable to load this information.";
 }
 
-function ProfileCardSkeleton() {
-  return (
-    <div className="flex flex-col items-center">
-      <Skeleton className="h-[180px] w-[180px] rounded-[12px] z-10" />
-      <div className="-mt-10 w-full max-w-[500px] rounded-[20px] bg-white pt-14 pb-6 px-8 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
-        <div className="flex flex-col items-center gap-3">
-          <Skeleton className="h-7 w-[200px]" />
-          <Skeleton className="h-5 w-[220px]" />
-          <Skeleton className="h-5 w-[140px]" />
-          <div className="mt-2 flex items-center gap-4">
-            <Skeleton className="h-[20px] w-[42px] rounded-full" />
-            <Skeleton className="h-[34px] w-[80px] rounded-[6px]" />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
+/* ──────────────────────────────────────────────
+   Classes Grid
+─────────────────────────────────────────────── */
 function ClassesGrid({ teacherId }: { teacherId: string }) {
   const { data, isLoading, isError, error, refetch } =
     useClassesByTeacher(teacherId);
 
   if (isLoading) {
     return (
-      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {Array.from({ length: 3 }).map((_, i) => (
-          <Skeleton key={i} className="h-[120px] w-full rounded-[16px]" />
+          <Skeleton key={i} className="h-[130px] w-full rounded-[16px]" />
         ))}
       </div>
     );
@@ -66,7 +54,7 @@ function ClassesGrid({ teacherId }: { teacherId: string }) {
 
   if (isError) {
     return (
-      <div className="mt-4 rounded-[12px] border border-[#fbd0d0] bg-[#fff5f5] p-5 text-center">
+      <div className="mt-5 rounded-[14px] border border-[#fbd0d0] bg-[#fff5f5] p-6 text-center">
         <p className="text-[14px] text-[#e64540]">{describeError(error)}</p>
         <button
           type="button"
@@ -81,8 +69,9 @@ function ClassesGrid({ teacherId }: { teacherId: string }) {
 
   if (!data || data.length === 0) {
     return (
-      <div className="mt-4 rounded-[12px] border border-dashed border-[#c7c7c7] bg-[#f9f9f9] p-8 text-center">
-        <p className="text-[15px] text-[#666]">
+      <div className="mt-5 rounded-[14px] border border-dashed border-[#ddd] bg-[#fafafa] p-10 text-center">
+        <BookOpen size={32} className="mx-auto mb-3 text-[#ccc]" />
+        <p className="text-[15px] text-[#888]">
           No classes assigned to this teacher yet.
         </p>
       </div>
@@ -90,33 +79,33 @@ function ClassesGrid({ teacherId }: { teacherId: string }) {
   }
 
   return (
-    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {data.map((cls, idx) => {
         const color = subjectChipColors[idx % subjectChipColors.length];
         return (
           <div
             key={cls._id}
-            className="rounded-[16px] bg-white p-5 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.08)]"
+            className="group rounded-[16px] bg-white p-5 shadow-[0px_2px_16px_rgba(0,0,0,0.07)] border border-[#f0f0f0] hover:shadow-[0px_4px_24px_rgba(135,29,173,0.12)] transition-shadow"
           >
             <div className="flex items-center gap-3">
               <div
-                className={`flex h-[40px] w-[40px] items-center justify-center rounded-full text-white ${color}`}
+                className={`flex h-[42px] w-[42px] flex-shrink-0 items-center justify-center rounded-[12px] text-white ${color}`}
               >
                 <BookOpen size={18} />
               </div>
               <div>
-                <p className="text-[16px] font-semibold text-[#333]">
+                <p className="text-[15px] font-semibold text-[#333]">
                   {cls.subject}
                 </p>
-                <p className="text-[13px] text-[#666]">
+                <p className="text-[12px] text-[#888]">
                   Grade {String(cls.grade)}
                   {cls.section ? ` · Section ${cls.section}` : ""}
                 </p>
               </div>
             </div>
             {cls.schedule && (
-              <p className="mt-3 flex items-center gap-2 text-[13px] text-[#666]">
-                <Calendar size={14} />
+              <p className="mt-3 flex items-center gap-1.5 text-[12px] text-[#999]">
+                <Calendar size={12} />
                 {cls.schedule}
               </p>
             )}
@@ -127,6 +116,114 @@ function ClassesGrid({ teacherId }: { teacherId: string }) {
   );
 }
 
+/* ──────────────────────────────────────────────
+   Additional Info Sections (Placeholder)
+─────────────────────────────────────────────── */
+function TeacherAdditionalInfoSections() {
+  return (
+    <div className="space-y-6 mt-10">
+      <div className="flex items-center justify-between">
+        <h2 className="text-[22px] sm:text-[26px] font-bold text-[#222]">
+          Teaching & Assessment
+        </h2>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Grades Overview */}
+        <div className="rounded-[16px] bg-white p-5 shadow-[0px_2px_16px_rgba(0,0,0,0.07)] border border-[#f0f0f0] hover:shadow-[0px_4px_24px_rgba(135,29,173,0.12)] transition-shadow">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex h-[42px] w-[42px] items-center justify-center rounded-[12px] bg-[#871dad]/10 text-[#871dad]">
+              <TrendingUp size={18} />
+            </div>
+            <h3 className="font-semibold text-[#333]">Grades Overview</h3>
+          </div>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[13px] text-[#666]">
+              Mid-term Grading Progress
+            </span>
+            <span className="text-[13px] font-semibold text-[#871dad]">
+              75%
+            </span>
+          </div>
+          <div className="h-2 w-full bg-[#f0f0f0] rounded-full mb-4">
+            <div
+              className="h-full bg-[#871dad] rounded-full"
+              style={{ width: "75%" }}
+            ></div>
+          </div>
+          <div className="grid grid-cols-3 gap-2 text-center border-t border-[#f0f0f0] pt-4">
+            <div>
+              <p className="text-[18px] font-bold text-[#333]">120</p>
+              <p className="text-[11px] text-[#888]">Graded</p>
+            </div>
+            <div>
+              <p className="text-[18px] font-bold text-[#e64540]">45</p>
+              <p className="text-[11px] text-[#888]">Pending</p>
+            </div>
+            <div>
+              <p className="text-[18px] font-bold text-[#4aa678]">B+</p>
+              <p className="text-[11px] text-[#888]">Class Avg</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Quizzes */}
+        <div className="rounded-[16px] bg-white p-5 shadow-[0px_2px_16px_rgba(0,0,0,0.07)] border border-[#f0f0f0] hover:shadow-[0px_4px_24px_rgba(135,29,173,0.12)] transition-shadow">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-[42px] w-[42px] items-center justify-center rounded-[12px] bg-[#3f99b4]/10 text-[#3f99b4]">
+                <FileQuestion size={18} />
+              </div>
+              <h3 className="font-semibold text-[#333]">Recent Quizzes</h3>
+            </div>
+            <button className="text-[12px] font-semibold text-[#3f99b4] hover:underline">
+              View All →
+            </button>
+          </div>
+
+          <ul className="space-y-3">
+            <li className="flex items-center justify-between p-3 rounded-[10px] bg-[#fafafa] border border-[#f0f0f0]">
+              <div>
+                <p className="text-[13px] font-medium text-[#333]">
+                  Algebra Basics (Quiz 3)
+                </p>
+                <p className="text-[11px] text-[#888] mt-0.5">
+                  Grade 9 • Section A
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-[13px] font-semibold text-[#4aa678]">
+                  Completed
+                </p>
+                <p className="text-[11px] text-[#888]">32/32 Submissions</p>
+              </div>
+            </li>
+            <li className="flex items-center justify-between p-3 rounded-[10px] bg-[#fafafa] border border-[#f0f0f0]">
+              <div>
+                <p className="text-[13px] font-medium text-[#333]">
+                  Geometry Fundamentals
+                </p>
+                <p className="text-[11px] text-[#888] mt-0.5">
+                  Grade 10 • Section B
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-[13px] font-semibold text-[#e64540]">
+                  Active
+                </p>
+                <p className="text-[11px] text-[#888]">15/30 Submissions</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ──────────────────────────────────────────────
+   Main component
+─────────────────────────────────────────────── */
 type TeacherProfileViewProps = {
   teacherId: string;
 };
@@ -139,15 +236,12 @@ export default function TeacherProfileView({
   const updateTeacher = useUpdateTeacher();
   const [editing, setEditing] = useState(false);
 
-  // The backend exposes no GET /users/:id endpoint, so we look the teacher up
-  // from the cached /users/my-teachers list. Both the list view and this
-  // route share that same query key, so navigating in usually hits a warm
-  // cache and skips the network entirely.
   const teacher: TeacherRow | undefined = useMemo(
     () => teachers?.find((t) => t._id === teacherId),
     [teachers, teacherId],
   );
 
+  /* ── Loading state ── */
   if (isLoading) {
     return (
       <div className="space-y-8">
@@ -157,15 +251,16 @@ export default function TeacherProfileView({
     );
   }
 
+  /* ── Error state ── */
   if (isError || !teachers) {
     return (
       <div className="space-y-8">
         <PageHeader title="Teacher Profile" />
-        <div className="rounded-[20px] bg-white p-10 text-center shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
+        <div className="rounded-[20px] bg-white p-10 text-center shadow-[0px_0px_20px_0px_rgba(0,0,0,0.08)]">
           <p className="text-[18px] font-medium text-[#e64540]">
             Failed to load teachers list
           </p>
-          <p className="mt-2 text-[14px] text-[#666]">
+          <p className="mt-2 text-[14px] text-[#888]">
             Please try again from the teachers page.
           </p>
         </div>
@@ -173,15 +268,16 @@ export default function TeacherProfileView({
     );
   }
 
+  /* ── Not found state ── */
   if (!teacher) {
     return (
       <div className="space-y-8">
         <PageHeader title="Teacher Profile" />
-        <div className="rounded-[20px] bg-white p-10 text-center shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
+        <div className="rounded-[20px] bg-white p-10 text-center shadow-[0px_0px_20px_0px_rgba(0,0,0,0.08)]">
           <p className="text-[18px] font-medium text-[#333]">
             Teacher not found
           </p>
-          <p className="mt-2 text-[14px] text-[#666]">
+          <p className="mt-2 text-[14px] text-[#888]">
             This teacher may have been removed or doesn&apos;t belong to your
             school.
           </p>
@@ -196,99 +292,50 @@ export default function TeacherProfileView({
     );
   }
 
+  /* Normalise to ProfileUser shape */
+  const profileUser: ProfileUser = {
+    _id: teacher._id,
+    name: teacher.name,
+    userId: teacher.teacherId,
+    email: teacher.email,
+    phoneNumber: teacher.phoneNumber,
+    badge: teacher.subject,
+    image: teacher.image,
+    active: teacher.active,
+  };
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       <PageHeader title="Teacher Profile" />
 
       {/* ── Profile Card ── */}
-      <div className="flex flex-col items-center">
-        <div className="relative z-10 h-[180px] w-[180px] overflow-hidden rounded-[12px] shadow-lg">
-          <Image
-            src={teacher.image || FALLBACK_IMAGE}
-            alt={teacher.name}
-            width={180}
-            height={180}
-            className="h-full w-full object-cover"
-          />
-        </div>
-
-        <div className="-mt-10 w-full max-w-[560px] rounded-[20px] bg-white pt-14 pb-6 px-8 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
-          <div className="flex flex-col items-center">
-            <h3 className="text-[24px] font-semibold text-black tracking-[0.3px]">
-              {teacher.name}
-            </h3>
-            <p className="mt-1 text-[14px] text-[#999]">
-              Teacher Id: {teacher.teacherId}
-            </p>
-
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[14px] text-[#666]">
-              {teacher.email && teacher.email !== "—" && (
-                <span className="inline-flex items-center gap-1.5">
-                  <Mail size={14} />
-                  {teacher.email}
-                </span>
-              )}
-              {teacher.phoneNumber && teacher.phoneNumber !== "—" && (
-                <span className="inline-flex items-center gap-1.5">
-                  <Phone size={14} />
-                  {teacher.phoneNumber}
-                </span>
-              )}
-            </div>
-
-            <div className="mt-5 flex items-center gap-4">
-              <span
-                className={`inline-flex items-center gap-1.5 text-[14px] font-medium ${
-                  teacher.active ? "text-[#5fb892]" : "text-[#ef3c50]"
-                }`}
-              >
-                <span
-                  className={`h-2 w-2 rounded-full ${
-                    teacher.active ? "bg-[#5fb892]" : "bg-[#ef3c50]"
-                  }`}
-                />
-                {teacher.active ? "Active" : "Inactive"}
-              </span>
-              <ToggleSwitch
-                active={teacher.active}
-                disabled={toggleState.isPending}
-                onChange={() =>
-                  toggleState.mutate({
-                    id: teacher._id,
-                    state: teacher.active ? "inactive" : "active",
-                  })
-                }
-              />
-              <button
-                type="button"
-                onClick={() => setEditing(true)}
-                className="rounded-[6px] bg-[#871dad] cursor-pointer px-[15px] py-[8px] text-[15px] font-medium text-white hover:bg-[#751a99] transition-colors"
-              >
-                Edit
-              </button>
-            </div>
-
-            {teacher.subject && teacher.subject !== "—" && (
-              <div className="mt-4 flex items-center gap-2">
-                <span className="rounded-[6px] bg-[#871dad] px-[14px] py-[6px] text-[13px] font-medium text-white">
-                  {teacher.subject}
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+      <UserProfileCard
+        user={profileUser}
+        type="teacher"
+        isTogglePending={toggleState.isPending}
+        onToggle={() =>
+          toggleState.mutate({
+            id: teacher._id,
+            state: teacher.active ? "inactive" : "active",
+          })
+        }
+        onEdit={() => setEditing(true)}
+      />
 
       {/* ── Classes Section ── */}
       <div>
         <div className="flex items-center justify-between">
-          <h2 className="text-[24px] sm:text-[28px] font-semibold text-[#333]">
-            Classes
+          <h2 className="text-[22px] sm:text-[26px] font-bold text-[#222]">
+            Assigned Classes
           </h2>
         </div>
         <ClassesGrid teacherId={teacher._id} />
       </div>
 
+      {/* ── Additional Features & Analytics ── */}
+      <TeacherAdditionalInfoSections />
+
+      {/* ── Edit Modal ── */}
       {editing && (
         <EditUserModal
           title="Edit Teacher"

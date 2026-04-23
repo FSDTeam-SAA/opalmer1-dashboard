@@ -81,3 +81,29 @@ export type UpdateStudentPayload = Partial<{
   age: number;
   gradeLevel: number;
 }>;
+
+export type StudentDetailsSubject = {
+  classId: string;
+  subject: string;
+  attendance: number;
+  progress: number;
+  teacherName?: string; // Sometimes APIs return this or we fall back
+};
+
+export type StudentDetailsOverall = {
+  attendance: number;
+  progress: number;
+};
+
+export type StudentDetailsData = {
+  student: StudentRecord;
+  parent: { name?: string; image?: string; _id?: string } | null;
+  overall: StudentDetailsOverall;
+  subjects: StudentDetailsSubject[];
+};
+
+export type StudentDetailsResponse = {
+  success: boolean;
+  message: string;
+  data: StudentDetailsData;
+};

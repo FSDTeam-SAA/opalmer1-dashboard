@@ -6,6 +6,8 @@ import type {
   StudentRow,
   StudentsResponse,
   UpdateStudentPayload,
+  StudentDetailsResponse,
+  StudentDetailsData,
 } from "../types/students.types";
 
 const FALLBACK_IMAGE = "/images/4f8da1b70693c4fcf9e01b9293706aed5cd4e34d.jpg";
@@ -32,7 +34,7 @@ function toRow(record: StudentRecord, idx: number): StudentRow {
  * Backend: user.controller.ts → getMySchoolAllStudents (authorizeRoles("administrator"))
  */
 export async function fetchMyStudents(): Promise<StudentRow[]> {
-  const { data } = await api.get<StudentsResponse>("/users/my-students");
+  const { data } = await api.get<StudentsResponse>("/users/students");
   return data.data.map(toRow);
 }
 
@@ -86,4 +88,15 @@ export async function setStudentState(
   state: "active" | "inactive",
 ): Promise<StudentRecord> {
   return updateStudent(id, { state });
+}
+
+/**
+ * GET /users/:id
+ * Fetches detailed profile of a student.
+ */
+export async function fetchStudentDetails(
+  id: string,
+): Promise<StudentDetailsData> {
+  const { data } = await api.get<StudentDetailsResponse>(`/users/${id}`);
+  return data.data;
 }

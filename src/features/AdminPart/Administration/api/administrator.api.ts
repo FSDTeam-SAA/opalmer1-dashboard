@@ -5,6 +5,8 @@ import type {
   AdministratorsResponse,
   CreateAdministratorPayload,
   UpdateAdministratorPayload,
+  AdministratorDetailsResponse,
+  AdministratorDetailsData,
 } from "../types/administrator.types";
 
 /**
@@ -72,4 +74,17 @@ export async function setAdministratorState(
   state: "active" | "inactive",
 ): Promise<Administrator> {
   return updateAdministrator(id, { state });
+}
+
+/**
+ * GET /users/administrators/:id
+ * Fetches detailed profile of an administrator including their school and students.
+ */
+export async function fetchAdministratorDetails(
+  id: string,
+): Promise<AdministratorDetailsData> {
+  const { data } = await api.get<AdministratorDetailsResponse>(
+    `/users/administrators/${id}`,
+  );
+  return data.data;
 }

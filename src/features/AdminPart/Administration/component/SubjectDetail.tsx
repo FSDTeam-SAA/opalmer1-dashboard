@@ -128,12 +128,16 @@ export default function SubjectDetail({
   slug,
   studentSlug,
   subjectSlug,
+  basePath = "/admin/administration",
 }: {
-  slug: string;
+  slug?: string;
   studentSlug: string;
   subjectSlug: string;
+  basePath?: string;
 }) {
   const subjectName = subjectSlug.replace(/-/g, " ");
+  const prefix = slug ? `${basePath}/${slug}` : `${basePath}`;
+  const root = `${prefix}/students/${studentSlug}/${subjectSlug}`;
 
   return (
     <div className="space-y-8 pt-10 mt-16">
@@ -168,14 +172,13 @@ export default function SubjectDetail({
         <div className="mt-4 grid grid-cols-2 gap-5">
           {classInfoItems.map((item) => {
             const itemSlug = item.replace(/\s+/g, "-").toLowerCase();
-            const basePath = `/admin/administration/${slug}/students/${studentSlug}/${subjectSlug}`;
             const hrefMap: Record<string, string> = {
-              "Home Work": `${basePath}/homework`,
-              Attendance: `${basePath}/attendance`,
-              Lessons: `${basePath}/lessons`,
-              "Behavior Record": `${basePath}/behavior-record`,
-              "Academic Notes": `${basePath}/academic-notes`,
-              "Grading Progress": `${basePath}/grading-progress`,
+              "Home Work": `${root}/homework`,
+              Attendance: `${root}/attendance`,
+              Lessons: `${root}/lessons`,
+              "Behavior Record": `${root}/behavior-record`,
+              "Academic Notes": `${root}/academic-notes`,
+              "Grading Progress": `${root}/grading-progress`,
             };
             const href = hrefMap[item];
 

@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createStudent,
   fetchMyStudents,
+  fetchStudentDetails,
   setStudentState,
   updateStudent,
 } from "../api/students.api";
@@ -12,6 +13,7 @@ import type {
 
 export const studentsKeys = {
   all: ["administrator", "students", "my-school"] as const,
+  detail: (id: string) => ["administrator", "students", "detail", id] as const,
 };
 
 /** GET /users/my-students — students of the authenticated administrator's school. */
@@ -60,5 +62,14 @@ export function useToggleStudentState() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: studentsKeys.all });
     },
+  });
+}
+
+/** GET /users/:id — fetch detailed student profile */
+export function useStudentDetails(id: string) {
+  return useQuery({
+    queryKey: studentsKeys.detail(id),
+    queryFn: () => fetchStudentDetails(id),
+    enabled: !!id,
   });
 }

@@ -9,7 +9,7 @@ export default function LessonDetail({
   subjectSlug,
   lessonSlug,
 }: {
-  slug: string;
+  slug?: string;
   studentSlug: string;
   subjectSlug: string;
   lessonSlug: string;

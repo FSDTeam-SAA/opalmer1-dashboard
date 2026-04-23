@@ -1,5 +1,10 @@
+import { Suspense } from "react";
 import Login from "@/features/auth/component/Login";
 
 export default function page() {
-  return <Login />;
+  return (
+    <Suspense fallback={null}>
+      <Login />
+    </Suspense>
+  );
 }

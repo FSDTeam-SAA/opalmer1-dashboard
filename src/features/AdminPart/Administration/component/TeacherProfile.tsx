@@ -140,10 +140,13 @@ function GradeCard({ grade }: { grade: GradeCardType }) {
 export default function TeacherProfile({
   slug,
   teacherId,
+  basePath = "/admin/administration",
 }: {
-  slug: string;
+  slug?: string;
   teacherId: string;
+  basePath?: string;
 }) {
+  const prefix = slug ? `${basePath}/${slug}` : `${basePath}`;
   const {
     data: teacher,
     isLoading,
@@ -231,7 +234,7 @@ export default function TeacherProfile({
         <div className="flex items-center justify-between">
           <h2 className="text-[30px] font-semibold text-[#333]">Grades</h2>
           <Link
-            href={`/admin/administration/${slug}/teachers/${teacherId}/grades`}
+            href={`${prefix}/teachers/${teacherId}/grades`}
             className="cursor-pointer text-[20px] text-[#871dad] underline hover:text-[#751a99] transition-colors"
           >
             View All
@@ -249,7 +252,7 @@ export default function TeacherProfile({
         <div className="flex items-center justify-between">
           <h2 className="text-[30px] font-semibold text-[#333]">Quizzes</h2>
           <Link
-            href={`/admin/administration/${slug}/teachers/${teacherId}/quizzes`}
+            href={`${prefix}/teachers/${teacherId}/quizzes`}
             className="cursor-pointer text-[20px] text-[#871dad] underline hover:text-[#751a99] transition-colors"
           >
             View All
@@ -259,7 +262,7 @@ export default function TeacherProfile({
           {teacher.quizzes.map((quiz) => (
             <Link
               key={quiz.id}
-              href={`/admin/administration/${slug}/teachers/${teacherId}/quizzes/${quiz.id}`}
+              href={`${prefix}/teachers/${teacherId}/quizzes/${quiz.id}`}
               className="flex items-center gap-4 rounded-[12px] bg-white p-4 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)] transition-colors hover:bg-gray-50"
             >
               <div className="h-[80px] w-[80px] flex-shrink-0 overflow-hidden rounded-[8px]">
