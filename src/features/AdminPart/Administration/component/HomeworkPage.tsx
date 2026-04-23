@@ -3,58 +3,99 @@
 import { CalendarDays } from "lucide-react";
 import PageHeader from "@/components/sheard/PageHeader";
 
-/* ───── Homework Data ───── */
-const todaysHomework = {
-  id: 1,
-  title: "Fractions Practice",
-  description: "Solve question 1-10 on page 42 of the textbook.",
-  due: "June 13,2025",
-};
-
-const archivedHomework = Array.from({ length: 12 }, (_, i) => ({
-  id: i + 2,
-  title: "Fractions Practice",
-  description: "Solve question 1-10 on page 42 of the textbook.",
-  due: "June 13,2025",
-}));
+import { useHomework } from "../hooks/useHomework";
+import { Skeleton } from "@/components/ui/skeleton";
+import { HomeworkData } from "../types/homework.types";
+import { format } from "date-fns";
 
 /* ───── Homework Card ───── */
-function HomeworkCard({
-  homework,
-}: {
-  homework: { id: number; title: string; description: string; due: string };
-}) {
+function HomeworkCard({ homework }: { homework: HomeworkData }) {
+  const dateStr = homework.created_at
+    ? format(new Date(homework.created_at), "MMMM d, yyyy")
+    : "N/A";
+
   return (
     <div className="rounded-[10px] bg-white px-5 py-5 shadow-[0px_0px_20px_0px_rgba(6,51,54,0.1)]">
       <h3 className="text-[22px] font-medium text-black">{homework.title}</h3>
       <p className="mt-2 text-[18px] font-light text-[#666]">
-        {homework.description}
+        {homework.description || "No description provided."}
       </p>
+      {homework.file && homework.file.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {homework.file.map((f) => (
+            <a
+              key={f._id}
+              href={f.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[14px] text-[#871dad] underline"
+            >
+              View File
+            </a>
+          ))}
+        </div>
+      )}
       <div className="my-3 h-[1px] bg-gray-200" />
-      <p className="text-[14px] font-light text-[#666]">Due: {homework.due}</p>
+      <p className="text-[14px] font-light text-[#666]">Created: {dateStr}</p>
     </div>
   );
 }
 
 export default function HomeworkPage({
   slug: _slug,
-  studentSlug: _studentSlug,
+  studentSlug,
   subjectSlug: _subjectSlug,
 }: {
   slug?: string;
   studentSlug: string;
   subjectSlug: string;
 }) {
+  const { data: homework = [], isLoading, isError } = useHomework(studentSlug);
+
+  const activeHomework = homework.filter((hw) => !hw.archived);
+  const archivedHomework = homework.filter((hw) => hw.archived);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-8 pt-10 mt-32">
+        <PageHeader title="Homework" />
+        <Skeleton className="h-[200px] w-full rounded-[10px]" />
+        <div className="grid grid-cols-2 gap-5">
+          <Skeleton className="h-[150px] rounded-[10px]" />
+          <Skeleton className="h-[150px] rounded-[10px]" />
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="space-y-8 pt-10 mt-32">
+        <PageHeader title="Homework" />
+        <div className="rounded-[20px] bg-white p-10 text-center shadow-[0px_0px_20px_0px_rgba(0,0,0,0.08)]">
+          <p className="text-[18px] font-medium text-[#e64540]">
+            Failed to load homework
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8 pt-10 mt-32">
       <PageHeader title="Homework" />
-      {/* Today's Homework */}
+      {/* Active Homework */}
       <div>
         <h2 className="text-[30px] font-semibold text-[#333]">
-          Today&apos;s Homework
+          Active Homework
         </h2>
-        <div className="mt-4 max-w-[529px]">
-          <HomeworkCard homework={todaysHomework} />
+        <div className="mt-4 grid grid-cols-2 gap-5">
+          {activeHomework.map((hw) => (
+            <HomeworkCard key={hw._id} homework={hw} />
+          ))}
+          {activeHomework.length === 0 && (
+            <p className="text-gray-500">No active homework found.</p>
+          )}
         </div>
       </div>
 
@@ -70,8 +111,11 @@ export default function HomeworkPage({
         </div>
         <div className="mt-4 grid grid-cols-2 gap-5">
           {archivedHomework.map((hw) => (
-            <HomeworkCard key={hw.id} homework={hw} />
+            <HomeworkCard key={hw._id} homework={hw} />
           ))}
+          {archivedHomework.length === 0 && (
+            <p className="text-gray-500">No archived homework found.</p>
+          )}
         </div>
       </div>
     </div>
