@@ -88,10 +88,22 @@ export type AdminStudentDetails = {
   };
 };
 
+export type AdminTeacherDetails = {
+  _id: string;
+  username: string;
+  phoneNumber: string;
+  Id: string;
+  avatar?: {
+    public_id: string;
+    url: string;
+  };
+};
+
 export type AdministratorDetailsData = {
   admin: Administrator;
   school: AdminSchoolDetails | null;
   students: AdminStudentDetails[];
+  teachers: AdminTeacherDetails[];
 };
 
 export type AdministratorDetailsResponse = {

@@ -14,6 +14,7 @@ import {
 } from "@tanstack/react-table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTeachers } from "../hooks/useTeachers";
+import { useAdministratorDetails } from "../hooks/useAdministrators";
 import type { TeacherListItem } from "@/types/teacher.types";
 
 const columnHelper = createColumnHelper<TeacherListItem>();
@@ -51,7 +52,40 @@ export default function TeachersTable({
   const prefix = slug ? `${basePath}/${slug}` : `${basePath}`;
   const [globalFilter, setGlobalFilter] = useState("");
 
-  const { data: teachers = [], isLoading, isError } = useTeachers();
+  // Fetch data based on whether slug is provided
+  const {
+    data: adminDetails,
+    isLoading: isLoadingAdmin,
+    isError: isErrorAdmin,
+  } = useAdministratorDetails(slug || "");
+
+  const {
+    data: allTeachers = [],
+    isLoading: isLoadingAll,
+    isError: isErrorAll,
+  } = useTeachers();
+
+  const isLoading = slug ? isLoadingAdmin : isLoadingAll;
+  const isError = slug ? isErrorAdmin : isErrorAll;
+
+  const teachers = useMemo(() => {
+    if (slug) {
+      if (!adminDetails?.teachers) return [];
+      return adminDetails.teachers.map((t, idx) => ({
+        id: idx + 1,
+        _id: t._id,
+        name: t.username,
+        teacherId: t.Id,
+        gradeLevel: "—",
+        subjects: "—",
+        state: "—",
+        image:
+          t.avatar?.url ||
+          "/images/4f8da1b70693c4fcf9e01b9293706aed5cd4e34d.jpg",
+      })) as TeacherListItem[];
+    }
+    return allTeachers;
+  }, [slug, adminDetails, allTeachers]);
 
   const columns = useMemo(
     () => [

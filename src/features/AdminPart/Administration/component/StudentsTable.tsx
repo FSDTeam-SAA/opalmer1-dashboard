@@ -7,6 +7,8 @@ import { Search } from "lucide-react";
 import PageHeader from "@/components/sheard/PageHeader";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useStudents } from "../hooks/useStudents";
+import { useAdministratorDetails } from "../hooks/useAdministrators";
+import { StudentListItem } from "../api/student.api";
 
 export default function StudentsTable({
   slug,
@@ -17,7 +19,42 @@ export default function StudentsTable({
 }) {
   const prefix = slug ? `${basePath}/${slug}` : `${basePath}`;
   const [searchQuery, setSearchQuery] = useState("");
-  const { data: students = [], isLoading, isError } = useStudents();
+
+  // Fetch data based on whether slug is provided
+  const {
+    data: adminDetails,
+    isLoading: isLoadingAdmin,
+    isError: isErrorAdmin,
+  } = useAdministratorDetails(slug || "");
+
+  const {
+    data: allStudents = [],
+    isLoading: isLoadingAll,
+    isError: isErrorAll,
+  } = useStudents();
+
+  const isLoading = slug ? isLoadingAdmin : isLoadingAll;
+  const isError = slug ? isErrorAdmin : isErrorAll;
+
+  // Use a fallback image for consistency
+  const FALLBACK_IMAGE = "/images/4f8da1b70693c4fcf9e01b9293706aed5cd4e34d.jpg";
+
+  const students = useMemo(() => {
+    if (slug) {
+      if (!adminDetails?.students) return [];
+      return adminDetails.students.map((s, idx) => ({
+        id: idx + 1,
+        _id: s._id,
+        name: s.username,
+        studentId: s.Id,
+        grade: `Grade ${s.gradeLevel}`,
+        age: "—",
+        attendance: "—",
+        image: s.avatar?.url || FALLBACK_IMAGE,
+      })) as StudentListItem[];
+    }
+    return allStudents;
+  }, [slug, adminDetails, allStudents]);
 
   const filteredStudents = useMemo(() => {
     const q = searchQuery.toLowerCase();

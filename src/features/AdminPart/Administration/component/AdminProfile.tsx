@@ -13,37 +13,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAdministratorDetails } from "../hooks/useAdministrators";
 import type { Administrator } from "../types/administrator.types";
 
-/* ───── Mock Data for Teachers (Fallback) ───── */
-const teachersData: Teacher[] = [
-  {
-    id: 1,
-    name: "Erin Yaeger",
-    grade: "Grade 6",
-    state: "MD",
-    subjects: "Math, English",
-    status: "Excellent",
-    image: "/images/4f8da1b70693c4fcf9e01b9293706aed5cd4e34d.jpg",
-  },
-  {
-    id: 2,
-    name: "Erin Yaeger",
-    grade: "Grade 6",
-    state: "MD",
-    subjects: "Math, English",
-    status: "Excellent",
-    image: "/images/4f8da1b70693c4fcf9e01b9293706aed5cd4e34d.jpg",
-  },
-  {
-    id: 3,
-    name: "Erin Yaeger",
-    grade: "Grade 6",
-    state: "MD",
-    subjects: "Math, English",
-    status: "Excellent",
-    image: "/images/4f8da1b70693c4fcf9e01b9293706aed5cd4e34d.jpg",
-  },
-];
-
 export default function AdminProfile({ slug }: { slug: string }) {
   const { data, isLoading, isError } = useAdministratorDetails(slug);
   const [active, setActive] = useState(true);
@@ -71,7 +40,7 @@ export default function AdminProfile({ slug }: { slug: string }) {
     );
   }
 
-  const { admin, school, students } = data;
+  const { admin, school, students, teachers } = data;
   const fallbackImage =
     "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=400&auto=format&fit=crop";
   const avatarUrl = admin.avatar?.url || fallbackImage;
@@ -84,11 +53,22 @@ export default function AdminProfile({ slug }: { slug: string }) {
     id: s._id as unknown as number,
     name: s.username || "Unknown Student",
     grade: `Grade ${s.gradeLevel}`,
-    age: 0, // Fallback
-    attendance: "N/A", // Fallback
-    progress: "N/A", // Fallback
-    status: "N/A", // Fallback
+    age: 0,
+    attendance: "N/A",
+    progress: "N/A",
+    status: "N/A",
     image: s.avatar?.url || fallbackImage,
+  }));
+
+  // Map API teachers to TeacherCard format
+  const mappedTeachers: Teacher[] = teachers.map((t) => ({
+    id: t._id as unknown as number,
+    name: t.username || "Unknown Teacher",
+    grade: "N/A",
+    state: "N/A",
+    subjects: "N/A",
+    status: "N/A",
+    image: t.avatar?.url || fallbackImage,
   }));
 
   return (
@@ -207,9 +187,12 @@ export default function AdminProfile({ slug }: { slug: string }) {
           </Link>
         </div>
         <div className="mt-4 grid grid-cols-3 gap-5">
-          {teachersData.map((teacher) => (
+          {mappedTeachers.slice(0, 3).map((teacher) => (
             <TeacherCard key={teacher.id} teacher={teacher} />
           ))}
+          {mappedTeachers.length === 0 && (
+            <p className="text-gray-500 text-lg">No teachers found.</p>
+          )}
         </div>
       </div>
 

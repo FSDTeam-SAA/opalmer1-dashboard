@@ -1,4 +1,8 @@
 import { api } from "@/lib/api";
+import {
+  StudentDetailsResponse,
+  StudentDetailsData,
+} from "../types/student.types";
 
 /**
  * Raw student record returned by GET /users/my-students.
@@ -41,7 +45,7 @@ const FALLBACK_IMAGE = "/images/4f8da1b70693c4fcf9e01b9293706aed5cd4e34d.jpg";
  * Returns the students of the authenticated administrator's school.
  */
 export async function fetchStudents(): Promise<StudentListItem[]> {
-  const { data } = await api.get<MyStudentsResponse>("/users/students");
+  const { data } = await api.get<MyStudentsResponse>("/users/my-students");
   return data.data.map((s, idx) => ({
     id: idx + 1,
     _id: s._id,
@@ -54,4 +58,15 @@ export async function fetchStudents(): Promise<StudentListItem[]> {
     attendance: "—",
     image: s.avatar?.url || FALLBACK_IMAGE,
   }));
+}
+
+/**
+ * GET /users/:id
+ * Fetches detailed profile of a student.
+ */
+export async function fetchStudentDetails(
+  id: string,
+): Promise<StudentDetailsData> {
+  const { data } = await api.get<StudentDetailsResponse>(`/users/${id}`);
+  return data.data;
 }
