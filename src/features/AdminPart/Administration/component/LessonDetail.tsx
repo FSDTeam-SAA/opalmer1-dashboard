@@ -4,10 +4,10 @@ import { FileText, Download } from "lucide-react";
 import PageHeader from "@/components/sheard/PageHeader";
 
 export default function LessonDetail({
-  slug,
-  studentSlug,
-  subjectSlug,
-  lessonSlug,
+  slug: _slug,
+  studentSlug: _studentSlug,
+  subjectSlug: _subjectSlug,
+  lessonSlug: _lessonSlug,
 }: {
   slug?: string;
   studentSlug: string;

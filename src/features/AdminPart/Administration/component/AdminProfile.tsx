@@ -80,7 +80,7 @@ export default function AdminProfile({ slug }: { slug: string }) {
     : "Location N/A";
 
   // Map API students to StudentCard format
-  const mappedStudents: Student[] = students.map((s, idx) => ({
+  const mappedStudents: Student[] = students.map((s) => ({
     id: s._id as unknown as number,
     name: s.username || "Unknown Student",
     grade: `Grade ${s.gradeLevel}`,

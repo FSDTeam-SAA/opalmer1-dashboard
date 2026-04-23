@@ -1,6 +1,5 @@
 "use client";
 
-import { Bell } from "lucide-react";
 import { useNavbarTitle } from "./NavbarContext";
 
 export default function Navbar() {

@@ -111,7 +111,7 @@ export default function TeachersTable({
         size: 100,
       }),
     ],
-    [slug],
+    [prefix],
   );
 
   const table = useReactTable({

@@ -9,9 +9,9 @@ const academicNotes = Array.from({ length: 14 }, (_, i) => ({
 }));
 
 export default function AcademicNotesPage({
-  slug,
-  studentSlug,
-  subjectSlug,
+  slug: _slug,
+  studentSlug: _studentSlug,
+  subjectSlug: _subjectSlug,
 }: {
   slug?: string;
   studentSlug: string;

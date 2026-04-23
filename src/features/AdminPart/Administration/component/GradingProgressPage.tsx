@@ -64,9 +64,9 @@ function GradingCard({
 }
 
 export default function GradingProgressPage({
-  slug,
-  studentSlug,
-  subjectSlug,
+  slug: _slug,
+  studentSlug: _studentSlug,
+  subjectSlug: _subjectSlug,
 }: {
   slug?: string;
   studentSlug: string;

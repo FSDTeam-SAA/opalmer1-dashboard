@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useNavbarTitle } from "@/components/sheard/NavbarContext";
 
 interface AdminHeaderProps {

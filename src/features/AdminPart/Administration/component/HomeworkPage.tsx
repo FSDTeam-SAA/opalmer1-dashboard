@@ -37,9 +37,9 @@ function HomeworkCard({
 }
 
 export default function HomeworkPage({
-  slug,
-  studentSlug,
-  subjectSlug,
+  slug: _slug,
+  studentSlug: _studentSlug,
+  subjectSlug: _subjectSlug,
 }: {
   slug?: string;
   studentSlug: string;
