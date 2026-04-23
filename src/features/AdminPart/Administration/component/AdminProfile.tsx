@@ -106,9 +106,9 @@ export default function AdminProfile({ slug }: { slug: string }) {
           <div className="flex items-center gap-8">
             <ToggleSwitch active={active} onChange={() => setActive(!active)} />
 
-            <button className="flex h-[34px] w-[34px] cursor-pointer items-center justify-center rounded-full bg-[#fde8e8] text-[#e64540] hover:bg-[#fbd0d0] transition-colors">
+            {/* <button className="flex h-[34px] w-[34px] cursor-pointer items-center justify-center rounded-full bg-[#fde8e8] text-[#e64540] hover:bg-[#fbd0d0] transition-colors">
               <Trash2 size={18} />
-            </button>
+            </button> */}
 
             <button
               onClick={() => setEditingAdmin(admin)}

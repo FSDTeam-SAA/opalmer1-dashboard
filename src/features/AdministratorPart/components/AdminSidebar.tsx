@@ -12,6 +12,8 @@ import {
   Settings,
   LogOut,
   X,
+  Building2,
+  ShieldUser,
 } from "lucide-react";
 import {
   Dialog,
@@ -26,6 +28,11 @@ const menuItems = [
   { label: "Dashboard", href: "/administrator/dashboard", icon: Home },
   { label: "Students", href: "/administrator/students", icon: GraduationCap },
   { label: "Teachers", href: "/administrator/teachers", icon: Users },
+  {
+    label: "Parents",
+    href: "/administrator/parents",
+    icon: ShieldUser,
+  },
   // {
   //   label: "Administration",
   //   href: "/administrator/administration",

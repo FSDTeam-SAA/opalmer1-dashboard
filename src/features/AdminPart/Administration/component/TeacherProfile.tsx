@@ -203,9 +203,9 @@ export default function TeacherProfile({
                 onChange={() => setActive(!active)}
               />
 
-              <button className="flex h-[34px] w-[34px] cursor-pointer items-center justify-center rounded-full bg-[#fde8e8] text-[#e64540] hover:bg-[#fbd0d0] transition-colors">
+              {/* <button className="flex h-[34px] w-[34px] cursor-pointer items-center justify-center rounded-full bg-[#fde8e8] text-[#e64540] hover:bg-[#fbd0d0] transition-colors">
                 <Trash2 size={18} />
-              </button>
+              </button> */}
 
               <button className="rounded-[6px] bg-[#871dad] cursor-pointer px-[15px] py-[8px] text-[16px] font-medium text-white hover:bg-[#751a99] transition-colors">
                 Edit

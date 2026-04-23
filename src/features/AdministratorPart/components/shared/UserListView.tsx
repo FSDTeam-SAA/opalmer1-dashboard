@@ -26,8 +26,8 @@ export type UserRow = {
 };
 
 export type UserListConfig = {
-  /** "student" | "teacher" */
-  type: "student" | "teacher";
+  /** "student" | "teacher" | "parent" */
+  type: "student" | "teacher" | "parent";
   /** Page title e.g. "Students" */
   title: string;
   /** Table heading e.g. "All Students" */
@@ -62,6 +62,7 @@ type UserListViewProps = {
   isUpdatePending: boolean;
   onUpdate: (id: string, payload: EditUserPayload) => Promise<unknown>;
   onAdd: () => void;
+  onViewClick?: (row: UserRow) => void;
   /** Extra slot rendered below the table (e.g. create modal) */
   children?: React.ReactNode;
 };
@@ -78,9 +79,14 @@ function StatCards({
   total: number;
   active: number;
   inactive: number;
-  type: "student" | "teacher";
+  type: "student" | "teacher" | "parent";
 }) {
-  const label = type === "student" ? "Students" : "Teachers";
+  const label =
+    type === "student"
+      ? "Students"
+      : type === "teacher"
+        ? "Teachers"
+        : "Parents";
   const cards = [
     {
       label: `Total ${label}`,
@@ -148,6 +154,7 @@ export function UserListView({
   isUpdatePending,
   onUpdate,
   onAdd,
+  onViewClick,
   children,
 }: UserListViewProps) {
   const router = useRouter();
@@ -179,7 +186,12 @@ export function UserListView({
       },
       {
         id: "name",
-        header: config.type === "student" ? "Student Name" : "Teacher Name",
+        header:
+          config.type === "student"
+            ? "Student Name"
+            : config.type === "teacher"
+              ? "Teacher Name"
+              : "Parent Name",
         accessorFn: (row) => row.name,
         cell: ({ row }) => {
           const u = row.original;
@@ -271,21 +283,31 @@ export function UserListView({
           const u = row.original;
           return (
             <div className="flex items-center justify-center gap-2">
-              <ToggleSwitch
-                active={u.active}
-                disabled={isTogglePending}
-                onChange={() => onToggle(u._id, u.active)}
-              />
+              {config.type !== "parent" && (
+                <>
+                  <ToggleSwitch
+                    active={u.active}
+                    disabled={isTogglePending}
+                    onChange={() => onToggle(u._id, u.active)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setEditing(u)}
+                    className="rounded-[6px] border border-[#871dad] px-[12px] py-[6px] text-[13px] font-medium text-[#871dad] hover:bg-[#faf2f9] transition-colors cursor-pointer"
+                  >
+                    Edit
+                  </button>
+                </>
+              )}
               <button
                 type="button"
-                onClick={() => setEditing(u)}
-                className="rounded-[6px] border border-[#871dad] px-[12px] py-[6px] text-[13px] font-medium text-[#871dad] hover:bg-[#faf2f9] transition-colors cursor-pointer"
-              >
-                Edit
-              </button>
-              <button
-                type="button"
-                onClick={() => router.push(`${config.viewRoutePrefx}/${u._id}`)}
+                onClick={() => {
+                  if (onViewClick) {
+                    onViewClick(u);
+                  } else {
+                    router.push(`${config.viewRoutePrefx}/${u._id}`);
+                  }
+                }}
                 className="rounded-[6px] bg-[#871dad] px-[12px] py-[6px] text-[13px] font-medium text-white hover:bg-[#751a99] transition-colors cursor-pointer"
               >
                 View
@@ -295,7 +317,7 @@ export function UserListView({
         },
       },
     ],
-    [config, isTogglePending, onToggle, router],
+    [config, isTogglePending, onToggle, router, onViewClick],
   );
 
   return (
@@ -380,7 +402,7 @@ export function UserListView({
       {/* Edit modal */}
       {editing && (
         <EditUserModal
-          title={`Edit ${config.type === "student" ? "Student" : "Teacher"}`}
+          title={`Edit ${config.type === "student" ? "Student" : config.type === "teacher" ? "Teacher" : "Parent"}`}
           user={{
             _id: editing._id,
             name: editing.name,

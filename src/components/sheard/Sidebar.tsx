@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { Home, BookMarked, Settings, LogOut } from "lucide-react";
+import { Home, BookMarked, Settings, LogOut, Building2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +25,11 @@ const menuItems = [
     href: "/admin/administration",
     icon: BookMarked,
   },
+  // {
+  //   label: "School",
+  //   href: "/admin/school",
+  //   icon: Building2,
+  // },
 ];
 
 export default function Sidebar() {

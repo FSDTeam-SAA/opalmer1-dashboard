@@ -58,12 +58,12 @@ export default function AdminCard({
             />
 
             {/* Delete Button */}
-            <button
+            {/* <button
               onClick={onDelete}
               className="flex h-[34px] w-[34px] items-center cursor-pointer justify-center rounded-full bg-[#fde8e8] text-[#e64540] hover:bg-[#fbd0d0] transition-colors"
             >
               <Trash2 size={18} />
-            </button>
+            </button> */}
 
             {/* Edit Button */}
             <button

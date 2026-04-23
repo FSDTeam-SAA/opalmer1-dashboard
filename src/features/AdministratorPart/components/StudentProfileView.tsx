@@ -10,7 +10,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 type SubjectItem = {
   classId: string;
   subject: string;
-  teacher?: string;
+  teacher?:
+    | string
+    | { username?: string; avatar?: { url?: string }; [key: string]: unknown };
   date?: string;
   attendance: number;
   progress: number;
@@ -68,7 +70,11 @@ function SubjectCard({ item }: { item: SubjectItem }) {
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Image
-            src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop"
+            src={
+              typeof item.teacher === "object" && item.teacher?.avatar?.url
+                ? item.teacher.avatar.url
+                : "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop"
+            }
             alt="teacher"
             width={34}
             height={34}
@@ -76,7 +82,11 @@ function SubjectCard({ item }: { item: SubjectItem }) {
           />
           <div>
             <p className="text-sm font-medium text-gray-700">
-              {item.teacher || "N/A"}
+              {item.teacher
+                ? typeof item.teacher === "string"
+                  ? item.teacher
+                  : item.teacher.username || "N/A"
+                : "N/A"}
             </p>
             <p className="text-xs text-gray-400">{item.date || "N/A"}</p>
           </div>
