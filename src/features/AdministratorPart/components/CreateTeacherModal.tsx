@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import { Camera, Eye, EyeOff, School as SchoolIcon, X } from "lucide-react";
 import { useCreateTeacher } from "../hooks/useTeachers";
-import { useCreateSchool, useMySchool } from "../hooks/useSchool";
+import { useMySchool } from "../hooks/useSchool";
 
 type CreateTeacherModalProps = {
   onClose: () => void;
@@ -29,36 +29,7 @@ function describeError(err: unknown): string {
  * Hits POST /school/create and lets the teacher form proceed once the school
  * cache has been refreshed.
  */
-function SchoolSetupPanel({
-  onCreated,
-}: {
-  onCreated: (schoolId: string) => void;
-}) {
-  const [name, setName] = useState("");
-  const [code, setCode] = useState("");
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const createSchool = useCreateSchool();
-
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    if (!name.trim()) {
-      setError("School name is required.");
-      return;
-    }
-    try {
-      const school = await createSchool.mutateAsync({
-        name: name.trim(),
-        code: code.trim() || undefined,
-        email: email.trim() || undefined,
-      });
-      onCreated(school._id);
-    } catch (err) {
-      setError(describeError(err));
-    }
-  };
-
+function SchoolSetupPanel() {
   return (
     <div className="mt-6 rounded-[12px] border border-[#f3d6ee] bg-[#faf2f9] p-5">
       <div className="flex items-start gap-3">
@@ -67,49 +38,14 @@ function SchoolSetupPanel({
         </div>
         <div>
           <p className="text-[15px] font-semibold text-[#333]">
-            Set up your school first
+            No school assigned
           </p>
           <p className="mt-1 text-[13px] text-[#666]">
-            Teachers belong to a school. Create yours below to continue.
+            Teachers can only be added after the platform admin assigns a school
+            to this administrator account.
           </p>
         </div>
       </div>
-
-      <form onSubmit={handleCreate} className="mt-4 space-y-3">
-        <input
-          type="text"
-          placeholder="School name *"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="h-[44px] w-full rounded-[8px] border border-[#c7c7c7] bg-white px-4 text-[15px] text-[#333] outline-none placeholder:text-[#888]"
-        />
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <input
-            type="text"
-            placeholder="School code (optional)"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            className="h-[44px] w-full rounded-[8px] border border-[#c7c7c7] bg-white px-4 text-[15px] text-[#333] outline-none placeholder:text-[#888]"
-          />
-          <input
-            type="email"
-            placeholder="School email (optional)"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="h-[44px] w-full rounded-[8px] border border-[#c7c7c7] bg-white px-4 text-[15px] text-[#333] outline-none placeholder:text-[#888]"
-          />
-        </div>
-
-        {error && <p className="text-[13px] text-[#e64540]">{error}</p>}
-
-        <button
-          type="submit"
-          disabled={createSchool.isPending}
-          className="h-[44px] w-full cursor-pointer rounded-[10px] bg-[#871dad] text-[15px] font-bold uppercase text-white hover:bg-[#751a99] transition-colors disabled:opacity-60"
-        >
-          {createSchool.isPending ? "Creating school..." : "Create school"}
-        </button>
-      </form>
     </div>
   );
 }
@@ -135,7 +71,6 @@ export default function CreateTeacherModal({
     data: school,
     isLoading: schoolLoading,
     isError: schoolError,
-    refetch: refetchSchool,
   } = useMySchool();
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -151,7 +86,7 @@ export default function CreateTeacherModal({
     setFormError(null);
 
     if (!school?._id) {
-      setFormError("Please set up your school first.");
+      setFormError("No school is assigned to this administrator.");
       return;
     }
 
@@ -240,7 +175,7 @@ export default function CreateTeacherModal({
           </div>
         </div>
 
-        {needsSchool && <SchoolSetupPanel onCreated={() => refetchSchool()} />}
+        {needsSchool && <SchoolSetupPanel />}
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-5">
           <fieldset

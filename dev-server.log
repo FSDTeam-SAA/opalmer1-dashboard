@@ -1,0 +1,23 @@
+
+> website-template@0.1.0 dev
+> next dev --webpack
+
+▲ Next.js 16.1.4 (webpack)
+- Local:         http://localhost:3000
+- Network:       http://10.10.5.32:3000
+- Environments: .env.local
+
+✓ Starting...
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+✓ Ready in 5.6s
+○ Compiling /login ...
+ GET /login?callbackUrl=%2F 200 in 8.7s (compile: 8.4s, proxy.ts: 6ms, render: 236ms)
+ GET /login?callbackUrl=%2F 200 in 122ms (compile: 8ms, proxy.ts: 13ms, render: 101ms)
+ GET /login 200 in 74ms (compile: 9ms, proxy.ts: 9ms, render: 57ms)
+ GET /login 200 in 128ms (compile: 57ms, proxy.ts: 17ms, render: 54ms)
+ GET /api/auth/session 200 in 2.5s (compile: 2.4s, proxy.ts: 13ms, render: 23ms)
+[?25h

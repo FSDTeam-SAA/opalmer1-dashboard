@@ -23,6 +23,14 @@ export type Administrator = {
   avatar?: AdministratorAvatar;
   created_at?: string;
   Id?: string;
+  schoolId?:
+    | string
+    | {
+        _id: string;
+        name: string;
+        code?: string;
+        email?: string;
+      };
 };
 
 export type AdministratorsResponse = {
@@ -45,6 +53,7 @@ export type CreateAdministratorPayload = {
   username: string;
   Id: string;
   password: string;
+  schoolId: string;
   phoneNumber?: string;
   email?: string;
   role: "administrator";

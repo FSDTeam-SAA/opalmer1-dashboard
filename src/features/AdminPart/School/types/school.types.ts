@@ -36,3 +36,23 @@ export type SchoolsResponse = {
   data: School[];
   meta: SchoolsMeta;
 };
+
+export type SchoolResponse = {
+  success: boolean;
+  message: string;
+  data: School;
+};
+
+export type CreateSchoolPayload = {
+  name: string;
+  code?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  country?: string;
+  phone?: string;
+  email?: string;
+  establishedYear?: number;
+  logo?: string;
+};

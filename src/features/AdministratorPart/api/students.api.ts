@@ -34,7 +34,7 @@ function toRow(record: StudentRecord, idx: number): StudentRow {
  * Backend: user.controller.ts → getMySchoolAllStudents (authorizeRoles("administrator"))
  */
 export async function fetchMyStudents(): Promise<StudentRow[]> {
-  const { data } = await api.get<StudentsResponse>("/users/students");
+  const { data } = await api.get<StudentsResponse>("/users/my-students");
   return data.data.map(toRow);
 }
 
@@ -54,7 +54,6 @@ export async function createStudent(
   form.append("username", payload.username);
   form.append("Id", payload.Id);
   form.append("password", payload.password);
-  form.append("schoolId", payload.schoolId);
   form.append("type", payload.type);
   if (payload.phoneNumber) form.append("phoneNumber", payload.phoneNumber);
   if (payload.email) form.append("email", payload.email);
@@ -64,9 +63,13 @@ export async function createStudent(
     form.append("gradeLevel", String(payload.gradeLevel));
   if (payload.image) form.append("image", payload.image);
 
-  const { data } = await api.post<StudentResponse>("/users/register", form, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  const { data } = await api.post<StudentResponse>(
+    "/users/school/students",
+    form,
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    },
+  );
   return data.data;
 }
 

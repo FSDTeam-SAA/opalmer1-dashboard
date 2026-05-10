@@ -34,7 +34,7 @@ function toRow(record: ParentRecord, idx: number): ParentRow {
 }
 
 export async function fetchParents(): Promise<ParentRow[]> {
-  const { data } = await api.get<ParentsResponse>("/users/parents");
+  const { data } = await api.get<ParentsResponse>("/users/my-parents");
   return data.data.map(toRow);
 }
 
@@ -45,14 +45,17 @@ export async function createParent(
   form.append("username", payload.username);
   form.append("Id", payload.Id);
   form.append("type", payload.type);
-  form.append("schoolId", payload.schoolId);
   if (payload.phoneNumber) form.append("phoneNumber", payload.phoneNumber);
   if (payload.password) form.append("password", payload.password);
   if (payload.image) form.append("image", payload.image);
 
-  const { data } = await api.post<ParentResponse>("/users/register", form, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  const { data } = await api.post<ParentResponse>(
+    "/users/school/parents",
+    form,
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    },
+  );
   return data.data;
 }
 

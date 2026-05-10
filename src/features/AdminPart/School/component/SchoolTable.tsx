@@ -2,15 +2,16 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { Search } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import PageHeader from "@/components/sheard/PageHeader";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSchools } from "../hooks/useSchools";
 import type { School } from "../types/school.types";
+import CreateSchoolModal from "./CreateSchoolModal";
 
 export default function SchoolTable() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [showCreate, setShowCreate] = useState(false);
 
   const { data: schools = [], isLoading, isError } = useSchools();
 
@@ -36,18 +37,28 @@ export default function SchoolTable() {
           <h2 className="text-[24px] font-semibold text-[#333]">
             Schools ({filteredSchools.length})
           </h2>
-          <div className="relative">
-            <Search
-              size={20}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-[#666]"
-            />
-            <input
-              type="text"
-              placeholder="Search schools..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-[48px] w-[350px] rounded-[8px] border border-[#08374d] bg-[#f9f9f9] pl-10 pr-4 text-[16px] text-[#333] outline-none placeholder:text-[#666]"
-            />
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <Search
+                size={20}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-[#666]"
+              />
+              <input
+                type="text"
+                placeholder="Search schools..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="h-[48px] w-[350px] rounded-[8px] border border-[#08374d] bg-[#f9f9f9] pl-10 pr-4 text-[16px] text-[#333] outline-none placeholder:text-[#666]"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowCreate(true)}
+              className="flex h-[48px] items-center gap-2 rounded-[8px] bg-[#871dad] px-5 text-[15px] font-semibold text-white hover:bg-[#751a99]"
+            >
+              <Plus size={18} />
+              Add School
+            </button>
           </div>
         </div>
 
@@ -153,6 +164,7 @@ export default function SchoolTable() {
           </div>
         )}
       </div>
+      {showCreate && <CreateSchoolModal onClose={() => setShowCreate(false)} />}
     </div>
   );
 }

@@ -40,6 +40,7 @@ export function useCreateAdministrator() {
       createAdministrator(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.all });
+      queryClient.invalidateQueries({ queryKey: ["schools"] });
     },
   });
 }

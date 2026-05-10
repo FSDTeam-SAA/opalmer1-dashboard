@@ -22,7 +22,7 @@ export async function fetchAdministrators(): Promise<Administrator[]> {
 }
 
 /**
- * POST /users/register (role=administrator)
+ * POST /users/administrators (role=administrator)
  * Creates a new administrator. Uses multipart/form-data to allow avatar upload.
  * Backend: user.controller.ts → registerUser
  */
@@ -34,6 +34,7 @@ export async function createAdministrator(
   form.append("Id", payload.Id);
   form.append("password", payload.password);
   form.append("role", payload.role);
+  form.append("schoolId", payload.schoolId);
   if (payload.type) form.append("type", payload.type);
   if (payload.phoneNumber) form.append("phoneNumber", payload.phoneNumber);
   if (payload.email) form.append("email", payload.email);
@@ -41,7 +42,7 @@ export async function createAdministrator(
   if (payload.image) form.append("image", payload.image);
 
   const { data } = await api.post<AdministratorResponse>(
-    "/users/register",
+    "/users/administrators",
     form,
     { headers: { "Content-Type": "multipart/form-data" } },
   );

@@ -55,7 +55,6 @@ export async function createTeacher(
   form.append("username", payload.username);
   form.append("Id", payload.Id);
   form.append("password", payload.password);
-  form.append("schoolId", payload.schoolId);
   form.append("type", payload.type);
   if (payload.phoneNumber) form.append("phoneNumber", payload.phoneNumber);
   if (payload.email) form.append("email", payload.email);
@@ -65,9 +64,13 @@ export async function createTeacher(
     form.append("gradeLevel", String(payload.gradeLevel));
   if (payload.image) form.append("image", payload.image);
 
-  const { data } = await api.post<TeacherResponse>("/users/register", form, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  const { data } = await api.post<TeacherResponse>(
+    "/users/school/teachers",
+    form,
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    },
+  );
   return data.data;
 }
 
