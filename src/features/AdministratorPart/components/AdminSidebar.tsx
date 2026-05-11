@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
@@ -80,15 +81,16 @@ export default function AdminSidebar({ open, onClose }: SidebarProps) {
 
         {/* Logo */}
         <div className="flex items-center justify-center pt-8 pb-6">
-          <h1
-            className="text-[40px] font-bold uppercase bg-clip-text text-transparent"
-            style={{
-              backgroundImage:
-                "linear-gradient(93deg, #6F5AA6 0%, #9B87F5 100%)",
-            }}
-          >
-            Logo
-          </h1>
+          <Link href="/" onClick={onClose}>
+            <Image
+              src="/icon.png"
+              alt="ClassPulse Logo"
+              width={60}
+              height={60}
+              className="object-contain"
+              priority
+            />
+          </Link>
         </div>
 
         {/* Navigation */}

@@ -12,9 +12,12 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Education App Dashboard",
+  title: "ClassPulse Dashboard",
   description:
     "A modern dashboard for managing educational content, users, and analytics. Built with Next.js, Tailwind CSS, and React.",
+  icons: {
+    icon: "/icon.png",
+  },
 };
 
 export default function RootLayout({

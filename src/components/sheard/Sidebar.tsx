@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
@@ -54,15 +55,16 @@ export default function Sidebar() {
       <aside className="fixed left-5 top-1/2 -translate-y-1/2 z-30 flex h-[calc(100vh-40px)] w-[242px] flex-col rounded-[20px] bg-white shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
         {/* Logo */}
         <div className="flex items-center justify-center pt-8 pb-6">
-          <h1
-            className="text-[40px] font-bold uppercase bg-clip-text text-transparent"
-            style={{
-              backgroundImage:
-                "linear-gradient(93deg, #6F5AA6 0%, #9B87F5 100%)",
-            }}
-          >
-            Logo
-          </h1>
+          <Link href="/">
+            <Image
+              src="/icon.png"
+              alt="ClassPulse Logo"
+              width={60}
+              height={60}
+              className="object-contain"
+              priority
+            />
+          </Link>
         </div>
 
         {/* Navigation */}
