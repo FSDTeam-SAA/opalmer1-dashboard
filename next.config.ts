@@ -1,13 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
+  outputFileTracingRoot: __dirname,
   images: {
-    domains: [
-      "img.freepik.com",
-      "res.cloudinary.com",
-      "api.dicebear.com",
-      "images.unsplash.com",
-      "example.com",
+    remotePatterns: [
+      { protocol: "https", hostname: "img.freepik.com" },
+      { protocol: "https", hostname: "res.cloudinary.com" },
+      { protocol: "https", hostname: "api.dicebear.com" },
+      { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "example.com" },
+      { protocol: "https", hostname: "api.classpulse.info" },
     ],
   },
 };
