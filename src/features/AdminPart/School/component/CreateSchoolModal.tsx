@@ -3,10 +3,12 @@
 import { useState } from "react";
 import Image from "next/image";
 import { ImageIcon, Upload, X } from "lucide-react";
-import { useCreateSchool } from "../hooks/useSchools";
+import { useCreateSchool, useUpdateSchool } from "../hooks/useSchools";
+import type { School } from "../types/school.types";
 
 type CreateSchoolModalProps = {
   onClose: () => void;
+  school?: School;
 };
 
 function describeError(err: unknown): string {
@@ -25,22 +27,30 @@ function describeError(err: unknown): string {
   return "Failed to create school";
 }
 
-export default function CreateSchoolModal({ onClose }: CreateSchoolModalProps) {
-  const [name, setName] = useState("");
-  const [code, setCode] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [country, setCountry] = useState("");
-  const [postalCode, setPostalCode] = useState("");
-  const [establishedYear, setEstablishedYear] = useState("");
+export default function CreateSchoolModal({
+  onClose,
+  school,
+}: CreateSchoolModalProps) {
+  const isEditing = Boolean(school);
+  const [name, setName] = useState(school?.name ?? "");
+  const [code, setCode] = useState(school?.code ?? "");
+  const [email, setEmail] = useState(school?.email ?? "");
+  const [phone, setPhone] = useState(school?.phone ?? "");
+  const [address, setAddress] = useState(school?.address ?? "");
+  const [city, setCity] = useState(school?.city ?? "");
+  const [state, setState] = useState(school?.state ?? "");
+  const [country, setCountry] = useState(school?.country ?? "");
+  const [postalCode, setPostalCode] = useState(school?.postalCode ?? "");
+  const [establishedYear, setEstablishedYear] = useState(
+    school?.establishedYear ? String(school.establishedYear) : "",
+  );
   const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [logoPreview, setLogoPreview] = useState("");
+  const [logoPreview, setLogoPreview] = useState(school?.logo ?? "");
   const [formError, setFormError] = useState<string | null>(null);
 
   const createSchool = useCreateSchool();
+  const updateSchool = useUpdateSchool();
+  const isSaving = createSchool.isPending || updateSchool.isPending;
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -65,7 +75,7 @@ export default function CreateSchoolModal({ onClose }: CreateSchoolModalProps) {
     }
 
     try {
-      await createSchool.mutateAsync({
+      const payload = {
         name: name.trim(),
         code: code.trim() || undefined,
         email: email.trim() || undefined,
@@ -77,7 +87,14 @@ export default function CreateSchoolModal({ onClose }: CreateSchoolModalProps) {
         postalCode: postalCode.trim() || undefined,
         establishedYear: establishedYear ? Number(establishedYear) : undefined,
         logo: logoFile || undefined,
-      });
+      };
+
+      if (school) {
+        await updateSchool.mutateAsync({ id: school._id, payload });
+      } else {
+        await createSchool.mutateAsync(payload);
+      }
+
       onClose();
     } catch (err) {
       setFormError(describeError(err));
@@ -102,7 +119,9 @@ export default function CreateSchoolModal({ onClose }: CreateSchoolModalProps) {
           <X size={20} />
         </button>
 
-        <h2 className="text-[28px] font-bold text-[#333]">Create School</h2>
+        <h2 className="text-[28px] font-bold text-[#333]">
+          {isEditing ? "Edit School" : "Create School"}
+        </h2>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-5">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -200,7 +219,10 @@ export default function CreateSchoolModal({ onClose }: CreateSchoolModalProps) {
                   School logo
                 </p>
                 <p className="mt-1 truncate text-[13px] text-[#666]">
-                  {logoFile?.name || "Upload a JPG or PNG image."}
+                  {logoFile?.name ||
+                    (logoPreview
+                      ? "Current logo will be kept."
+                      : "Upload a JPG or PNG image.")}
                 </p>
               </div>
 
@@ -227,10 +249,16 @@ export default function CreateSchoolModal({ onClose }: CreateSchoolModalProps) {
 
           <button
             type="submit"
-            disabled={createSchool.isPending}
+            disabled={isSaving}
             className="h-[52px] w-full rounded-[10px] bg-[#871dad] text-[18px] font-bold uppercase text-white hover:bg-[#751a99] disabled:opacity-60"
           >
-            {createSchool.isPending ? "Creating..." : "Create School"}
+            {isSaving
+              ? isEditing
+                ? "Saving..."
+                : "Creating..."
+              : isEditing
+                ? "Save Changes"
+                : "Create School"}
           </button>
         </form>
       </div>

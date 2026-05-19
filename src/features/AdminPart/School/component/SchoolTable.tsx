@@ -2,15 +2,17 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
-import { Plus, Search } from "lucide-react";
+import { Pencil, Plus, Search } from "lucide-react";
 import PageHeader from "@/components/sheard/PageHeader";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSchools } from "../hooks/useSchools";
+import type { School } from "../types/school.types";
 import CreateSchoolModal from "./CreateSchoolModal";
 
 export default function SchoolTable() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreate, setShowCreate] = useState(false);
+  const [editingSchool, setEditingSchool] = useState<School | null>(null);
 
   const { data: schools = [], isLoading, isError } = useSchools();
 
@@ -74,6 +76,7 @@ export default function SchoolTable() {
                 <Skeleton className="h-5 w-[120px]" />
                 <Skeleton className="h-5 w-[150px]" />
                 <Skeleton className="h-5 w-[150px]" />
+                <Skeleton className="h-8 w-[72px]" />
               </div>
             ))}
           </div>
@@ -120,6 +123,9 @@ export default function SchoolTable() {
                   <th className="pb-3 text-left text-[14px] font-light text-[#666]">
                     Created At
                   </th>
+                  <th className="pb-3 text-right text-[14px] font-light text-[#666]">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -156,6 +162,16 @@ export default function SchoolTable() {
                     <td className="py-4 text-[16px] font-light text-[#666]">
                       {new Date(school.created_at).toLocaleDateString()}
                     </td>
+                    <td className="py-4 text-right">
+                      <button
+                        type="button"
+                        onClick={() => setEditingSchool(school)}
+                        className="inline-flex h-9 items-center gap-2 rounded-[8px] border border-[#871dad] px-3 text-[14px] font-medium text-[#871dad] hover:bg-[#871dad] hover:text-white"
+                      >
+                        <Pencil size={15} />
+                        Edit
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -164,6 +180,12 @@ export default function SchoolTable() {
         )}
       </div>
       {showCreate && <CreateSchoolModal onClose={() => setShowCreate(false)} />}
+      {editingSchool && (
+        <CreateSchoolModal
+          school={editingSchool}
+          onClose={() => setEditingSchool(null)}
+        />
+      )}
     </div>
   );
 }

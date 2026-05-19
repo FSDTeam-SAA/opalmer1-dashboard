@@ -56,3 +56,5 @@ export type CreateSchoolPayload = {
   establishedYear?: number;
   logo?: File | string;
 };
+
+export type UpdateSchoolPayload = Partial<CreateSchoolPayload>;

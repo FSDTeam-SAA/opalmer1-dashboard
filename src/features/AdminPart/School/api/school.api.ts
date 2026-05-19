@@ -4,6 +4,7 @@ import type {
   SchoolResponse,
   SchoolsResponse,
   School,
+  UpdateSchoolPayload,
 } from "../types/school.types";
 
 /**
@@ -22,6 +23,28 @@ export async function fetchSchools(): Promise<School[]> {
 export async function createSchool(
   payload: CreateSchoolPayload,
 ): Promise<School> {
+  const formData = buildSchoolFormData(payload);
+
+  const { data } = await api.post<SchoolResponse>("/school/create", formData);
+  return data.data;
+}
+
+export async function updateSchool(
+  id: string,
+  payload: UpdateSchoolPayload,
+): Promise<School> {
+  const formData = buildSchoolFormData(payload);
+
+  const { data } = await api.put<SchoolResponse>(
+    `/school/update/${id}`,
+    formData,
+  );
+  return data.data;
+}
+
+function buildSchoolFormData(
+  payload: CreateSchoolPayload | UpdateSchoolPayload,
+) {
   const formData = new FormData();
 
   Object.entries(payload).forEach(([key, value]) => {
@@ -39,6 +62,5 @@ export async function createSchool(
     formData.append(key, String(value));
   });
 
-  const { data } = await api.post<SchoolResponse>("/school/create", formData);
-  return data.data;
+  return formData;
 }
