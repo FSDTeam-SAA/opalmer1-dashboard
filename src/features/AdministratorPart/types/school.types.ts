@@ -16,8 +16,19 @@ export type SchoolAdministrator = {
 export type School = {
   _id: string;
   name?: string;
+  code?: string;
+  email?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  country?: string;
+  phone?: string;
+  establishedYear?: number;
+  logo?: string;
   administrator?: SchoolAdministrator | string;
   created_at?: string;
+  updated_at?: string;
 };
 
 export type SchoolResponse = {
@@ -41,5 +52,7 @@ export type CreateSchoolPayload = {
   phone?: string;
   email?: string;
   establishedYear?: number;
-  logo?: string;
+  logo?: File | string;
 };
+
+export type UpdateSchoolPayload = Partial<CreateSchoolPayload>;

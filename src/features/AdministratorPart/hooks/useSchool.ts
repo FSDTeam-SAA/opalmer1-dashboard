@@ -1,6 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createSchool, fetchMySchool } from "../api/school.api";
-import type { CreateSchoolPayload } from "../types/school.types";
+import { createSchool, fetchMySchool, updateSchool } from "../api/school.api";
+import type {
+  CreateSchoolPayload,
+  UpdateSchoolPayload,
+} from "../types/school.types";
 
 export const schoolKeys = {
   mine: ["administrator", "school", "mine"] as const,
@@ -27,6 +30,23 @@ export function useCreateSchool() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: CreateSchoolPayload) => createSchool(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: schoolKeys.mine });
+    },
+  });
+}
+
+/** PUT /school/update/:id - updates the administrator's assigned school. */
+export function useUpdateSchool() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: UpdateSchoolPayload;
+    }) => updateSchool(id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: schoolKeys.mine });
     },

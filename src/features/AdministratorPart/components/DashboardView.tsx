@@ -1,28 +1,28 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowDown,
   ArrowUp,
+  Building2,
   Briefcase,
   ChevronDown,
+  Edit3,
   GraduationCap,
-  Search,
+  Mail,
+  MapPin,
+  Phone,
   Users,
 } from "lucide-react";
-import type { ColumnDef } from "@tanstack/react-table";
 import PageHeader from "@/components/sheard/PageHeader";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useStudentGenderStats, useUserStats } from "../hooks/useDashboard";
-import {
-  useAdministrators,
-  useToggleAdministratorState,
-} from "../hooks/useAdministrators";
-import type { Administrator } from "../types/administrators.types";
-import { DataTable } from "./shared/DataTable";
+import { useMySchool } from "../hooks/useSchool";
+import type { School } from "../types/school.types";
+import ManageSchoolModal from "./ManageSchoolModal";
 import { DonutSkeleton, StatCardSkeleton } from "./shared/Skeletons";
 import { ErrorFallback } from "./shared/ErrorFallback";
-import { ToggleSwitch } from "./shared/ToggleSwitch";
 
 type StatDisplay = {
   label: string;
@@ -37,7 +37,7 @@ type StatDisplay = {
 function StatCard({ stat }: { stat: StatDisplay }) {
   const Icon = stat.icon;
   return (
-    <div className="flex-1 rounded-[12px] mt-10 bg-white p-5 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
+    <div className="mt-10 flex-1 rounded-[12px] bg-white p-5 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
       <div className="flex items-start justify-between">
         <div className="flex items-start gap-3">
           <div
@@ -97,12 +97,12 @@ function GrowthChart() {
     .join(" ");
 
   return (
-    <div className="flex-1 rounded-[20px] bg-white p-6 sm:p-8 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
+    <div className="flex-1 rounded-[20px] bg-white p-6 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)] sm:p-8">
       <div className="flex items-center justify-between pb-4">
-        <h2 className="text-[20px] sm:text-[24px] font-semibold text-[#131313]">
+        <h2 className="text-[20px] font-semibold text-[#131313] sm:text-[24px]">
           Growth
         </h2>
-        <button className="flex items-center gap-1 text-[14px] sm:text-[16px] text-[#454545]">
+        <button className="flex items-center gap-1 text-[14px] text-[#454545] sm:text-[16px]">
           Yearly
           <ChevronDown size={18} />
         </button>
@@ -223,7 +223,7 @@ function StudentsDonut() {
   const maleArc = (malePct / 100) * circumference;
 
   return (
-    <div className="w-full lg:w-[274px] rounded-[20px] bg-white p-6 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
+    <div className="w-full rounded-[20px] bg-white p-6 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)] lg:w-[274px]">
       <h2 className="text-center text-[20px] font-medium text-[#333]">
         Students
       </h2>
@@ -274,8 +274,143 @@ function StudentsDonut() {
   );
 }
 
+function formatLocation(school: School) {
+  return [school.address, school.city, school.state, school.country]
+    .filter(Boolean)
+    .join(", ");
+}
+
+function SchoolInfoRow({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: typeof Building2;
+  label: string;
+  value?: string | number;
+}) {
+  return (
+    <div className="flex min-h-[52px] items-center gap-3 rounded-[10px] bg-[#f9f9f9] px-4 py-3">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[6px] bg-[#871dad]/10 text-[#871dad]">
+        <Icon size={18} />
+      </div>
+      <div className="min-w-0">
+        <p className="text-[12px] text-[#777]">{label}</p>
+        <p className="truncate text-[15px] font-medium text-[#333]">
+          {value || "Not added"}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function SchoolPanel({
+  school,
+  isLoading,
+  isError,
+  error,
+  onRetry,
+  onManage,
+}: {
+  school?: School;
+  isLoading: boolean;
+  isError: boolean;
+  error: unknown;
+  onRetry: () => void;
+  onManage: () => void;
+}) {
+  if (isLoading) {
+    return (
+      <div className="rounded-[20px] bg-white p-4 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)] sm:p-6 lg:p-8">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-center gap-4">
+            <Skeleton className="h-20 w-20 rounded-[16px]" />
+            <div className="space-y-3">
+              <Skeleton className="h-6 w-[220px]" />
+              <Skeleton className="h-4 w-[150px]" />
+            </div>
+          </div>
+          <Skeleton className="h-12 w-[160px] rounded-[10px]" />
+        </div>
+        <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <Skeleton key={index} className="h-[76px] rounded-[10px]" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (isError || !school?._id) {
+    return (
+      <div className="rounded-[20px] bg-white p-4 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)] sm:p-6 lg:p-8">
+        <ErrorFallback
+          title="No school assigned"
+          message="This administrator account does not have an assigned school yet."
+          error={isError ? error : undefined}
+          onRetry={onRetry}
+        />
+      </div>
+    );
+  }
+
+  const location = formatLocation(school);
+
+  return (
+    <div className="rounded-[20px] bg-white p-4 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)] sm:p-6 lg:p-8">
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex items-center gap-4">
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[16px] bg-[#f4edf7]">
+            {school.logo ? (
+              <Image
+                src={school.logo}
+                alt={school.name || "Assigned school"}
+                width={80}
+                height={80}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <Building2 size={34} className="text-[#871dad]" />
+            )}
+          </div>
+          <div className="min-w-0">
+            <p className="text-[14px] font-medium text-[#871dad]">
+              Assigned School
+            </p>
+            <h2 className="mt-1 truncate text-[24px] font-semibold text-[#333] sm:text-[28px]">
+              {school.name || "Unnamed school"}
+            </h2>
+            <p className="mt-1 text-[14px] text-[#666]">
+              {school.code ? `Code: ${school.code}` : "No school code added"}
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={onManage}
+          className="inline-flex items-center justify-center gap-2 rounded-[10px] bg-[#871dad] px-5 py-[14px] text-[15px] font-bold text-white transition-colors hover:bg-[#751a99]"
+        >
+          <Edit3 size={18} />
+          Manage School
+        </button>
+      </div>
+
+      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <SchoolInfoRow icon={Mail} label="Email" value={school.email} />
+        <SchoolInfoRow icon={Phone} label="Phone" value={school.phone} />
+        <SchoolInfoRow icon={MapPin} label="Location" value={location} />
+        <SchoolInfoRow
+          icon={Building2}
+          label="Established"
+          value={school.establishedYear}
+        />
+      </div>
+    </div>
+  );
+}
+
 export function DashboardView() {
-  const [search, setSearch] = useState("");
+  const [showManageSchool, setShowManageSchool] = useState(false);
 
   const {
     data: userStats,
@@ -286,14 +421,12 @@ export function DashboardView() {
   } = useUserStats();
 
   const {
-    data: admins,
-    isLoading: adminsLoading,
-    isError: adminsError,
-    error: adminsErrorObj,
-    refetch: refetchAdmins,
-  } = useAdministrators();
-
-  const toggleState = useToggleAdministratorState();
+    data: school,
+    isLoading: schoolLoading,
+    isError: schoolError,
+    error: schoolErrorObj,
+    refetch: refetchSchool,
+  } = useMySchool();
 
   const stats: StatDisplay[] = useMemo(
     () => [
@@ -328,113 +461,16 @@ export function DashboardView() {
     [userStats],
   );
 
-  const columns = useMemo<ColumnDef<Administrator, unknown>[]>(
-    () => [
-      {
-        id: "no",
-        header: "No",
-        size: 60,
-        cell: ({ row }) => (
-          <span className="text-[16px] font-light text-[#666]">
-            {row.index + 1}
-          </span>
-        ),
-      },
-      {
-        id: "name",
-        header: "Administrator Name",
-        accessorFn: (row) => row.username,
-        cell: ({ row }) => {
-          const admin = row.original;
-          return (
-            <div className="flex items-center gap-2">
-              <div className="h-6 w-6 rounded-full bg-gray-300 overflow-hidden">
-                <div className="h-full w-full bg-gradient-to-br from-purple-300 to-purple-500" />
-              </div>
-              <Link
-                href={`/administrator/administration/${admin._id}`}
-                className="text-[16px] font-light text-[#666] hover:text-[#871dad] transition-colors"
-              >
-                {admin.username}
-              </Link>
-            </div>
-          );
-        },
-      },
-      {
-        id: "adminId",
-        header: "Administrator I'd",
-        accessorFn: (row) => row._id,
-        cell: ({ getValue }) => (
-          <span className="text-[16px] font-light text-[#666]">
-            {String(getValue() ?? "—")}
-          </span>
-        ),
-      },
-      {
-        id: "phone",
-        header: "Phone",
-        accessorFn: (row) => row.phoneNumber ?? "—",
-        cell: ({ getValue }) => (
-          <span className="text-[16px] font-light text-[#666]">
-            {String(getValue() ?? "—")}
-          </span>
-        ),
-      },
-      {
-        id: "state",
-        header: "State",
-        accessorFn: (row) => row.state ?? "—",
-        cell: ({ getValue }) => (
-          <span className="text-[16px] font-light text-[#666] capitalize">
-            {String(getValue() ?? "—")}
-          </span>
-        ),
-      },
-      {
-        id: "action",
-        header: () => <span className="block text-center">Action</span>,
-        size: 160,
-        cell: ({ row }) => {
-          const admin = row.original;
-          const active = admin.state === "active";
-          return (
-            <div className="flex items-center justify-center gap-3">
-              <ToggleSwitch
-                active={active}
-                disabled={toggleState.isPending}
-                onChange={() =>
-                  toggleState.mutate({
-                    id: admin._id,
-                    state: active ? "inactive" : "active",
-                  })
-                }
-              />
-              <Link
-                href={`/administrator/administration/${admin._id}`}
-                className="rounded-[4px] bg-[#871dad] px-[6px] py-[8px] text-[16px] font-medium text-white hover:bg-[#751a99] transition-colors"
-              >
-                View
-              </Link>
-            </div>
-          );
-        },
-      },
-    ],
-    [toggleState],
-  );
-
   return (
     <div className="space-y-6">
       <PageHeader title="Main Dashboard" showBack={false} />
 
-      {/* Stat Cards */}
-      <div className="flex flex-col md:flex-row gap-5">
+      <div className="flex flex-col gap-5 md:flex-row">
         {statsLoading &&
           Array.from({ length: 3 }).map((_, i) => <StatCardSkeleton key={i} />)}
 
         {!statsLoading && statsError && (
-          <div className="flex-1 mt-10">
+          <div className="mt-10 flex-1">
             <ErrorFallback
               title="Couldn't load dashboard stats"
               error={statsErrorObj}
@@ -448,54 +484,26 @@ export function DashboardView() {
           stats.map((stat) => <StatCard key={stat.label} stat={stat} />)}
       </div>
 
-      {/* Charts Row */}
-      <div className="flex flex-col lg:flex-row gap-5">
+      <div className="flex flex-col gap-5 lg:flex-row">
         <GrowthChart />
         <StudentsDonut />
       </div>
 
-      {/* Administrator Table */}
-      <div className="rounded-[20px] bg-white p-4 sm:p-6 lg:p-8 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-          <h2 className="text-[20px] sm:text-[24px] font-semibold text-[#333]">
-            Administrator Id&apos;s
-          </h2>
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-            <div className="relative">
-              <Search
-                size={20}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-[#666]"
-              />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Enter administrator Id"
-                className="h-[48px] w-full sm:w-[350px] rounded-[8px] border border-[#08374d] bg-[#f9f9f9] pl-10 pr-4 text-[16px] text-[#666] outline-none placeholder:text-[#666]"
-              />
-            </div>
-            <Link
-              href="/administrator/administration"
-              className="rounded-[10px] bg-[#871dad] cursor-pointer px-5 py-[14px] sm:py-[18px] text-[14px] sm:text-[16px] font-bold text-white hover:bg-[#751a99] transition-colors whitespace-nowrap text-center"
-            >
-              Manage Administrators
-            </Link>
-          </div>
-        </div>
+      <SchoolPanel
+        school={school}
+        isLoading={schoolLoading}
+        isError={schoolError}
+        error={schoolErrorObj}
+        onRetry={() => refetchSchool()}
+        onManage={() => setShowManageSchool(true)}
+      />
 
-        <DataTable<Administrator>
-          data={admins}
-          columns={columns}
-          isLoading={adminsLoading}
-          isError={adminsError}
-          error={adminsErrorObj}
-          onRetry={() => refetchAdmins()}
-          globalFilter={search}
-          minWidth={780}
-          emptyMessage="No administrators match your search."
-          errorMessage="We couldn't load the administrators list."
+      {showManageSchool && school?._id && (
+        <ManageSchoolModal
+          school={school}
+          onClose={() => setShowManageSchool(false)}
         />
-      </div>
+      )}
     </div>
   );
 }
