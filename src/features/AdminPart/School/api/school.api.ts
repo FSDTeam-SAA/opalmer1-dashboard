@@ -42,6 +42,11 @@ export async function updateSchool(
   return data.data;
 }
 
+export async function deleteSchool(id: string): Promise<School> {
+  const { data } = await api.delete<SchoolResponse>(`/school/delete/${id}`);
+  return data.data;
+}
+
 function buildSchoolFormData(
   payload: CreateSchoolPayload | UpdateSchoolPayload,
 ) {

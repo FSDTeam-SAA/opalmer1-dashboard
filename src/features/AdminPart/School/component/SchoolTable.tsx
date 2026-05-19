@@ -2,10 +2,18 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
-import { Pencil, Plus, Search } from "lucide-react";
+import { Pencil, Plus, Search, Trash2 } from "lucide-react";
 import PageHeader from "@/components/sheard/PageHeader";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useSchools } from "../hooks/useSchools";
+import { useDeleteSchool, useSchools } from "../hooks/useSchools";
 import type { School } from "../types/school.types";
 import CreateSchoolModal from "./CreateSchoolModal";
 
@@ -13,8 +21,11 @@ export default function SchoolTable() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreate, setShowCreate] = useState(false);
   const [editingSchool, setEditingSchool] = useState<School | null>(null);
+  const [deletingSchool, setDeletingSchool] = useState<School | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const { data: schools = [], isLoading, isError } = useSchools();
+  const deleteSchool = useDeleteSchool();
 
   // Use a fallback image for consistency
   const FALLBACK_IMAGE = "/images/4f8da1b70693c4fcf9e01b9293706aed5cd4e34d.jpg";
@@ -29,6 +40,20 @@ export default function SchoolTable() {
         s.administrator?.username.toLowerCase().includes(q),
     );
   }, [searchQuery, schools]);
+
+  const handleDeleteSchool = async () => {
+    if (!deletingSchool) return;
+    setDeleteError(null);
+
+    try {
+      await deleteSchool.mutateAsync(deletingSchool._id);
+      setDeletingSchool(null);
+    } catch (err) {
+      setDeleteError(
+        err instanceof Error ? err.message : "Failed to delete school",
+      );
+    }
+  };
 
   return (
     <div className="mt-32 pt-10">
@@ -162,15 +187,28 @@ export default function SchoolTable() {
                     <td className="py-4 text-[16px] font-light text-[#666]">
                       {new Date(school.created_at).toLocaleDateString()}
                     </td>
-                    <td className="py-4 text-right">
-                      <button
-                        type="button"
-                        onClick={() => setEditingSchool(school)}
-                        className="inline-flex h-9 items-center gap-2 rounded-[8px] border border-[#871dad] px-3 text-[14px] font-medium text-[#871dad] hover:bg-[#871dad] hover:text-white"
-                      >
-                        <Pencil size={15} />
-                        Edit
-                      </button>
+                    <td className="py-4">
+                      <div className="flex justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setEditingSchool(school)}
+                          className="inline-flex h-9 items-center gap-2 rounded-[8px] border border-[#871dad] px-3 text-[14px] font-medium text-[#871dad] hover:bg-[#871dad] hover:text-white"
+                        >
+                          <Pencil size={15} />
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDeleteError(null);
+                            setDeletingSchool(school);
+                          }}
+                          className="inline-flex h-9 items-center gap-2 rounded-[8px] border border-[#e64540] px-3 text-[14px] font-medium text-[#e64540] hover:bg-[#e64540] hover:text-white"
+                        >
+                          <Trash2 size={15} />
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -186,6 +224,54 @@ export default function SchoolTable() {
           onClose={() => setEditingSchool(null)}
         />
       )}
+      <Dialog
+        open={Boolean(deletingSchool)}
+        onOpenChange={(open) => {
+          if (!open && !deleteSchool.isPending) {
+            setDeletingSchool(null);
+            setDeleteError(null);
+          }
+        }}
+      >
+        <DialogContent showCloseButton={false} className="sm:max-w-[420px]">
+          <DialogHeader>
+            <DialogTitle>Delete School</DialogTitle>
+            <DialogDescription>
+              Delete {deletingSchool?.name}? The school will be removed, but its
+              assigned administrator account will stay active and become
+              available for another school.
+            </DialogDescription>
+          </DialogHeader>
+
+          {deleteError && (
+            <p className="rounded-[8px] bg-red-50 px-3 py-2 text-[14px] text-[#e64540]">
+              {deleteError}
+            </p>
+          )}
+
+          <DialogFooter className="gap-3">
+            <button
+              type="button"
+              disabled={deleteSchool.isPending}
+              onClick={() => {
+                setDeletingSchool(null);
+                setDeleteError(null);
+              }}
+              className="rounded-[8px] border border-gray-300 px-5 py-2 text-[#333] hover:bg-gray-50 disabled:opacity-60"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              disabled={deleteSchool.isPending}
+              onClick={handleDeleteSchool}
+              className="rounded-[8px] bg-[#e64540] px-5 py-2 font-semibold text-white hover:bg-[#d63a35] disabled:opacity-60"
+            >
+              {deleteSchool.isPending ? "Deleting..." : "Delete"}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

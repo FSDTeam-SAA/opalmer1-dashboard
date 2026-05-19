@@ -1,5 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createSchool, fetchSchools, updateSchool } from "../api/school.api";
+import {
+  createSchool,
+  deleteSchool,
+  fetchSchools,
+  updateSchool,
+} from "../api/school.api";
 import type {
   CreateSchoolPayload,
   UpdateSchoolPayload,
@@ -38,6 +43,16 @@ export function useUpdateSchool() {
       id: string;
       payload: UpdateSchoolPayload;
     }) => updateSchool(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: schoolKeys.all });
+    },
+  });
+}
+
+export function useDeleteSchool() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deleteSchool(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: schoolKeys.all });
     },
