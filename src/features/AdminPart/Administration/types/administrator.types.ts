@@ -22,6 +22,10 @@ export type Administrator = {
   state?: "active" | "inactive" | string;
   avatar?: AdministratorAvatar;
   created_at?: string;
+  updated_at?: string;
+  gender?: "male" | "female" | "other" | string;
+  role?: string;
+  isActive?: boolean;
   Id?: string;
   schoolId?:
     | string
@@ -81,20 +85,28 @@ export type UpdateAdministratorPayload = Partial<{
 export type AdminSchoolDetails = {
   _id: string;
   name: string;
+  code?: string;
   address: string;
   city: string;
   state: string;
+  postalCode?: string;
+  country?: string;
   phone: string;
   email: string;
+  establishedYear?: number;
   logo: string;
+  created_at?: string;
+  updated_at?: string;
 };
 
 export type AdminStudentDetails = {
   _id: string;
   username: string;
   phoneNumber: string;
+  email?: string;
   Id: string;
   gradeLevel: number;
+  state?: string;
   avatar?: {
     public_id: string;
     url: string;
@@ -105,7 +117,9 @@ export type AdminTeacherDetails = {
   _id: string;
   username: string;
   phoneNumber: string;
+  email?: string;
   Id: string;
+  state?: string;
   avatar?: {
     public_id: string;
     url: string;
