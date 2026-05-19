@@ -48,11 +48,6 @@ export default function Administration() {
                   state: admin.state === "active" ? "inactive" : "active",
                 })
               }
-              onDelete={() => {
-                // Backend currently has no dedicated delete endpoint for users.
-                // Soft-delete by marking inactive until DELETE /users/:id exists.
-                toggleState.mutate({ id: admin._id, state: "inactive" });
-              }}
               onEdit={() => setEditingAdmin(admin)}
             />
           ))}

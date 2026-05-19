@@ -59,10 +59,26 @@ export async function updateAdministrator(
   id: string,
   payload: UpdateAdministratorPayload,
 ): Promise<Administrator> {
-  const { data } = await api.put<AdministratorResponse>(
-    `/users/${id}`,
-    payload,
-  );
+  const form = new FormData();
+
+  Object.entries(payload).forEach(([key, value]) => {
+    if (value === undefined || value === null) return;
+
+    if (
+      key === "image" &&
+      typeof File !== "undefined" &&
+      value instanceof File
+    ) {
+      form.append("image", value);
+      return;
+    }
+
+    form.append(key, String(value));
+  });
+
+  const { data } = await api.put<AdministratorResponse>(`/users/${id}`, form, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
   return data.data;
 }
 

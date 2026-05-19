@@ -10,6 +10,8 @@ export default function CreateAdminModal({ onClose }: { onClose: () => void }) {
   const [name, setName] = useState("");
   const [adminId, setAdminId] = useState("");
   const [schoolId, setSchoolId] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -44,6 +46,8 @@ export default function CreateAdminModal({ onClose }: { onClose: () => void }) {
         Id: adminId.trim(),
         password,
         schoolId,
+        phoneNumber: phone.trim() || undefined,
+        email: email.trim() || undefined,
         role: "administrator",
         image: avatarFile,
       });
@@ -61,7 +65,7 @@ export default function CreateAdminModal({ onClose }: { onClose: () => void }) {
       onClick={onClose}
     >
       <div
-        className="relative w-[629px] rounded-[30px] bg-white px-[72px] py-[50px]"
+        className="relative max-h-[90vh] w-[629px] overflow-y-auto rounded-[30px] bg-white px-[72px] py-[50px]"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -162,6 +166,32 @@ export default function CreateAdminModal({ onClose }: { onClose: () => void }) {
                 Create an unassigned school before adding an administrator.
               </p>
             )}
+          </div>
+
+          <div>
+            <label className="block text-[18px] font-semibold capitalize text-[#333]">
+              Phone Number
+            </label>
+            <input
+              type="text"
+              placeholder="Enter phone number"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="mt-2 h-[56px] w-full rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-5 text-[16px] text-[#333] outline-none placeholder:text-[#666]"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[18px] font-semibold capitalize text-[#333]">
+              Email
+            </label>
+            <input
+              type="email"
+              placeholder="Enter email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-2 h-[56px] w-full rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-5 text-[16px] text-[#333] outline-none placeholder:text-[#666]"
+            />
           </div>
 
           <div>

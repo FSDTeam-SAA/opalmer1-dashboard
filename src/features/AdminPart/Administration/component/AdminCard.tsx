@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Trash2 } from "lucide-react";
 import ToggleSwitch from "./ToggleSwitch";
 import { Admin } from "./Administration";
 
@@ -11,15 +10,19 @@ const FALLBACK_AVATAR = "/images/12043465729ab7c8ceffce00749e7c71df0c9e25.jpg";
 export default function AdminCard({
   admin,
   onToggle,
-  onDelete,
   onEdit,
 }: {
   admin: Admin;
   onToggle: () => void;
-  onDelete: () => void;
   onEdit: () => void;
 }) {
   const avatarUrl = admin.avatar?.url || FALLBACK_AVATAR;
+  const assignedSchool =
+    typeof admin.schoolId === "object" && admin.schoolId
+      ? `${admin.schoolId.name}${
+          admin.schoolId.code ? ` (${admin.schoolId.code})` : ""
+        }`
+      : "Unassigned";
 
   return (
     <div>
@@ -45,9 +48,24 @@ export default function AdminCard({
               {admin.username}
             </Link>
             <p className="mt-3 text-[18px] text-[#666]">{admin.phoneNumber}</p>
-            <p className="mt-2 text-[14px] text-[#999] capitalize">
-              {admin.state}
-            </p>
+            <div className="mt-4 grid grid-cols-1 gap-2 text-[14px] text-[#666]">
+              <p>
+                <span className="font-semibold text-[#333]">Admin ID:</span>{" "}
+                {admin.Id || "Not set"}
+              </p>
+              <p>
+                <span className="font-semibold text-[#333]">Email:</span>{" "}
+                {admin.email || "Not set"}
+              </p>
+              <p>
+                <span className="font-semibold text-[#333]">School:</span>{" "}
+                {assignedSchool}
+              </p>
+              <p className="capitalize">
+                <span className="font-semibold text-[#333]">Status:</span>{" "}
+                {admin.state || "inactive"}
+              </p>
+            </div>
           </div>
 
           {/* Actions Row */}
@@ -56,15 +74,6 @@ export default function AdminCard({
               active={admin.state === "active"}
               onChange={onToggle}
             />
-
-            {/* Delete Button */}
-            {/* <button
-              onClick={onDelete}
-              className="flex h-[34px] w-[34px] items-center cursor-pointer justify-center rounded-full bg-[#fde8e8] text-[#e64540] hover:bg-[#fbd0d0] transition-colors"
-            >
-              <Trash2 size={18} />
-            </button> */}
-
             {/* Edit Button */}
             <button
               onClick={onEdit}

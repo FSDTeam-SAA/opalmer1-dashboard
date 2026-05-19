@@ -68,10 +68,14 @@ export type CreateAdministratorPayload = {
  */
 export type UpdateAdministratorPayload = Partial<{
   username: string;
+  Id: string;
+  password: string;
+  schoolId: string;
   phoneNumber: string;
   email: string;
   state: "active" | "inactive";
   gender: "male" | "female" | "other";
+  image: File | null;
 }>;
 
 export type AdminSchoolDetails = {
