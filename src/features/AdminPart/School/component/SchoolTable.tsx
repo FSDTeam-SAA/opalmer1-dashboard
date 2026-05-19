@@ -6,7 +6,6 @@ import { Plus, Search } from "lucide-react";
 import PageHeader from "@/components/sheard/PageHeader";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSchools } from "../hooks/useSchools";
-import type { School } from "../types/school.types";
 import CreateSchoolModal from "./CreateSchoolModal";
 
 export default function SchoolTable() {

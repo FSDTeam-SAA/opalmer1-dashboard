@@ -54,5 +54,5 @@ export type CreateSchoolPayload = {
   phone?: string;
   email?: string;
   establishedYear?: number;
-  logo?: string;
+  logo?: File | string;
 };

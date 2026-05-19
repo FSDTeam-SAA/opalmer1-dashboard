@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { X } from "lucide-react";
+import Image from "next/image";
+import { ImageIcon, Upload, X } from "lucide-react";
 import { useCreateSchool } from "../hooks/useSchools";
 
 type CreateSchoolModalProps = {
@@ -35,10 +36,24 @@ export default function CreateSchoolModal({ onClose }: CreateSchoolModalProps) {
   const [country, setCountry] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [establishedYear, setEstablishedYear] = useState("");
-  const [logo, setLogo] = useState("");
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
 
   const createSchool = useCreateSchool();
+
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setLogoFile(file);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setLogoPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,7 +76,7 @@ export default function CreateSchoolModal({ onClose }: CreateSchoolModalProps) {
         country: country.trim() || undefined,
         postalCode: postalCode.trim() || undefined,
         establishedYear: establishedYear ? Number(establishedYear) : undefined,
-        logo: logo.trim() || undefined,
+        logo: logoFile || undefined,
       });
       onClose();
     } catch (err) {
@@ -164,13 +179,47 @@ export default function CreateSchoolModal({ onClose }: CreateSchoolModalProps) {
             />
           </div>
 
-          <input
-            type="url"
-            placeholder="Logo URL"
-            value={logo}
-            onChange={(e) => setLogo(e.target.value)}
-            className="h-[48px] w-full rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 outline-none"
-          />
+          <div className="rounded-[10px] border border-dashed border-[#c7c7c7] bg-[#f9f9f9] p-4">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+              <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center overflow-hidden rounded-full border border-[#ddd] bg-white">
+                {logoPreview ? (
+                  <Image
+                    src={logoPreview}
+                    alt="School logo preview"
+                    width={80}
+                    height={80}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <ImageIcon size={28} className="text-[#871dad]" />
+                )}
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <p className="text-[15px] font-semibold text-[#333]">
+                  School logo
+                </p>
+                <p className="mt-1 truncate text-[13px] text-[#666]">
+                  {logoFile?.name || "Upload a JPG or PNG image."}
+                </p>
+              </div>
+
+              <label
+                htmlFor="school-logo"
+                className="inline-flex h-[44px] cursor-pointer items-center justify-center gap-2 rounded-[8px] bg-[#871dad] px-4 text-[14px] font-semibold text-white hover:bg-[#751a99]"
+              >
+                <Upload size={16} />
+                Choose Image
+              </label>
+              <input
+                id="school-logo"
+                type="file"
+                accept="image/jpeg,image/jpg,image/png"
+                onChange={handleLogoChange}
+                className="sr-only"
+              />
+            </div>
+          </div>
 
           {formError && (
             <p className="text-[14px] text-[#e64540]">{formError}</p>

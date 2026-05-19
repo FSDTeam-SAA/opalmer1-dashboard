@@ -5,14 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import {
-  Home,
-  BookMarked,
-  Settings,
-  LogOut,
-  Building2,
-  Plus,
-} from "lucide-react";
+import { Home, BookMarked, Settings, LogOut, Building2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -21,7 +14,6 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import CreateSchoolModal from "@/features/AdminPart/School/component/CreateSchoolModal";
 
 const menuItems = [
   {
@@ -34,17 +26,16 @@ const menuItems = [
     href: "/admin/administration",
     icon: BookMarked,
   },
-  // {
-  //   label: "School",
-  //   href: "/admin/school",
-  //   icon: Building2,
-  // },
+  {
+    label: "Schools",
+    href: "/admin/school",
+    icon: Building2,
+  },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [showCreateSchoolModal, setShowCreateSchoolModal] = useState(false);
 
   const handleLogout = () => {
     signOut({ callbackUrl: "/login" });
@@ -87,23 +78,6 @@ export default function Sidebar() {
               </Link>
             );
           })}
-
-          <button
-            type="button"
-            onClick={() => setShowCreateSchoolModal(true)}
-            className="flex w-full items-center gap-3 rounded-[12px] px-5 py-4 text-left text-[16px] text-[#333] transition-colors hover:bg-gray-50"
-          >
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <Building2 size={24} />
-                <Plus
-                  size={12}
-                  className="absolute -bottom-1 -right-1 rounded-full bg-white text-[#871dad]"
-                />
-              </div>
-              <span>Create School</span>
-            </div>
-          </button>
         </nav>
 
         {/* Bottom actions */}
@@ -155,10 +129,6 @@ export default function Sidebar() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      {showCreateSchoolModal && (
-        <CreateSchoolModal onClose={() => setShowCreateSchoolModal(false)} />
-      )}
     </>
   );
 }
