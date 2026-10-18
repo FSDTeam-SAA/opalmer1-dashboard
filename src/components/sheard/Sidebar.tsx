@@ -45,14 +45,17 @@ export default function Sidebar() {
     <>
       <aside className="fixed left-5 top-1/2 -translate-y-1/2 z-30 flex h-[calc(100vh-40px)] w-[242px] flex-col rounded-[20px] bg-white shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
         {/* Logo */}
-        <div className="flex items-center justify-center pt-8 pb-6">
-          <Link href="/">
+        <div className="flex items-center justify-center px-5 pt-6 pb-6">
+          <Link
+            href="/admin/dashboard"
+            aria-label="AchieverPlus admin dashboard"
+          >
             <Image
-              src="/icon.png"
-              alt="ClassPulse Logo"
-              width={60}
-              height={60}
-              className="object-contain"
+              src="/images/achieverplus-logo.png"
+              alt="AchieverPlus logo"
+              width={160}
+              height={160}
+              className="h-auto w-40 object-contain"
               priority
             />
           </Link>

@@ -1,6 +1,15 @@
+import type { Metadata } from "next";
 import Sidebar from "@/components/sheard/Sidebar";
 import Navbar from "@/components/sheard/Navbar";
 import { NavbarProvider } from "@/components/sheard/NavbarContext";
+
+export const metadata: Metadata = {
+  icons: {
+    icon: "/images/achieverplus-logo.png",
+    shortcut: "/images/achieverplus-logo.png",
+    apple: "/images/achieverplus-logo.png",
+  },
+};
 
 export default function AdminLayout({
   children,
