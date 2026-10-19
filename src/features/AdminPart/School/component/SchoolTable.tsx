@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Image from "next/image";
+import Image from "@/components/ui/data-image";
 import { Pencil, Plus, Search, Trash2 } from "lucide-react";
 import PageHeader from "@/components/sheard/PageHeader";
 import {
@@ -28,7 +28,6 @@ export default function SchoolTable() {
   const deleteSchool = useDeleteSchool();
 
   // Use a fallback image for consistency
-  const FALLBACK_IMAGE = "/images/4f8da1b70693c4fcf9e01b9293706aed5cd4e34d.jpg";
 
   const filteredSchools = useMemo(() => {
     const q = searchQuery.toLowerCase();
@@ -163,7 +162,7 @@ export default function SchoolTable() {
                       <div className="flex items-center gap-2">
                         <div className="h-8 w-8 flex-shrink-0 overflow-hidden rounded-full">
                           <Image
-                            src={school.logo || FALLBACK_IMAGE}
+                            src={school.logo || ""}
                             alt={school.name}
                             width={32}
                             height={32}

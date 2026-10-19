@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Image from "next/image";
+import Image from "@/components/ui/data-image";
 import { useRouter } from "next/navigation";
 import { Search, Users, UserCheck, UserX } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -63,6 +63,7 @@ type UserListViewProps = {
   onUpdate: (id: string, payload: EditUserPayload) => Promise<unknown>;
   onAdd: () => void;
   onViewClick?: (row: UserRow) => void;
+  onInviteGuardian?: (row: UserRow) => void;
   /** Extra slot rendered below the table (e.g. create modal) */
   children?: React.ReactNode;
 };
@@ -155,6 +156,7 @@ export function UserListView({
   onUpdate,
   onAdd,
   onViewClick,
+  onInviteGuardian,
   children,
 }: UserListViewProps) {
   const router = useRouter();
@@ -275,6 +277,24 @@ export function UserListView({
           );
         },
       },
+      ...(onInviteGuardian
+        ? [
+            {
+              id: "guardianInvitation",
+              header: "Guardian Invitations",
+              cell: ({ row }: { row: { original: UserRow } }) => (
+                <button
+                  type="button"
+                  onClick={() => onInviteGuardian(row.original)}
+                  aria-label={`Invite guardian for ${row.original.name}`}
+                  className="cursor-pointer whitespace-nowrap rounded-[6px] border border-[#871dad] px-3 py-1.5 text-[13px] font-medium text-[#871dad] transition-colors hover:bg-[#faf2f9]"
+                >
+                  Invite Guardian
+                </button>
+              ),
+            },
+          ]
+        : []),
       {
         id: "action",
         header: () => <span className="block text-center">Action</span>,
@@ -317,7 +337,7 @@ export function UserListView({
         },
       },
     ],
-    [config, isTogglePending, onToggle, router, onViewClick],
+    [config, isTogglePending, onToggle, router, onViewClick, onInviteGuardian],
   );
 
   return (

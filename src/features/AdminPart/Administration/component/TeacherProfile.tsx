@@ -1,12 +1,13 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/ui/data-image";
 import Link from "next/link";
 import { useState } from "react";
-import { Trash2, Calendar, Users } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { Calendar, Users } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import ToggleSwitch from "./ToggleSwitch";
+import { api } from "@/lib/api";
 import { fetchTeacherProfile } from "../api/teacher.api";
 import type { GradeCard as GradeCardType } from "@/types/teacher.types";
 
@@ -156,7 +157,24 @@ export default function TeacherProfile({
     queryFn: () => fetchTeacherProfile(teacherId),
   });
 
-  const [active, setActive] = useState(true);
+  const cache = useQueryClient();
+  const [editing, setEditing] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const update = useMutation({
+    mutationFn: (fields: {
+      state?: string;
+      username?: string;
+      email?: string;
+    }) => api.put(`/users/${encodeURIComponent(teacherId)}`, fields),
+    onSuccess: async () => {
+      setEditing(false);
+      await cache.invalidateQueries({
+        queryKey: ["teacher-profile", slug, teacherId],
+      });
+      await cache.invalidateQueries({ queryKey: ["teachers"] });
+    },
+  });
 
   if (isLoading) return <ProfileSkeleton />;
 
@@ -173,6 +191,62 @@ export default function TeacherProfile({
 
   return (
     <div className="space-y-8 pt-10 mt-16">
+      {update.isError && (
+        <p role="alert" className="text-red-600">
+          The teacher could not be updated. Please retry.
+        </p>
+      )}
+      {editing && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Edit teacher"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+        >
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              update.mutate({ username: name, email });
+            }}
+            className="w-full max-w-md space-y-4 rounded-xl bg-white p-6"
+          >
+            <h2 className="text-xl font-semibold">Edit teacher</h2>
+            <label className="block">
+              Name
+              <input
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full rounded border p-2"
+              />
+            </label>
+            <label className="block">
+              Email
+              <input
+                required
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full rounded border p-2"
+              />
+            </label>
+            <button
+              type="button"
+              onClick={() => setEditing(false)}
+              className="mr-4"
+            >
+              Cancel
+            </button>
+            <button
+              disabled={update.isPending}
+              className="rounded bg-purple-700 p-2 text-white"
+            >
+              Save changes
+            </button>
+          </form>
+        </div>
+      )}
+
       {/* ── Centered Profile Card ── */}
       <div className="flex flex-col items-center">
         {/* Floating photo */}
@@ -199,15 +273,27 @@ export default function TeacherProfile({
             {/* Controls row */}
             <div className="mt-4 flex items-center gap-5">
               <ToggleSwitch
-                active={active}
-                onChange={() => setActive(!active)}
+                active={teacher.active}
+                onChange={() => {
+                  if (!update.isPending)
+                    update.mutate({
+                      state: teacher.active ? "inactive" : "active",
+                    });
+                }}
               />
 
               {/* <button className="flex h-[34px] w-[34px] cursor-pointer items-center justify-center rounded-full bg-[#fde8e8] text-[#e64540] hover:bg-[#fbd0d0] transition-colors">
                 <Trash2 size={18} />
               </button> */}
 
-              <button className="rounded-[6px] bg-[#871dad] cursor-pointer px-[15px] py-[8px] text-[16px] font-medium text-white hover:bg-[#751a99] transition-colors">
+              <button
+                onClick={() => {
+                  setName(teacher.name);
+                  setEmail(teacher.email);
+                  setEditing(true);
+                }}
+                className="rounded-[6px] bg-[#871dad] cursor-pointer px-[15px] py-[8px] text-[16px] font-medium text-white hover:bg-[#751a99] transition-colors"
+              >
                 Edit
               </button>
             </div>

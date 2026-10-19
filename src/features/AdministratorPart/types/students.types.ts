@@ -97,7 +97,13 @@ export type StudentDetailsOverall = {
 
 export type StudentDetailsData = {
   student: StudentRecord;
-  parent: { name?: string; image?: string; _id?: string } | null;
+  parent: {
+    parentId?: {
+      _id: string;
+      username?: string;
+      avatar?: StudentAvatar;
+    } | null;
+  } | null;
   overall: StudentDetailsOverall;
   subjects: StudentDetailsSubject[];
 };

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import Image from "next/image";
+import Image from "@/components/ui/data-image";
 import { Eye, EyeOff, Camera, X } from "lucide-react";
 import { useCreateAdministrator } from "../hooks/useAdministrators";
 import { useSchools } from "../../School/hooks/useSchools";

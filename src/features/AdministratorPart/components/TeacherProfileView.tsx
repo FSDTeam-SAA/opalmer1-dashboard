@@ -1,8 +1,10 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import { fetchTeacherProfile } from "@/features/AdminPart/Administration/api/teacher.api";
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { BookOpen, Calendar, TrendingUp, FileQuestion } from "lucide-react";
+import { BookOpen, Calendar } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import PageHeader from "@/components/sheard/PageHeader";
 import {
@@ -119,104 +121,46 @@ function ClassesGrid({ teacherId }: { teacherId: string }) {
 /* ──────────────────────────────────────────────
    Additional Info Sections (Placeholder)
 ─────────────────────────────────────────────── */
-function TeacherAdditionalInfoSections() {
+function TeacherAdditionalInfoSections({ teacherId }: { teacherId: string }) {
+  const profile = useQuery({
+    queryKey: ["teacher-overview", teacherId],
+    queryFn: () => fetchTeacherProfile(teacherId),
+  });
+  if (profile.isLoading) return <p className="mt-8">Loading assessments...</p>;
+  if (profile.isError)
+    return (
+      <p role="alert" className="mt-8 text-red-600">
+        Unable to load assessment records.{" "}
+        <button onClick={() => void profile.refetch()} className="underline">
+          Retry
+        </button>
+      </p>
+    );
   return (
-    <div className="space-y-6 mt-10">
-      <div className="flex items-center justify-between">
-        <h2 className="text-[22px] sm:text-[26px] font-bold text-[#222]">
-          Teaching & Assessment
-        </h2>
-      </div>
-
+    <div className="mt-8 space-y-6">
+      <h2 className="text-2xl font-semibold">Teaching &amp; Assessment</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Grades Overview */}
-        <div className="rounded-[16px] bg-white p-5 shadow-[0px_2px_16px_rgba(0,0,0,0.07)] border border-[#f0f0f0] hover:shadow-[0px_4px_24px_rgba(135,29,173,0.12)] transition-shadow">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="flex h-[42px] w-[42px] items-center justify-center rounded-[12px] bg-[#871dad]/10 text-[#871dad]">
-              <TrendingUp size={18} />
-            </div>
-            <h3 className="font-semibold text-[#333]">Grades Overview</h3>
-          </div>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[13px] text-[#666]">
-              Mid-term Grading Progress
-            </span>
-            <span className="text-[13px] font-semibold text-[#871dad]">
-              75%
-            </span>
-          </div>
-          <div className="h-2 w-full bg-[#f0f0f0] rounded-full mb-4">
-            <div
-              className="h-full bg-[#871dad] rounded-full"
-              style={{ width: "75%" }}
-            ></div>
-          </div>
-          <div className="grid grid-cols-3 gap-2 text-center border-t border-[#f0f0f0] pt-4">
-            <div>
-              <p className="text-[18px] font-bold text-[#333]">120</p>
-              <p className="text-[11px] text-[#888]">Graded</p>
-            </div>
-            <div>
-              <p className="text-[18px] font-bold text-[#e64540]">45</p>
-              <p className="text-[11px] text-[#888]">Pending</p>
-            </div>
-            <div>
-              <p className="text-[18px] font-bold text-[#4aa678]">B+</p>
-              <p className="text-[11px] text-[#888]">Class Avg</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Quizzes */}
-        <div className="rounded-[16px] bg-white p-5 shadow-[0px_2px_16px_rgba(0,0,0,0.07)] border border-[#f0f0f0] hover:shadow-[0px_4px_24px_rgba(135,29,173,0.12)] transition-shadow">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-[42px] w-[42px] items-center justify-center rounded-[12px] bg-[#3f99b4]/10 text-[#3f99b4]">
-                <FileQuestion size={18} />
-              </div>
-              <h3 className="font-semibold text-[#333]">Recent Quizzes</h3>
-            </div>
-            <button className="text-[12px] font-semibold text-[#3f99b4] hover:underline">
-              View All →
-            </button>
-          </div>
-
-          <ul className="space-y-3">
-            <li className="flex items-center justify-between p-3 rounded-[10px] bg-[#fafafa] border border-[#f0f0f0]">
-              <div>
-                <p className="text-[13px] font-medium text-[#333]">
-                  Algebra Basics (Quiz 3)
-                </p>
-                <p className="text-[11px] text-[#888] mt-0.5">
-                  Grade 9 • Section A
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="text-[13px] font-semibold text-[#4aa678]">
-                  Completed
-                </p>
-                <p className="text-[11px] text-[#888]">32/32 Submissions</p>
-              </div>
-            </li>
-            <li className="flex items-center justify-between p-3 rounded-[10px] bg-[#fafafa] border border-[#f0f0f0]">
-              <div>
-                <p className="text-[13px] font-medium text-[#333]">
-                  Geometry Fundamentals
-                </p>
-                <p className="text-[11px] text-[#888] mt-0.5">
-                  Grade 10 • Section B
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="text-[13px] font-semibold text-[#e64540]">
-                  Active
-                </p>
-                <p className="text-[11px] text-[#888]">15/30 Submissions</p>
-              </div>
-            </li>
-          </ul>
-        </div>
+        {profile.data?.grades.map((grade) => (
+          <article key={grade.id} className="rounded-xl bg-white p-5 shadow-sm">
+            <h3 className="font-semibold">{grade.name}</h3>
+            <p>{grade.students} students</p>
+            <p>Attendance: {grade.attendance}</p>
+            <p>Released assessment average: {grade.performance}</p>
+          </article>
+        ))}
       </div>
+      <h3 className="text-xl font-semibold">
+        Assessments ({profile.data?.quizzes.length ?? 0})
+      </h3>
+      {profile.data?.quizzes.map((quiz) => (
+        <article key={quiz.id} className="rounded-xl bg-white p-5 shadow-sm">
+          <p className="font-semibold">{quiz.title}</p>
+          <p>
+            {quiz.questions} questions ? {quiz.duration}
+          </p>
+        </article>
+      ))}
+      {!profile.data?.quizzes.length && <p>No assessments yet.</p>}
     </div>
   );
 }
@@ -333,7 +277,7 @@ export default function TeacherProfileView({
       </div>
 
       {/* ── Additional Features & Analytics ── */}
-      <TeacherAdditionalInfoSections />
+      <TeacherAdditionalInfoSections teacherId={teacherId} />
 
       {/* ── Edit Modal ── */}
       {editing && (

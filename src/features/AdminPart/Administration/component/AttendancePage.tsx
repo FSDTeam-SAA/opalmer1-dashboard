@@ -1,6 +1,7 @@
 "use client";
 
 import { CalendarDays } from "lucide-react";
+import { matchesSubject } from "../api/subjectScope";
 import PageHeader from "@/components/sheard/PageHeader";
 
 import { useClassAttendance } from "../hooks/useAttendance";
@@ -17,8 +18,6 @@ export default function AttendancePage({
   studentSlug: string;
   subjectSlug: string;
 }) {
-  const subjectName = subjectSlug.replace(/-/g, " ");
-
   // 1. Get student details to find the classId for this subject
   const {
     data: studentData,
@@ -26,8 +25,8 @@ export default function AttendancePage({
     isError: isErrorStudent,
   } = useStudentDetails(studentSlug);
 
-  const subjectInfo = studentData?.subjects.find(
-    (s) => s.subject.toLowerCase() === subjectName.toLowerCase(),
+  const subjectInfo = studentData?.subjects.find((s) =>
+    matchesSubject(s, subjectSlug),
   );
 
   const classId = subjectInfo?.classId || "";

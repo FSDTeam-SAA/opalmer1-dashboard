@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { Home, BookMarked, Settings, LogOut, Building2 } from "lucide-react";
+import { Home, BookMarked, Settings, LogOut, Building2, X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 
 const menuItems = [
+  { label: "Guardian invitations", href: "/admin/guardians", icon: BookMarked },
   {
     label: "Dashboard",
     href: "/admin/dashboard",
@@ -33,7 +34,13 @@ const menuItems = [
   },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}) {
   const pathname = usePathname();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
@@ -43,26 +50,44 @@ export default function Sidebar() {
 
   return (
     <>
-      <aside className="fixed left-5 top-1/2 -translate-y-1/2 z-30 flex h-[calc(100vh-40px)] w-[242px] flex-col rounded-[20px] bg-white shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
+      {open && (
+        <div
+          className="fixed inset-0 z-20 bg-black/40 lg:hidden"
+          onClick={onClose}
+          aria-hidden
+        />
+      )}
+      <aside
+        className={`fixed left-5 top-1/2 -translate-y-1/2 z-30 flex h-[calc(100dvh-40px)] w-[242px] flex-col rounded-[20px] bg-white shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)] transition-transform lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-[270px]"}`}
+      >
+        <button
+          onClick={onClose}
+          aria-label="Close menu"
+          className="absolute right-2 top-2 rounded p-2 lg:hidden"
+        >
+          <X size={20} />
+        </button>
         {/* Logo */}
-        <div className="flex items-center justify-center px-5 pt-6 pb-6">
+        <div className="flex shrink-0 items-center justify-center px-5 pt-6 pb-4">
           <Link
             href="/admin/dashboard"
             aria-label="AchieverPlus admin dashboard"
+            onClick={onClose}
           >
             <Image
               src="/images/achieverplus-logo.png"
               alt="AchieverPlus logo"
               width={160}
               height={160}
-              className="h-auto w-40 object-contain"
+              sizes="160px"
+              className="h-auto max-h-[18dvh] w-40 max-w-full object-contain"
               priority
             />
           </Link>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-[10px]">
+        <nav className="min-h-0 flex-1 overflow-y-auto px-[10px]">
           {menuItems.map((item) => {
             const isActive = pathname === item.href;
             const Icon = item.icon;
@@ -70,6 +95,7 @@ export default function Sidebar() {
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={onClose}
                 className={`flex items-center gap-3 rounded-[12px] px-5 py-4 mb-2 text-[16px] transition-colors ${
                   isActive
                     ? "bg-[#871dad] text-white backdrop-blur-[10px]"

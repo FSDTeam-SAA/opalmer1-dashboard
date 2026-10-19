@@ -1,11 +1,9 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/ui/data-image";
 import Link from "next/link";
 import ToggleSwitch from "./ToggleSwitch";
 import { Admin } from "./Administration";
-
-const FALLBACK_AVATAR = "/images/12043465729ab7c8ceffce00749e7c71df0c9e25.jpg";
 
 export default function AdminCard({
   admin,
@@ -16,7 +14,7 @@ export default function AdminCard({
   onToggle: () => void;
   onEdit: () => void;
 }) {
-  const avatarUrl = admin.avatar?.url || FALLBACK_AVATAR;
+  const avatarUrl = admin.avatar?.url || "";
   const assignedSchool =
     typeof admin.schoolId === "object" && admin.schoolId
       ? `${admin.schoolId.name}${

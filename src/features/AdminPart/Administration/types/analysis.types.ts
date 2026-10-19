@@ -2,7 +2,7 @@ export type AnalysisSummary = {
   totalDays: number;
   present: number;
   absent: number;
-  percentage: string;
+  percentage: string | null;
 };
 
 export type AnalysisChartItem = {

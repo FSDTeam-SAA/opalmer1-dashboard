@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/ui/data-image";
 import { X, Copy } from "lucide-react";
 import type { UserRow } from "./shared/UserListView";
 

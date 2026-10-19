@@ -7,8 +7,6 @@ import type {
   CreateParentPayload,
 } from "../types/parents.types";
 
-const FALLBACK_IMAGE = "/images/4f8da1b70693c4fcf9e01b9293706aed5cd4e34d.jpg";
-
 export type ParentRow = {
   no: number;
   _id: string;
@@ -29,7 +27,7 @@ function toRow(record: ParentRecord, idx: number): ParentRow {
     email: record.email ?? "—",
     phoneNumber: record.phoneNumber ?? "—",
     active: (record.state ?? "active").toLowerCase() === "active",
-    image: record.avatar?.url || FALLBACK_IMAGE,
+    image: record.avatar?.url || "",
   };
 }
 

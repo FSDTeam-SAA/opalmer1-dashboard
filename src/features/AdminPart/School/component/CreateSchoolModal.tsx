@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import Image from "@/components/ui/data-image";
 import { ImageIcon, Upload, X } from "lucide-react";
 import { useCreateSchool, useUpdateSchool } from "../hooks/useSchools";
 import type { School } from "../types/school.types";

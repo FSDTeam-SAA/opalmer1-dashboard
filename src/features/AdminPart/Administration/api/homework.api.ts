@@ -7,7 +7,10 @@ import { HomeworkResponse, HomeworkData } from "../types/homework.types";
  */
 export async function fetchHomeworkByUser(
   userId: string,
+  classId?: string,
 ): Promise<HomeworkData[]> {
-  const { data } = await api.get<HomeworkResponse>(`/homework/user/${userId}`);
+  const { data } = await api.get<HomeworkResponse>(`/homework/user/${userId}`, {
+    params: { classId },
+  });
   return data.data;
 }

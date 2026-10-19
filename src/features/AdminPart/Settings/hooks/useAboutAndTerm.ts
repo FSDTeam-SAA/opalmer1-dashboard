@@ -6,6 +6,7 @@ import {
   updateAboutOrTerm,
 } from "../api/aboutAndTerm.api";
 import type {
+  AboutOrTermDocType,
   CreateAboutOrTermPayload,
   UpdateAboutOrTermPayload,
 } from "../types/settings.types";
@@ -16,15 +17,22 @@ const TERMS_KEY = ["settings", "terms"] as const;
 /**
  * useAbout — GET /aboutAndTerm/about
  */
+export function usePolicyContent(docType: AboutOrTermDocType) {
+  return useQuery({
+    queryKey: docType === "about" ? ABOUT_KEY : TERMS_KEY,
+    queryFn: docType === "about" ? fetchAbout : fetchTerms,
+    staleTime: 0,
+  });
+}
 export function useAbout() {
-  return useQuery({ queryKey: ABOUT_KEY, queryFn: fetchAbout });
+  return usePolicyContent("about");
 }
 
 /**
  * useTerms — GET /aboutAndTerm/terms
  */
 export function useTerms() {
-  return useQuery({ queryKey: TERMS_KEY, queryFn: fetchTerms });
+  return usePolicyContent("terms");
 }
 
 /**

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import Image from "@/components/ui/data-image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
@@ -13,8 +13,8 @@ import {
   Settings,
   LogOut,
   X,
-  Building2,
   ShieldUser,
+  MessageCircle,
 } from "lucide-react";
 import {
   Dialog,
@@ -29,6 +29,7 @@ const menuItems = [
   { label: "Dashboard", href: "/administrator/dashboard", icon: Home },
   { label: "Students", href: "/administrator/students", icon: GraduationCap },
   { label: "Teachers", href: "/administrator/teachers", icon: Users },
+  { label: "Chat", href: "/administrator/chat", icon: MessageCircle },
   {
     label: "Parents",
     href: "/administrator/parents",
@@ -66,7 +67,7 @@ export default function AdminSidebar({ open, onClose }: SidebarProps) {
       )}
 
       <aside
-        className={`fixed left-5 top-1/2 -translate-y-1/2 z-30 flex h-[calc(100vh-40px)] w-[242px] flex-col rounded-[20px] bg-white shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)] transition-transform duration-200 lg:translate-x-0 ${
+        className={`fixed left-5 top-1/2 -translate-y-1/2 z-30 flex h-[calc(100dvh-40px)] w-[242px] flex-col rounded-[20px] bg-white shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)] transition-transform duration-200 lg:translate-x-0 ${
           open ? "translate-x-0" : "-translate-x-[270px]"
         }`}
       >
@@ -80,21 +81,26 @@ export default function AdminSidebar({ open, onClose }: SidebarProps) {
         </button>
 
         {/* Logo */}
-        <div className="flex items-center justify-center pt-8 pb-6">
-          <Link href="/" onClick={onClose}>
+        <div className="flex shrink-0 items-center justify-center px-5 pt-6 pb-4">
+          <Link
+            href="/administrator/dashboard"
+            onClick={onClose}
+            aria-label="AchieverPlus dashboard"
+          >
             <Image
-              src="/icon.png"
-              alt="ClassPulse Logo"
-              width={60}
-              height={60}
-              className="object-contain"
+              src="/images/achieverplus-logo.png"
+              alt="AchieverPlus logo"
+              width={160}
+              height={160}
+              sizes="160px"
+              className="h-auto max-h-[18dvh] w-40 max-w-full object-contain"
               priority
             />
           </Link>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-[10px]">
+        <nav className="min-h-0 flex-1 overflow-y-auto px-[10px]">
           {menuItems.map((item) => {
             const isActive =
               pathname === item.href || pathname.startsWith(`${item.href}/`);

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { CalendarDays } from "lucide-react";
+import { matchesSubject } from "../api/subjectScope";
 import PageHeader from "@/components/sheard/PageHeader";
 
 import { useLessons } from "../hooks/useLessons";
@@ -47,13 +48,12 @@ export default function LessonsPage({
   basePath?: string;
 }) {
   const prefix = slug ? `${basePath}/${slug}` : `${basePath}`;
-  const subjectName = subjectSlug.replace(/-/g, " ");
 
   const { data: lessons = [], isLoading, isError } = useLessons(studentSlug);
 
   // Filter lessons for this specific subject
   const subjectLessons = lessons.filter(
-    (l) => l.classId.subject.toLowerCase() === subjectName.toLowerCase(),
+    (l) => l.classId && matchesSubject(l.classId, subjectSlug),
   );
 
   const activeLessons = subjectLessons.filter((l) => !l.isArchived);
@@ -104,7 +104,7 @@ export default function LessonsPage({
           ))}
           {activeLessons.length === 0 && (
             <p className="text-gray-500">
-              No active lessons found for {subjectName}.
+              No active lessons found for this class.
             </p>
           )}
         </div>

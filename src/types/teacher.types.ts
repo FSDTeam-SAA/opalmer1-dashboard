@@ -1,7 +1,7 @@
 /* ───── Teacher Types ───── */
 
 export type TeacherListItem = {
-  id: number;
+  id: string | number;
   name: string;
   teacherId: string;
   gradeLevel: string;
@@ -11,7 +11,7 @@ export type TeacherListItem = {
 };
 
 export type TeacherProfile = {
-  id: number;
+  id: string | number;
   name: string;
   email: string;
   username: string;
@@ -23,7 +23,7 @@ export type TeacherProfile = {
 };
 
 export type GradeCard = {
-  id: number;
+  id: string | number;
   name: string;
   date: string;
   students: number;
@@ -33,7 +33,7 @@ export type GradeCard = {
 };
 
 export type SubjectStat = {
-  id: number;
+  id: string | number;
   name: string;
   attendance: string;
   progress: string;
@@ -47,7 +47,7 @@ export type TeacherGradesData = {
 };
 
 export type Quiz = {
-  id: number;
+  id: string | number;
   title: string;
   questions: number;
   duration: string;
@@ -55,7 +55,7 @@ export type Quiz = {
 };
 
 export type AttendedStudent = {
-  id: number;
+  id: string | number;
   name: string;
   grade: string;
   age: number;
@@ -66,7 +66,7 @@ export type AttendedStudent = {
 };
 
 export type QuestionResult = {
-  id: number;
+  id: string | number;
   question: string;
   options: string[];
   selectedAnswer: string;
@@ -76,7 +76,7 @@ export type QuestionResult = {
 
 export type QuizAttempt = {
   student: {
-    id: number;
+    id: string | number;
     name: string;
     grade: string;
     age: number;

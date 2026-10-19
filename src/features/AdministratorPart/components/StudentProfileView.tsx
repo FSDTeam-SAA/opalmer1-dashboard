@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/ui/data-image";
 import { Copy, Clock3 } from "lucide-react";
 
 import { useStudentDetails } from "../hooks/useStudents";
@@ -73,7 +73,7 @@ function SubjectCard({ item }: { item: SubjectItem }) {
             src={
               typeof item.teacher === "object" && item.teacher?.avatar?.url
                 ? item.teacher.avatar.url
-                : "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop"
+                : ""
             }
             alt="teacher"
             width={34}
@@ -130,6 +130,7 @@ export default function StudentProfileView({
   }
 
   const { student, overall, parent, subjects } = data;
+  const parentUser = parent?.parentId;
 
   const name = student.username || "Unknown";
   const grade = student.gradeLevel
@@ -137,8 +138,6 @@ export default function StudentProfileView({
     : "Grade N/A";
   const age = student.age ? `Age ${student.age}` : "Age N/A";
   const phone = student.phoneNumber || "N/A";
-  const fallbackImage =
-    "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=400&auto=format&fit=crop";
 
   return (
     <div className="mt-20">
@@ -151,7 +150,7 @@ export default function StudentProfileView({
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-4">
               <Image
-                src={student.avatar?.url || fallbackImage}
+                src={student.avatar?.url || ""}
                 alt="student"
                 width={92}
                 height={92}
@@ -204,14 +203,16 @@ export default function StudentProfileView({
             <div className="rounded-2xl bg-[#dfe9ef] p-4 shadow-sm">
               <div className="flex items-center gap-3">
                 <Image
-                  src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=300&auto=format&fit=crop"
+                  src={parentUser?.avatar?.url || ""}
                   alt="parent"
                   width={52}
                   height={52}
                   className="h-[52px] w-[52px] rounded-full object-cover"
                 />
                 <p className="text-[18px] font-semibold text-gray-800">
-                  {parent ? parent.name || "Parent Name" : "N/A"}
+                  {parentUser
+                    ? parentUser.username || "Name unavailable"
+                    : "No parent linked"}
                 </p>
               </div>
             </div>

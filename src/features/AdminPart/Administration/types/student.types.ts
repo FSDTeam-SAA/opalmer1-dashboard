@@ -39,6 +39,7 @@ export type StudentSubject = {
   subject: string;
   attendance: number;
   progress: number;
+  teacher?: { username?: string; avatar?: { url?: string } };
 };
 
 export type StudentDetailsData = {

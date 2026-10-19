@@ -38,8 +38,6 @@ export type StudentListItem = {
   image: string;
 };
 
-const FALLBACK_IMAGE = "/images/4f8da1b70693c4fcf9e01b9293706aed5cd4e34d.jpg";
-
 /**
  * GET /users/my-students
  * Returns the students of the authenticated administrator's school.
@@ -56,7 +54,7 @@ export async function fetchStudents(): Promise<StudentListItem[]> {
     // Attendance aggregate isn't in the endpoint; omit or compute later
     // via GET /attendances/student?studentId=...
     attendance: "—",
-    image: s.avatar?.url || FALLBACK_IMAGE,
+    image: s.avatar?.url || "",
   }));
 }
 

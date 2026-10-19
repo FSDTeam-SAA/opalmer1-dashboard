@@ -1,6 +1,7 @@
 "use client";
 
 import { FileText, Download } from "lucide-react";
+import { matchesSubject } from "../api/subjectScope";
 import PageHeader from "@/components/sheard/PageHeader";
 
 import { useAcademicNotes } from "../hooks/useAcademicNotes";
@@ -15,15 +16,15 @@ export default function AcademicNotesPage({
   studentSlug: string;
   subjectSlug: string;
 }) {
-  const subjectName = subjectSlug.replace(/-/g, " ");
   const {
     data: documents = [],
     isLoading,
     isError,
   } = useAcademicNotes(studentSlug);
 
-  // Display all documents for the student as requested in the example
-  const subjectDocuments = documents;
+  const subjectDocuments = documents.filter(
+    (doc) => doc.classId && matchesSubject(doc.classId, subjectSlug),
+  );
 
   if (isLoading) {
     return (
@@ -83,7 +84,7 @@ export default function AcademicNotesPage({
         })}
         {subjectDocuments.length === 0 && (
           <p className="text-gray-500">
-            No academic documents found for {subjectName}.
+            No academic documents found for this class.
           </p>
         )}
       </div>

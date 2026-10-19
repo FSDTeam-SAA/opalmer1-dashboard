@@ -12,11 +12,12 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "ClassPulse Dashboard",
+  title: "AchieverPlus Dashboard",
   description:
     "A modern dashboard for managing educational content, users, and analytics. Built with Next.js, Tailwind CSS, and React.",
   icons: {
-    icon: "/icon.png",
+    icon: "/images/achieverplus-logo.png",
+    apple: "/images/achieverplus-logo.png",
   },
 };
 

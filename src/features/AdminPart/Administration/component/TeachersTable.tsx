@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import Image from "next/image";
+import Image from "@/components/ui/data-image";
 import Link from "next/link";
 import { Search } from "lucide-react";
 import {
@@ -71,17 +71,15 @@ export default function TeachersTable({
   const teachers = useMemo(() => {
     if (slug) {
       if (!adminDetails?.teachers) return [];
-      return adminDetails.teachers.map((t, idx) => ({
-        id: idx + 1,
+      return adminDetails.teachers.map((t) => ({
+        id: t._id,
         _id: t._id,
         name: t.username,
         teacherId: t.Id,
         gradeLevel: "—",
         subjects: "—",
         state: "—",
-        image:
-          t.avatar?.url ||
-          "/images/4f8da1b70693c4fcf9e01b9293706aed5cd4e34d.jpg",
+        image: t.avatar?.url || "",
       })) as TeacherListItem[];
     }
     return allTeachers;
@@ -91,7 +89,7 @@ export default function TeachersTable({
     () => [
       columnHelper.accessor("id", {
         header: "No",
-        cell: (info) => info.getValue(),
+        cell: (info) => info.row.index + 1,
         size: 60,
       }),
       columnHelper.accessor("name", {

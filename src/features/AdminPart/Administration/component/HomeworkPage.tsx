@@ -3,6 +3,8 @@
 import { CalendarDays } from "lucide-react";
 import PageHeader from "@/components/sheard/PageHeader";
 
+import { useStudentDetails } from "../hooks/useStudents";
+import { matchesSubject } from "../api/subjectScope";
 import { useHomework } from "../hooks/useHomework";
 import { Skeleton } from "@/components/ui/skeleton";
 import { HomeworkData } from "../types/homework.types";
@@ -44,13 +46,20 @@ function HomeworkCard({ homework }: { homework: HomeworkData }) {
 export default function HomeworkPage({
   slug: _slug,
   studentSlug,
-  subjectSlug: _subjectSlug,
+  subjectSlug,
 }: {
   slug?: string;
   studentSlug: string;
   subjectSlug: string;
 }) {
-  const { data: homework = [], isLoading, isError } = useHomework(studentSlug);
+  const student = useStudentDetails(studentSlug);
+  const subject = student.data?.subjects.find((s) =>
+    matchesSubject(s, subjectSlug),
+  );
+  const query = useHomework(studentSlug, subject?.classId);
+  const homework = subject ? (query.data ?? []) : [];
+  const isLoading = student.isLoading || query.isLoading;
+  const isError = student.isError || query.isError;
 
   const activeHomework = homework.filter((hw) => !hw.archived);
   const archivedHomework = homework.filter((hw) => hw.archived);

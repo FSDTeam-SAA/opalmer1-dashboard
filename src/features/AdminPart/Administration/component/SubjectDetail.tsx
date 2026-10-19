@@ -1,8 +1,9 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/ui/data-image";
 import Link from "next/link";
 import { ChevronRight, ChevronDown } from "lucide-react";
+import { matchesSubject } from "../api/subjectScope";
 import PageHeader from "@/components/sheard/PageHeader";
 import { useAnalysis } from "../hooks/useAnalysis";
 import { useStudentDetails } from "../hooks/useStudents";
@@ -22,6 +23,13 @@ const classInfoItems = [
 /* ───── Progress Chart ───── */
 function ProgressChart({ data }: { data: AnalysisData }) {
   const chartData = data.chartData;
+  if (data.summary.percentage == null) {
+    return (
+      <div className="rounded-xl bg-white p-8 text-gray-500">
+        No attendance records for this period.
+      </div>
+    );
+  }
 
   // Map labels to short forms
   const shortDays: Record<string, string> = {
@@ -36,7 +44,7 @@ function ProgressChart({ data }: { data: AnalysisData }) {
 
   // Generate points for the line (using daily percentage)
   const points = chartData.map((item, i) => {
-    const x = (i / (chartData.length - 1)) * 600;
+    const x = chartData.length > 1 ? (i / (chartData.length - 1)) * 600 : 300;
     const total = item.present + item.absent;
     const percentage = total > 0 ? (item.present / total) * 100 : 0;
     // Scale y: 100% -> 0, 0% -> 100
@@ -52,7 +60,11 @@ function ProgressChart({ data }: { data: AnalysisData }) {
     <div className="rounded-[12px] bg-white p-8 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
       <div className="flex items-center justify-between pb-4">
         <h2 className="text-[20px] font-medium capitalize text-[#871dad]">
-          Progress ({data.summary.percentage}%)
+          Attendance (
+          {data.summary.percentage == null
+            ? "N/A"
+            : `${data.summary.percentage}%`}
+          )
         </h2>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 text-[14px] text-[#666]">
@@ -182,11 +194,14 @@ export default function SubjectDetail({
     isError: isErrorStudent,
   } = useStudentDetails(studentSlug);
 
-  const subjectInfo = studentData?.subjects.find(
-    (s) => s.subject.toLowerCase() === subjectName.toLowerCase(),
+  const subjectInfo = studentData?.subjects.find((s) =>
+    matchesSubject(s, subjectSlug),
   );
 
   const classId = subjectInfo?.classId || "";
+  const displaySubject =
+    subjectInfo?.subject ??
+    (/^[a-f0-9]{24}$/i.test(subjectSlug) ? "Subject" : subjectName);
 
   // 2. Fetch analysis data
   const {
@@ -198,7 +213,7 @@ export default function SubjectDetail({
   if (isLoadingStudent || isLoadingAnalysis) {
     return (
       <div className="space-y-8 pt-10 mt-16">
-        <PageHeader title={subjectName} />
+        <PageHeader title={displaySubject} />
         <Skeleton className="h-[300px] w-full rounded-[12px]" />
         <Skeleton className="h-[120px] w-fit rounded-[20px]" />
       </div>
@@ -208,7 +223,7 @@ export default function SubjectDetail({
   if (isErrorStudent || isErrorAnalysis || !analysisData) {
     return (
       <div className="space-y-8 pt-10 mt-16">
-        <PageHeader title={subjectName} />
+        <PageHeader title={displaySubject} />
         <div className="rounded-[20px] bg-white p-10 text-center shadow-[0px_0px_20px_0px_rgba(0,0,0,0.08)]">
           <p className="text-[18px] font-medium text-[#e64540]">
             Failed to load subject analysis
@@ -220,7 +235,7 @@ export default function SubjectDetail({
 
   return (
     <div className="space-y-8 pt-10 mt-16">
-      <PageHeader title={subjectName} />
+      <PageHeader title={displaySubject} />
       {/* Progress Chart */}
       <ProgressChart data={analysisData} />
 
@@ -232,7 +247,7 @@ export default function SubjectDetail({
         <div className="mt-4 flex w-fit items-center gap-5 rounded-[20px] bg-white px-5 py-5 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
           <div className="h-[80px] w-[80px] flex-shrink-0 overflow-hidden rounded-full">
             <Image
-              src="/images/12043465729ab7c8ceffce00749e7c71df0c9e25.jpg"
+              src=""
               alt="Olivia Carter"
               width={80}
               height={80}

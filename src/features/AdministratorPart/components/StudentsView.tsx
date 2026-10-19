@@ -12,6 +12,7 @@ import {
   type UserListConfig,
 } from "./shared/UserListView";
 import CreateStudentModal from "./CreateStudentModal";
+import GuardianInvitationModal from "./GuardianInvitationModal";
 
 const CONFIG: UserListConfig = {
   type: "student",
@@ -28,6 +29,7 @@ const CONFIG: UserListConfig = {
 
 export function StudentsView() {
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [invitingStudent, setInvitingStudent] = useState<UserRow | null>(null);
 
   const { data: raw, isLoading, isError, error, refetch } = useMyStudents();
   const toggleState = useToggleStudentState();
@@ -63,9 +65,17 @@ export function StudentsView() {
       isUpdatePending={updateStudent.isPending}
       onUpdate={(id, payload) => updateStudent.mutateAsync({ id, payload })}
       onAdd={() => setShowCreateModal(true)}
+      onInviteGuardian={setInvitingStudent}
     >
       {showCreateModal && (
         <CreateStudentModal onClose={() => setShowCreateModal(false)} />
+      )}
+      {invitingStudent && (
+        <GuardianInvitationModal
+          key={invitingStudent._id}
+          student={invitingStudent}
+          onClose={() => setInvitingStudent(null)}
+        />
       )}
     </UserListView>
   );

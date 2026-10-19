@@ -21,6 +21,7 @@ export type AboutOrTermDoc = {
   _id: string;
   docType: AboutOrTermDocType;
   description: string;
+  contentFormat?: "html";
   createdAt?: string;
   updatedAt?: string;
 };

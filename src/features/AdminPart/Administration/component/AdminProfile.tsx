@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import Image from "@/components/ui/data-image";
 import Link from "next/link";
 import { Copy, Mail, MapPin, Phone, School, UserRound } from "lucide-react";
 import PageHeader from "@/components/sheard/PageHeader";
@@ -44,9 +44,7 @@ export default function AdminProfile({ slug }: { slug: string }) {
   }
 
   const { admin, school, students, teachers } = data;
-  const fallbackImage =
-    "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=400&auto=format&fit=crop";
-  const avatarUrl = admin.avatar?.url || fallbackImage;
+  const avatarUrl = admin.avatar?.url || "";
   const locationParts = school
     ? [
         school.address,
@@ -58,8 +56,7 @@ export default function AdminProfile({ slug }: { slug: string }) {
         .filter(Boolean)
         .join(", ")
     : "No school assigned";
-  const schoolLogo =
-    school?.logo || "/images/4f8da1b70693c4fcf9e01b9293706aed5cd4e34d.jpg";
+  const schoolLogo = school?.logo || "";
 
   // Map API students to StudentCard format
   const mappedStudents: Student[] = students.map((s) => ({
@@ -70,7 +67,7 @@ export default function AdminProfile({ slug }: { slug: string }) {
     attendance: "N/A",
     progress: "N/A",
     status: s.state || "N/A",
-    image: s.avatar?.url || fallbackImage,
+    image: s.avatar?.url || "",
   }));
 
   // Map API teachers to TeacherCard format
@@ -81,7 +78,7 @@ export default function AdminProfile({ slug }: { slug: string }) {
     state: "N/A",
     subjects: "N/A",
     status: t.state || "N/A",
-    image: t.avatar?.url || fallbackImage,
+    image: t.avatar?.url || "",
   }));
 
   const handleCopyId = async () => {

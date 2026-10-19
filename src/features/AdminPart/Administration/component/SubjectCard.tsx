@@ -1,11 +1,12 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/ui/data-image";
 import Link from "next/link";
 import { BookOpen, TrendingUp } from "lucide-react";
 
 export type Subject = {
   id: number;
+  classId?: string;
   name: string;
   teacherName: string;
   teacherImage: string;
@@ -25,7 +26,7 @@ export default function SubjectCard({
   studentSlug: string;
   basePath?: string;
 }) {
-  const subjectSlug = subject.name.replace(/\s+/g, "-");
+  const subjectSlug = subject.classId ?? subject.name.replace(/\s+/g, "-");
   const prefix = slug ? `${basePath}/${slug}` : `${basePath}`;
   const href = `${prefix}/students/${studentSlug}/${subjectSlug}`;
 

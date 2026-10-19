@@ -47,24 +47,37 @@ const handler = NextAuth({
       credentials: {
         Id: { label: "Admin Id", type: "text" },
         password: { label: "Password", type: "password" },
+        challenge: { label: "Challenge", type: "text" },
+        otp: { label: "Verification code", type: "text" },
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       async authorize(credentials): Promise<any> {
-        if (!credentials?.Id || !credentials?.password) {
+        if (
+          !credentials?.challenge &&
+          (!credentials?.Id || !credentials?.password)
+        ) {
           throw new Error("Id and password are required");
         }
 
         try {
-          const res = await fetch(`${baseUrl}/users/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              Id: credentials.Id,
-              password: credentials.password,
-            }),
-          });
-
-          console.log("Login response status:", res.status);
+          const verifying = Boolean(credentials?.challenge);
+          const res = await fetch(
+            `${baseUrl}/users/${verifying ? "verify-otp" : "login"}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                ...(verifying
+                  ? { Authorization: `Bearer ${credentials?.challenge}` }
+                  : {}),
+              },
+              body: JSON.stringify(
+                verifying
+                  ? { otp: credentials?.otp }
+                  : { Id: credentials?.Id, password: credentials?.password },
+              ),
+            },
+          );
 
           const data = await res.json();
 
@@ -72,13 +85,14 @@ const handler = NextAuth({
             throw new Error(data.message || "Login failed");
           }
 
+          if (data.data?.is2FA && data.data?.challengeToken)
+            throw new Error(`2FA_REQUIRED:${data.data.challengeToken}`);
           const user = data.data?.user;
           const token = data.data?.token;
 
           if (!user || !token) {
             throw new Error("Invalid response from server");
           }
-          console.log(user);
 
           return {
             id: user.id,
@@ -90,7 +104,6 @@ const handler = NextAuth({
             token: token,
           };
         } catch (error) {
-          console.error("Authorize error:", error);
           if (error instanceof Error) {
             throw new Error(error.message);
           }
@@ -105,7 +118,7 @@ const handler = NextAuth({
   },
 
   callbacks: {
-    async jwt({ token, user, trigger, session }) {
+    async jwt({ token, user }) {
       if (user) {
         return {
           ...token,
@@ -117,10 +130,6 @@ const handler = NextAuth({
           state: user.state,
           accessToken: user.token,
         };
-      }
-
-      if (trigger === "update" && session) {
-        return { ...token, ...session.user };
       }
 
       return token;

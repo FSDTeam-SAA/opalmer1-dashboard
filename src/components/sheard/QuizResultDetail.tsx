@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/ui/data-image";
 import { Check } from "lucide-react";
 import {
   Accordion,

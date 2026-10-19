@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Image from "next/image";
+import Image from "@/components/ui/data-image";
 import Link from "next/link";
 import { Search } from "lucide-react";
 import PageHeader from "@/components/sheard/PageHeader";
@@ -37,7 +37,6 @@ export default function StudentsTable({
   const isError = slug ? isErrorAdmin : isErrorAll;
 
   // Use a fallback image for consistency
-  const FALLBACK_IMAGE = "/images/4f8da1b70693c4fcf9e01b9293706aed5cd4e34d.jpg";
 
   const students = useMemo(() => {
     if (slug) {
@@ -50,7 +49,7 @@ export default function StudentsTable({
         grade: `Grade ${s.gradeLevel}`,
         age: "—",
         attendance: "—",
-        image: s.avatar?.url || FALLBACK_IMAGE,
+        image: s.avatar?.url || "",
       })) as StudentListItem[];
     }
     return allStudents;

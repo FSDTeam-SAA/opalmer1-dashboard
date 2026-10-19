@@ -8,8 +8,6 @@ import type {
   UpdateTeacherPayload,
 } from "../types/teachers.types";
 
-const FALLBACK_IMAGE = "/images/4f8da1b70693c4fcf9e01b9293706aed5cd4e34d.jpg";
-
 function toRow(record: TeacherRecord, idx: number): TeacherRow {
   return {
     no: idx + 1,
@@ -24,7 +22,7 @@ function toRow(record: TeacherRecord, idx: number): TeacherRow {
     email: record.email ?? "—",
     phoneNumber: record.phoneNumber ?? "—",
     active: (record.state ?? "active").toLowerCase() === "active",
-    image: record.avatar?.url || FALLBACK_IMAGE,
+    image: record.avatar?.url || "",
   };
 }
 

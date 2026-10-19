@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/ui/data-image";
 import { Mail, Phone, BookOpen, GraduationCap } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ToggleSwitch } from "./ToggleSwitch";
@@ -27,8 +27,6 @@ export type UserProfileCardProps = {
   onToggle: () => void;
   onEdit: () => void;
 };
-
-const FALLBACK_IMAGE = "/images/4f8da1b70693c4fcf9e01b9293706aed5cd4e34d.jpg";
 
 /* ────────────────────────────────────────────────────────────
    Skeleton
@@ -71,7 +69,7 @@ export function UserProfileCard({
       {/* Floating photo */}
       <div className="relative z-10 h-[180px] w-[180px] overflow-hidden rounded-[16px] shadow-[0_8px_30px_rgba(135,29,173,0.2)]">
         <Image
-          src={user.image || FALLBACK_IMAGE}
+          src={user.image || ""}
           alt={user.name}
           width={180}
           height={180}

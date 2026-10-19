@@ -131,3 +131,10 @@
     font-family: "Poppins", sans-serif;
   }
 }
+
+.policy-editor .ql-toolbar { border-radius: 10px 10px 0 0; background: #fafafa; }
+.policy-editor .ql-container { border-radius: 0 0 10px 10px; font-family: inherit; font-size: 16px; }
+.policy-editor .ql-editor { min-height: 260px; max-height: 42dvh; overflow-y: auto; overflow-wrap: anywhere; }
+.policy-content { overflow-wrap: anywhere; line-height: 1.7; }
+.policy-content a { color: #871dad; text-decoration: underline; }
+@media (max-width: 640px) { .policy-editor .ql-editor { min-height: 200px; } .policy-editor .ql-toolbar { padding: 8px 4px; } }

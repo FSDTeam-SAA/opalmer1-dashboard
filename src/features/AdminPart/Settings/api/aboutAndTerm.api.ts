@@ -8,7 +8,7 @@ import type {
 
 /**
  * GET /aboutAndTerm/about
- * Returns all "about" docs. The UI only uses the first entry.
+ * Returns the current published About Us document (legacy array envelope).
  */
 export async function fetchAbout(): Promise<AboutOrTermDoc | null> {
   const { data } = await api.get<AboutOrTermResponse>("/aboutAndTerm/about");
@@ -18,7 +18,7 @@ export async function fetchAbout(): Promise<AboutOrTermDoc | null> {
 
 /**
  * GET /aboutAndTerm/terms
- * Returns all "terms" docs. The UI only uses the first entry.
+ * Returns the current published Terms document (legacy array envelope).
  */
 export async function fetchTerms(): Promise<AboutOrTermDoc | null> {
   const { data } = await api.get<AboutOrTermResponse>("/aboutAndTerm/terms");

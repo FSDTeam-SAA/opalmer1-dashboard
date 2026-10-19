@@ -14,6 +14,8 @@ export default function Login() {
   const searchParams = useSearchParams();
   const [adminId, setAdminId] = useState("");
   const [password, setPassword] = useState("");
+  const [challenge, setChallenge] = useState("");
+  const [otp, setOtp] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -35,9 +37,21 @@ export default function Login() {
       const result = await signIn("credentials", {
         Id: adminId,
         password,
+        challenge,
+        otp,
         redirect: false,
       });
 
+      if (result?.error?.startsWith("2FA_REQUIRED:")) {
+        setChallenge(result.error.slice("2FA_REQUIRED:".length));
+        setOtp("");
+        return;
+      }
+      if (result?.error?.startsWith("2FA_REQUIRED:")) {
+        setChallenge(result.error.slice("2FA_REQUIRED:".length));
+        setOtp("");
+        return;
+      }
       if (result?.error) {
         setError(result.error || "Invalid credentials");
         return;
@@ -109,6 +123,17 @@ export default function Login() {
           onSubmit={handleSubmit}
           className="px-6 sm:px-10 lg:px-[72px] pt-6 sm:pt-8 pb-8 sm:pb-10"
         >
+          <div className="mb-6 flex justify-center">
+            <Image
+              src="/images/achieverplus-logo.png"
+              alt="AchieverPlus logo"
+              width={128}
+              height={128}
+              sizes="128px"
+              className="h-auto w-28 object-contain sm:w-32"
+              priority
+            />
+          </div>
           {error && (
             <div className="mb-4 text-red-500 text-sm bg-red-50 border border-red-200 rounded-[8px] px-4 py-2">
               {error}
@@ -163,6 +188,37 @@ export default function Login() {
             </div>
           </div>
 
+          {challenge && (
+            <div className="mb-6">
+              <label htmlFor="otp" className="block font-semibold mb-2">
+                Email verification code
+              </label>
+              <p className="mb-2 text-sm text-gray-600">
+                Enter the six-digit code sent to your account email.
+              </p>
+              <input
+                id="otp"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                pattern="[0-9]{6}"
+                maxLength={6}
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                required
+                className="w-full h-12 border rounded-lg px-4"
+              />
+              <button
+                type="button"
+                className="mt-2 text-sm underline"
+                onClick={() => {
+                  setChallenge("");
+                  setOtp("");
+                }}
+              >
+                Start again
+              </button>
+            </div>
+          )}
           {/* Sign In button */}
           <button
             type="submit"

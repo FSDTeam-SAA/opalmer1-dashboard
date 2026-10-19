@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/ui/data-image";
 import { Copy } from "lucide-react";
 import PageHeader from "@/components/sheard/PageHeader";
 import SubjectCard, { Subject } from "./SubjectCard";
@@ -46,8 +46,6 @@ export default function StudentProfile({
   }
 
   const { student, parent, overall, subjects } = data;
-  const fallbackImage =
-    "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=400&auto=format&fit=crop";
 
   return (
     <div className="space-y-8 pt-10 mt-16">
@@ -57,7 +55,7 @@ export default function StudentProfile({
         {/* Student Image */}
         <div className="h-[200px] w-[200px] flex-shrink-0 overflow-hidden rounded-[6px]">
           <Image
-            src={student.avatar?.url || fallbackImage}
+            src={student.avatar?.url || ""}
             alt={student.username}
             width={200}
             height={200}
@@ -103,7 +101,7 @@ export default function StudentProfile({
           <div className="mt-4 flex items-center gap-5 rounded-[20px] bg-[rgba(63,153,180,0.1)] px-5 py-7">
             <div className="h-[80px] w-[80px] flex-shrink-0 overflow-hidden rounded-full">
               <Image
-                src={parent?.parentId?.avatar?.url || fallbackImage}
+                src={parent?.parentId?.avatar?.url || ""}
                 alt={parent?.parentId?.username || "N/A"}
                 width={80}
                 height={80}
@@ -157,8 +155,9 @@ export default function StudentProfile({
               subject={{
                 id: idx + 1,
                 name: subject.subject,
-                teacherName: "N/A", // Not in individual student API
-                teacherImage: fallbackImage,
+                classId: subject.classId,
+                teacherName: subject.teacher?.username || "N/A",
+                teacherImage: subject.teacher?.avatar?.url || "",
                 date: "N/A",
                 attendance: `${subject.attendance}%`,
                 progress: `${subject.progress}%`,
