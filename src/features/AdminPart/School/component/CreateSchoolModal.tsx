@@ -1,5 +1,7 @@
 "use client";
 
+import styles from "@/components/ui/dashboard-modal.module.css";
+
 import { useState } from "react";
 import Image from "@/components/ui/data-image";
 import { ImageIcon, Upload, X } from "lucide-react";
@@ -103,13 +105,10 @@ export default function CreateSchoolModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(18,18,18,0.4)] p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-[3px]"
       onClick={onClose}
     >
-      <div
-        className="relative w-full max-w-[720px] max-h-[90vh] overflow-y-auto rounded-[20px] bg-white px-8 py-8"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className={styles.panel} onClick={(e) => e.stopPropagation()}>
         <button
           type="button"
           onClick={onClose}
@@ -127,63 +126,63 @@ export default function CreateSchoolModal({
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <input
               type="text"
-              placeholder="School name *"
+              placeholder="Enter school name *"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="h-[48px] rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 outline-none"
             />
             <input
               type="text"
-              placeholder="School code"
+              placeholder="Enter school code"
               value={code}
               onChange={(e) => setCode(e.target.value)}
               className="h-[48px] rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 outline-none"
             />
             <input
               type="email"
-              placeholder="Email"
+              placeholder="Enter school email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="h-[48px] rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 outline-none"
             />
             <input
               type="tel"
-              placeholder="Phone"
+              placeholder="Enter school phone number"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               className="h-[48px] rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 outline-none"
             />
             <input
               type="text"
-              placeholder="Address"
+              placeholder="Enter school address"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               className="h-[48px] rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 outline-none"
             />
             <input
               type="text"
-              placeholder="City"
+              placeholder="Enter city"
               value={city}
               onChange={(e) => setCity(e.target.value)}
               className="h-[48px] rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 outline-none"
             />
             <input
               type="text"
-              placeholder="State"
+              placeholder="Enter state"
               value={state}
               onChange={(e) => setState(e.target.value)}
               className="h-[48px] rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 outline-none"
             />
             <input
               type="text"
-              placeholder="Country"
+              placeholder="Enter country"
               value={country}
               onChange={(e) => setCountry(e.target.value)}
               className="h-[48px] rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 outline-none"
             />
             <input
               type="text"
-              placeholder="Postal code"
+              placeholder="Enter postal code"
               value={postalCode}
               onChange={(e) => setPostalCode(e.target.value)}
               className="h-[48px] rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 outline-none"
@@ -191,7 +190,7 @@ export default function CreateSchoolModal({
             <input
               type="number"
               min="1800"
-              placeholder="Established year"
+              placeholder="Enter establishment year"
               value={establishedYear}
               onChange={(e) => setEstablishedYear(e.target.value)}
               className="h-[48px] rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 outline-none"

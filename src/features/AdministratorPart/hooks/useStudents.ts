@@ -49,6 +49,9 @@ export function useUpdateStudent() {
     }) => updateStudent(id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: studentsKeys.all });
+      queryClient.invalidateQueries({
+        queryKey: ["administrator", "students", "detail"],
+      });
     },
   });
 }
@@ -61,6 +64,9 @@ export function useToggleStudentState() {
       setStudentState(id, state),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: studentsKeys.all });
+      queryClient.invalidateQueries({
+        queryKey: ["administrator", "students", "detail"],
+      });
     },
   });
 }

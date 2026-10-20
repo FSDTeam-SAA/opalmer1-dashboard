@@ -36,6 +36,9 @@ export function TeachersView() {
   /** Normalise API rows → UserRow */
   const data: UserRow[] | undefined = raw?.map((t) => ({
     _id: t._id,
+    age: t.age,
+    gender: t.gender,
+    gradeLevel: t.gradeLevel,
     name: t.name,
     userId: t.teacherId,
     badge: t.subject,

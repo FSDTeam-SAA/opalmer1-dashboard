@@ -1,5 +1,7 @@
 "use client";
 
+import PageHeader from "@/components/sheard/PageHeader";
+
 import { useState, useMemo } from "react";
 import Image from "@/components/ui/data-image";
 import Link from "next/link";
@@ -168,6 +170,7 @@ export default function TeachersTable({
 
   return (
     <div className="mt-32 pt-10">
+      <PageHeader title="Teachers" />
       <div className="rounded-[20px] bg-white p-8 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">

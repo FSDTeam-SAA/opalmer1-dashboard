@@ -1,5 +1,7 @@
 "use client";
 
+import PageHeader from "@/components/sheard/PageHeader";
+
 import { useQuery } from "@tanstack/react-query";
 import QuizResultDetail, {
   QuizResultSkeleton,
@@ -27,6 +29,7 @@ export default function QuizAttemptPage({
   if (isError || !data) {
     return (
       <div className="mt-32 flex flex-col items-center justify-center pt-10 text-center">
+        <PageHeader title="Quiz Results" />
         <p className="text-[18px] font-medium text-[#e64540]">
           Failed to load quiz results
         </p>

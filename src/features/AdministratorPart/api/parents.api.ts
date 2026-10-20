@@ -43,6 +43,7 @@ export async function createParent(
   form.append("username", payload.username);
   form.append("Id", payload.Id);
   form.append("type", payload.type);
+  if (payload.email) form.append("email", payload.email);
   if (payload.phoneNumber) form.append("phoneNumber", payload.phoneNumber);
   if (payload.password) form.append("password", payload.password);
   if (payload.image) form.append("image", payload.image);

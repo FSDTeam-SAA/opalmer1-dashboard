@@ -15,6 +15,9 @@ import EditUserModal from "./EditUserModal";
    Generic row shape expected by UserListView
 ─────────────────────────────────────────────── */
 export type UserRow = {
+  age?: number;
+  gender?: "male" | "female" | "other";
+  gradeLevel?: string | number;
   _id: string;
   name: string;
   userId: string; // studentId or teacherId
@@ -342,7 +345,7 @@ export function UserListView({
 
   return (
     <div className="space-y-6">
-      <PageHeader title={config.title} showBack={false} />
+      <PageHeader title={config.title} />
 
       {/* ── Stats Row ── */}
       {!isLoading && !isError && data && (
@@ -429,14 +432,9 @@ export function UserListView({
             Id: editing.userId,
             phoneNumber: editing.phoneNumber === "—" ? "" : editing.phoneNumber,
             email: editing.email === "—" ? "" : editing.email,
-            ...(config.type === "student"
-              ? {
-                  gradeLevel:
-                    editing.badge && editing.badge !== "—"
-                      ? Number(editing.badge) || undefined
-                      : undefined,
-                }
-              : {}),
+            age: editing.age,
+            gender: editing.gender,
+            gradeLevel: editing.gradeLevel,
             state: editing.active ? "active" : "inactive",
           }}
           isPending={isUpdatePending}

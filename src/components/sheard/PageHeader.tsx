@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { useNavbarTitle } from "./NavbarContext";
+import { getDashboardBackHref } from "@/lib/dashboard-navigation";
 
 interface PageHeaderProps {
   title: string;
@@ -14,7 +16,8 @@ export default function PageHeader({
   title,
   showBack = true,
 }: PageHeaderProps) {
-  const router = useRouter();
+  const pathname = usePathname();
+  const backHref = getDashboardBackHref(pathname);
   const { setTitle } = useNavbarTitle();
 
   useEffect(() => {
@@ -22,14 +25,16 @@ export default function PageHeader({
   }, [title, setTitle]);
 
   return (
-    <div className="mb-6 flex items-center gap-4">
-      {showBack && (
-        <button
-          onClick={() => router.back()}
-          className="flex h-[40px] w-[40px] cursor-pointer items-center justify-center rounded-full bg-white text-[#333] shadow-[0px_0px_10px_0px_rgba(0,0,0,0.1)] transition-colors hover:bg-gray-50"
+    <div className="mb-6 flex w-full items-center gap-4">
+      {showBack && backHref && (
+        <Link
+          href={backHref}
+          aria-label="Back"
+          className="inline-flex h-10 items-center gap-2 rounded-lg border border-purple-100 bg-white px-4 text-sm font-medium text-[#871dad] shadow-sm transition-colors hover:bg-purple-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#871dad]"
         >
-          <ArrowLeft size={20} />
-        </button>
+          <ArrowLeft size={18} aria-hidden="true" />
+          Back
+        </Link>
       )}
     </div>
   );

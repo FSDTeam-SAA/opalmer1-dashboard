@@ -77,7 +77,7 @@ export default function ChatInbox() {
 
   return (
     <div className="space-y-4 pt-6 sm:pt-10">
-      <PageHeader title="Chat" showBack={false} />
+      <PageHeader title="Chat" />
       <div className="flex h-[calc(100dvh-240px)] min-h-[440px] overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm sm:min-h-[520px]">
         <aside
           className={`${selected ? "hidden md:flex" : "flex"} w-full flex-col border-r border-gray-100 md:w-80 md:shrink-0`}

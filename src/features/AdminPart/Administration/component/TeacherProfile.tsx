@@ -1,5 +1,7 @@
 "use client";
 
+import PageHeader from "@/components/sheard/PageHeader";
+
 import Image from "@/components/ui/data-image";
 import Link from "next/link";
 import { useState } from "react";
@@ -35,6 +37,7 @@ const subjectChipColors: Record<string, string> = {
 function ProfileSkeleton() {
   return (
     <div className="space-y-8 pt-10 mt-16">
+      <PageHeader title="Teacher Profile" />
       {/* Centered profile card skeleton */}
       <div className="flex flex-col items-center">
         <Skeleton className="h-[180px] w-[180px] rounded-[12px] z-10" />
@@ -181,6 +184,7 @@ export default function TeacherProfile({
   if (isError || !teacher) {
     return (
       <div className="mt-32 flex flex-col items-center justify-center pt-10 text-center">
+        <PageHeader title="Teacher Profile" />
         <p className="text-[18px] font-medium text-[#e64540]">
           Failed to load teacher profile
         </p>
@@ -191,6 +195,7 @@ export default function TeacherProfile({
 
   return (
     <div className="space-y-8 pt-10 mt-16">
+      <PageHeader title="Teacher Profile" />
       {update.isError && (
         <p role="alert" className="text-red-600">
           The teacher could not be updated. Please retry.

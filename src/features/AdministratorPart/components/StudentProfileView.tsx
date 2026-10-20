@@ -141,6 +141,7 @@ export default function StudentProfileView({
 
   return (
     <div className="mt-20">
+      <PageHeader title="Student Profile" />
       {/* top purple area */}
       <div className="" />
 

@@ -1,8 +1,12 @@
 "use client";
 
+import styles from "@/components/ui/dashboard-modal.module.css";
+
 import { useState, type FormEvent } from "react";
 import { isAxiosError } from "axios";
 import { api } from "@/lib/api";
+import ParentPicker from "./ParentPicker";
+import type { ParentRow } from "../api/parents.api";
 import {
   Dialog,
   DialogContent,
@@ -25,7 +29,7 @@ export default function GuardianInvitationModal({
   student: { _id: string; userId: string; name: string };
   onClose: () => void;
 }) {
-  const [email, setEmail] = useState("");
+  const [parent, setParent] = useState<ParentRow | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [invitation, setInvitation] = useState<Invitation | null>(null);
@@ -33,6 +37,10 @@ export default function GuardianInvitationModal({
   async function create(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy || invitation) return;
+    if (!parent) {
+      setError("Select a parent from the list.");
+      return;
+    }
     setBusy(true);
     setError("");
     try {
@@ -40,7 +48,7 @@ export default function GuardianInvitationModal({
         "/parent/child/invitations",
         {
           childId: student._id,
-          parentEmail: email.trim(),
+          parentId: parent._id,
         },
       );
       setInvitation(data.data);
@@ -48,8 +56,8 @@ export default function GuardianInvitationModal({
       setError(
         isAxiosError(err)
           ? err.response?.data?.message ||
-              "Unable to create invitation. Please try again."
-          : "Unable to create invitation. Please try again.",
+              "Unable to send invitation. Please try again."
+          : "Unable to send invitation. Please try again.",
       );
     } finally {
       setBusy(false);
@@ -64,7 +72,7 @@ export default function GuardianInvitationModal({
       }}
     >
       <DialogContent
-        className="max-h-[90vh] overflow-y-auto rounded-2xl bg-white sm:max-w-lg"
+        className={`${styles.panel} ${styles.compact} ${styles.dialog}`}
         showCloseButton={!busy}
       >
         <DialogHeader>
@@ -72,14 +80,14 @@ export default function GuardianInvitationModal({
             Guardian Invitation
           </DialogTitle>
           <DialogDescription>
-            Invite a verified guardian for {student.name}. Enter the
-            guardian&apos;s email below.
+            Invite a verified guardian for {student.name}. Search and select a
+            parent to send the invitation by email.
           </DialogDescription>
         </DialogHeader>
         {invitation ? (
           <div role="status" className="space-y-4">
             <p className="font-medium text-green-700">
-              Invitation created successfully.
+              Invitation email sent to {invitation.parentEmail}.
             </p>
             <div className="space-y-2 rounded-xl border border-green-200 bg-green-50 p-4">
               <p className="text-sm">Student ID: {invitation.studentId}</p>
@@ -94,9 +102,9 @@ export default function GuardianInvitationModal({
               </p>
             </div>
             <p className="text-sm text-gray-600">
-              Share this code securely with the guardian. Only a parent account
-              using this email can redeem it. The code is shown only when
-              created.
+              The email includes this code and instructions to link the child in
+              the parent app. Only a parent account using this email can redeem
+              it.
             </p>
             <button
               type="button"
@@ -122,25 +130,14 @@ export default function GuardianInvitationModal({
                 className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-600"
               />
             </div>
-            <div className="space-y-2">
-              <label
-                htmlFor="invitation-guardian-email"
-                className="block text-sm font-medium text-[#333]"
-              >
-                Guardian email
-              </label>
-              <input
-                id="invitation-guardian-email"
-                type="email"
-                autoComplete="email"
-                required
-                disabled={busy}
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder="guardian@example.com"
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#871dad] focus:outline-none"
-              />
-            </div>
+            <ParentPicker
+              value={parent}
+              onChange={(value) => {
+                setParent(value);
+                setError("");
+              }}
+              disabled={busy}
+            />
             {error && (
               <p role="alert" className="text-sm text-red-600">
                 {error}
@@ -157,10 +154,10 @@ export default function GuardianInvitationModal({
               </button>
               <button
                 type="submit"
-                disabled={busy}
+                disabled={busy || !parent}
                 className="cursor-pointer rounded-lg bg-[#871dad] px-5 py-2.5 font-medium text-white hover:bg-[#751a99] disabled:opacity-50"
               >
-                {busy ? "Creating..." : "Create Invitation"}
+                {busy ? "Sending..." : "Send Invitation"}
               </button>
             </div>
           </form>

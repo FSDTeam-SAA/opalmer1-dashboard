@@ -1,5 +1,7 @@
 "use client";
 
+import PageHeader from "@/components/sheard/PageHeader";
+
 import { Calendar, Users, BarChart3, User } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -26,6 +28,7 @@ const gradeColorMap: Record<
 function GradesSkeleton() {
   return (
     <div className="mt-32 pt-10">
+      <PageHeader title="Grades" />
       <div className="grid grid-cols-2 gap-8">
         {/* Left column skeleton */}
         <div>
@@ -182,6 +185,7 @@ export default function TeacherGrades({
   if (isError || !data) {
     return (
       <div className="mt-32 flex flex-col items-center justify-center pt-10 text-center">
+        <PageHeader title="Grades" />
         <p className="text-[18px] font-medium text-[#e64540]">
           Failed to load grades
         </p>
@@ -192,6 +196,7 @@ export default function TeacherGrades({
 
   return (
     <div className="mt-32 pt-10">
+      <PageHeader title="Grades" />
       <div className="grid grid-cols-2 gap-8">
         {/* ── Left Column: Grades ── */}
         <div>

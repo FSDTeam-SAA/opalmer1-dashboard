@@ -34,6 +34,7 @@ export type UpdateParentPayload = Partial<{
 
 export type CreateParentPayload = {
   username: string;
+  email?: string;
   phoneNumber?: string;
   Id: string;
   password?: string;

@@ -151,7 +151,7 @@ export function AdministrationView() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Administration" showBack={false} />
+      <PageHeader title="Administration" />
 
       <div className="rounded-[20px] bg-white p-4 sm:p-6 lg:p-8 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)] mt-10">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">

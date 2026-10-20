@@ -20,7 +20,7 @@ export type StudentRecord = {
   avatar?: StudentAvatar;
   state?: string;
   email?: string;
-  gender?: string;
+  gender?: "male" | "female" | "other";
 };
 
 export type StudentsResponse = {
@@ -31,6 +31,9 @@ export type StudentsResponse = {
 
 /** Shape consumed by the StudentsTable UI. */
 export type StudentRow = {
+  age?: number;
+  gender?: "male" | "female" | "other";
+  gradeLevel?: string | number;
   no: number;
   _id: string;
   name: string;

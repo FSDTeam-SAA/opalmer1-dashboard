@@ -1,5 +1,7 @@
 "use client";
 
+import PageHeader from "@/components/sheard/PageHeader";
+
 import Image from "@/components/ui/data-image";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
@@ -48,6 +50,7 @@ export default function AttendedStudentsGrid({
 
   return (
     <div className="space-y-6 pt-10 mt-16">
+      <PageHeader title="Attended Students" />
       <h2 className="text-[30px] font-semibold text-[#333]">
         Attended Students
       </h2>

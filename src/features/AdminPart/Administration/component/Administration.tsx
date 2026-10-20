@@ -21,7 +21,7 @@ export default function Administration() {
 
   return (
     <div className="space-y-8 pt-10 mt-32">
-      <PageHeader title="Administration" showBack={false} />
+      <PageHeader title="Administration" />
 
       {isLoading && (
         <div className="text-center text-[18px] text-[#666] py-12">

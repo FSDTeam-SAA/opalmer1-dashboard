@@ -15,6 +15,9 @@ function toRow(record: StudentRecord, idx: number): StudentRow {
   return {
     no: idx + 1,
     _id: record._id,
+    age: record.age,
+    gender: record.gender,
+    gradeLevel: record.gradeLevel,
     name: record.username,
     studentId: record.Id,
     grade: String(grade),

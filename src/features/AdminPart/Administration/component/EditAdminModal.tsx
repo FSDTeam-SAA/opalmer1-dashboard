@@ -1,5 +1,7 @@
 "use client";
 
+import styles from "@/components/ui/dashboard-modal.module.css";
+
 import { useState, useRef } from "react";
 import Image from "@/components/ui/data-image";
 import { Camera, Eye, EyeOff, X } from "lucide-react";
@@ -78,13 +80,10 @@ export default function EditAdminModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(18,18,18,0.4)]"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-[3px]"
       onClick={onClose}
     >
-      <div
-        className="relative max-h-[90vh] w-[629px] overflow-y-auto rounded-[30px] bg-white px-[72px] py-[50px]"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className={styles.panel} onClick={(e) => e.stopPropagation()}>
         <button
           onClick={onClose}
           className="absolute right-6 top-6 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-[#666] hover:bg-gray-100 transition-colors"
@@ -97,9 +96,9 @@ export default function EditAdminModal({
         </h2>
 
         {/* Avatar Upload */}
-        <div className="mt-8 flex justify-center">
+        <div className="mt-5 flex justify-center">
           <div className="relative">
-            <div className="h-[150px] w-[150px] overflow-hidden rounded-full border-[3px] border-[#871dad]">
+            <div className="h-20 w-20 sm:h-24 sm:w-24 overflow-hidden rounded-full border-[3px] border-[#871dad]">
               {avatarPreview ? (
                 <Image
                   src={avatarPreview}
@@ -131,7 +130,7 @@ export default function EditAdminModal({
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-10 space-y-6">
+        <form onSubmit={handleSubmit} className={styles.fields}>
           <div>
             <label className="block text-[18px] font-semibold capitalize text-[#333]">
               Name
@@ -151,7 +150,7 @@ export default function EditAdminModal({
             </label>
             <input
               type="text"
-              placeholder="Enter admin Id"
+              placeholder="Enter administrator ID"
               value={adminId}
               onChange={(e) => setAdminId(e.target.value)}
               className="mt-2 h-[56px] w-full rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-5 text-[16px] text-[#333] outline-none placeholder:text-[#666]"
@@ -186,7 +185,7 @@ export default function EditAdminModal({
             </label>
             <input
               type="text"
-              placeholder="Enter phone number"
+              placeholder="Enter administrator phone number"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               className="mt-2 h-[56px] w-full rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-5 text-[16px] text-[#333] outline-none placeholder:text-[#666]"
@@ -199,7 +198,7 @@ export default function EditAdminModal({
             </label>
             <input
               type="email"
-              placeholder="Enter email"
+              placeholder="Enter administrator email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="mt-2 h-[56px] w-full rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-5 text-[16px] text-[#333] outline-none placeholder:text-[#666]"

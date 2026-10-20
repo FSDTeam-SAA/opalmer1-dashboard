@@ -1,7 +1,9 @@
 "use client";
 
+import styles from "@/components/ui/dashboard-modal.module.css";
+
 import Image from "@/components/ui/data-image";
-import { X, Copy } from "lucide-react";
+import { X } from "lucide-react";
 import type { UserRow } from "./shared/UserListView";
 
 type ParentDetailsModalProps = {
@@ -15,13 +17,10 @@ export default function ParentDetailsModal({
 }: ParentDetailsModalProps) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(18,18,18,0.4)] p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-[3px]"
       onClick={onClose}
     >
-      <div
-        className="relative w-full max-w-[500px] overflow-hidden rounded-[20px] bg-white p-6 shadow-xl"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className={styles.panel} onClick={(e) => e.stopPropagation()}>
         <button
           onClick={onClose}
           aria-label="Close"
@@ -103,7 +102,7 @@ export default function ParentDetailsModal({
           </div>
         </div>
 
-        <div className="mt-6 flex justify-center">
+        <div className="mt-5 flex justify-center">
           <button
             onClick={onClose}
             className="w-full rounded-[10px] bg-[#871dad] cursor-pointer px-5 py-[12px] text-[15px] font-semibold text-white hover:bg-[#751a99] active:scale-95 transition-all"

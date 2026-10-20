@@ -1,5 +1,7 @@
 "use client";
 
+import PageHeader from "./PageHeader";
+
 import Image from "@/components/ui/data-image";
 import { Check } from "lucide-react";
 import {
@@ -15,6 +17,7 @@ import type { QuizAttempt } from "@/types/teacher.types";
 export function QuizResultSkeleton() {
   return (
     <div className="space-y-8 pt-10 mt-16">
+      <PageHeader title="Quiz Results" />
       {/* Student card skeleton */}
       <div className="flex items-center gap-5 rounded-[20px] bg-white p-5 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
         <Skeleton className="h-[160px] w-[160px] rounded-[6px]" />
@@ -46,6 +49,7 @@ export default function QuizResultDetail({ data }: { data: QuizAttempt }) {
 
   return (
     <div className="space-y-8 pt-10 mt-16">
+      <PageHeader title="Quiz Results" />
       {/* Student Header Card */}
       <div className="flex items-center gap-5 rounded-[20px] bg-white p-5 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
         <div className="h-[160px] w-[160px] flex-shrink-0 overflow-hidden rounded-[6px]">

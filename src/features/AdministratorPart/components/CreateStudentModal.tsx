@@ -1,5 +1,7 @@
 "use client";
 
+import styles from "@/components/ui/dashboard-modal.module.css";
+
 import { useRef, useState } from "react";
 import Image from "@/components/ui/data-image";
 import { Camera, Eye, EyeOff, School as SchoolIcon, X } from "lucide-react";
@@ -122,13 +124,10 @@ export default function CreateStudentModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(18,18,18,0.4)] p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-[3px]"
       onClick={onClose}
     >
-      <div
-        className="relative w-full max-w-[629px] max-h-[90vh] overflow-y-auto rounded-[30px] bg-white px-6 py-8 sm:px-10 lg:px-[72px] lg:py-[50px]"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className={styles.panel} onClick={(e) => e.stopPropagation()}>
         <button
           onClick={onClose}
           aria-label="Close"
@@ -141,9 +140,9 @@ export default function CreateStudentModal({
           Add New Student
         </h2>
 
-        <div className="mt-6 flex justify-center">
+        <div className="mt-5 flex justify-center">
           <div className="relative">
-            <div className="h-[120px] w-[120px] sm:h-[150px] sm:w-[150px] overflow-hidden rounded-full border-[3px] border-[#871dad]">
+            <div className="h-20 w-20 sm:h-24 sm:w-24 overflow-hidden rounded-full border-[3px] border-[#871dad]">
               {avatarPreview ? (
                 <Image
                   src={avatarPreview}
@@ -180,7 +179,7 @@ export default function CreateStudentModal({
         <form onSubmit={handleSubmit} className="mt-6 space-y-5">
           <fieldset
             disabled={needsSchool}
-            className="space-y-5 disabled:opacity-60"
+            className={`${styles.fields} disabled:opacity-60`}
           >
             <div>
               <label className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]">
@@ -201,21 +200,21 @@ export default function CreateStudentModal({
               </label>
               <input
                 type="text"
-                placeholder="Enter student Id"
+                placeholder="Enter student ID"
                 value={studentId}
                 onChange={(e) => setStudentId(e.target.value)}
                 className="mt-2 h-[48px] sm:h-[56px] w-full rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 sm:px-5 text-[15px] sm:text-[16px] text-[#333] outline-none placeholder:text-[#666]"
               />
             </div>
 
-            <div>
+            <div className={styles.fullWidth}>
               <label className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]">
                 Password
               </label>
               <div className="relative mt-2">
                 <input
                   type={showPassword ? "text" : "password"}
-                  placeholder="Enter password"
+                  placeholder="Enter student password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="h-[48px] sm:h-[56px] w-full rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 sm:px-5 pr-12 text-[15px] sm:text-[16px] text-[#333] outline-none placeholder:text-[#666]"
@@ -231,14 +230,16 @@ export default function CreateStudentModal({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div
+              className={`${styles.fullWidth} grid grid-cols-1 gap-4 sm:grid-cols-2`}
+            >
               <div>
                 <label className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]">
                   Email
                 </label>
                 <input
                   type="email"
-                  placeholder="student@school.io"
+                  placeholder="Enter student email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="mt-2 h-[48px] sm:h-[56px] w-full rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 sm:px-5 text-[15px] sm:text-[16px] text-[#333] outline-none placeholder:text-[#666]"
@@ -250,7 +251,7 @@ export default function CreateStudentModal({
                 </label>
                 <input
                   type="tel"
-                  placeholder="+1 555 123 4567"
+                  placeholder="Enter student phone number"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   className="mt-2 h-[48px] sm:h-[56px] w-full rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 sm:px-5 text-[15px] sm:text-[16px] text-[#333] outline-none placeholder:text-[#666]"
@@ -258,7 +259,9 @@ export default function CreateStudentModal({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div
+              className={`${styles.fullWidth} grid grid-cols-1 gap-4 sm:grid-cols-3`}
+            >
               <div>
                 <label className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]">
                   Grade Level
@@ -266,7 +269,7 @@ export default function CreateStudentModal({
                 <input
                   type="number"
                   min="1"
-                  placeholder="e.g. 8"
+                  placeholder="Enter student grade level"
                   value={gradeLevel}
                   onChange={(e) => setGradeLevel(e.target.value)}
                   className="mt-2 h-[48px] sm:h-[56px] w-full rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 sm:px-5 text-[15px] sm:text-[16px] text-[#333] outline-none placeholder:text-[#666]"
@@ -279,7 +282,7 @@ export default function CreateStudentModal({
                 <input
                   type="number"
                   min="1"
-                  placeholder="e.g. 14"
+                  placeholder="Enter student age"
                   value={age}
                   onChange={(e) => setAge(e.target.value)}
                   className="mt-2 h-[48px] sm:h-[56px] w-full rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 sm:px-5 text-[15px] sm:text-[16px] text-[#333] outline-none placeholder:text-[#666]"

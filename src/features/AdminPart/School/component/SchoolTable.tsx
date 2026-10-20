@@ -56,7 +56,7 @@ export default function SchoolTable() {
 
   return (
     <div className="mt-32 pt-10">
-      <PageHeader title="Schools" showBack={false} />
+      <PageHeader title="Schools" />
       <div className="rounded-[20px] bg-white p-8 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-[24px] font-semibold text-[#333]">

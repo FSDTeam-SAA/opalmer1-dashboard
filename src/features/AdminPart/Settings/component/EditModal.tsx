@@ -1,5 +1,7 @@
 "use client";
 
+import styles from "@/components/ui/dashboard-modal.module.css";
+
 import { useState } from "react";
 import { X } from "lucide-react";
 
@@ -21,13 +23,10 @@ export default function EditModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(18,18,18,0.4)]"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-[3px]"
       onClick={onClose}
     >
-      <div
-        className="relative w-[480px] rounded-[20px] bg-white px-10 py-10"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className={styles.panel} onClick={(e) => e.stopPropagation()}>
         {/* Close */}
         <button
           onClick={onClose}
@@ -49,7 +48,7 @@ export default function EditModal({
             </label>
             <input
               type="text"
-              placeholder="write"
+              placeholder="Enter question"
               value={q}
               onChange={(e) => setQ(e.target.value)}
               className="mt-2 h-[50px] w-full rounded-[8px] border border-[#c7c7c7] bg-white px-4 text-[16px] text-[#333] outline-none placeholder:text-[#999]"
@@ -61,7 +60,7 @@ export default function EditModal({
             </label>
             <input
               type="text"
-              placeholder="write"
+              placeholder="Enter answer"
               value={a}
               onChange={(e) => setA(e.target.value)}
               className="mt-2 h-[50px] w-full rounded-[8px] border border-[#c7c7c7] bg-white px-4 text-[16px] text-[#333] outline-none placeholder:text-[#999]"

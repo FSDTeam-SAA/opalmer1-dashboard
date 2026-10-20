@@ -12,6 +12,9 @@ function toRow(record: TeacherRecord, idx: number): TeacherRow {
   return {
     no: idx + 1,
     _id: record._id,
+    age: record.age,
+    gender: record.gender,
+    gradeLevel: record.gradeLevel,
     name: record.username,
     teacherId: record.Id,
     subject:

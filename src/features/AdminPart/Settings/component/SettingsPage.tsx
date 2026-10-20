@@ -36,7 +36,7 @@ export default function SettingsPage({
 
   return (
     <div className="pt-6 sm:pt-10">
-      <PageHeader title="Settings" showBack={false} />
+      <PageHeader title="Settings" />
 
       <div className="flex min-h-[600px] min-w-0 flex-col gap-6 rounded-3xl border border-gray-100 bg-white p-4 shadow-sm sm:p-8 md:flex-row">
         {/* Left Menu */}

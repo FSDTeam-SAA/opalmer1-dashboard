@@ -1,5 +1,7 @@
 "use client";
 
+import styles from "@/components/ui/dashboard-modal.module.css";
+
 import { useState } from "react";
 import { X } from "lucide-react";
 
@@ -98,7 +100,7 @@ export default function EditUserModal({
     if (gender !== (user.gender ?? "") && gender !== "")
       payload.gender = gender;
     if (state !== (user.state ?? "active")) payload.state = state;
-    if (gradeLevel !== "" && Number(gradeLevel) !== user.gradeLevel) {
+    if (gradeLevel !== "" && Number(gradeLevel) !== Number(user.gradeLevel)) {
       payload.gradeLevel = Number(gradeLevel);
     }
     if (age !== "" && Number(age) !== user.age) {
@@ -120,13 +122,10 @@ export default function EditUserModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(18,18,18,0.4)] p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-[3px]"
       onClick={onClose}
     >
-      <div
-        className="relative w-full max-w-[629px] max-h-[90vh] overflow-y-auto rounded-[30px] bg-white px-6 py-8 sm:px-10 lg:px-[72px] lg:py-[50px]"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className={styles.panel} onClick={(e) => e.stopPropagation()}>
         <button
           onClick={onClose}
           aria-label="Close"
@@ -142,8 +141,8 @@ export default function EditUserModal({
           Id: <span className="font-medium text-[#333]">{user.Id}</span>
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-6 space-y-5">
-          <div>
+        <form onSubmit={handleSubmit} className={styles.fields}>
+          <div className={styles.fullWidth}>
             <label className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]">
               Name
             </label>
@@ -155,7 +154,9 @@ export default function EditUserModal({
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div
+            className={`${styles.fullWidth} grid grid-cols-1 gap-4 sm:grid-cols-2`}
+          >
             <div>
               <label className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]">
                 Email
@@ -180,7 +181,9 @@ export default function EditUserModal({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div
+            className={`${styles.fullWidth} grid grid-cols-1 gap-4 sm:grid-cols-3`}
+          >
             <div>
               <label className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]">
                 Grade Level
@@ -224,7 +227,7 @@ export default function EditUserModal({
             </div>
           </div>
 
-          <div>
+          <div className={styles.fullWidth}>
             <label className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]">
               Status
             </label>

@@ -46,6 +46,27 @@ jest.mock("../hooks/useStudents", () => ({
   useUpdateStudent: () => ({ isPending: false, mutateAsync: jest.fn() }),
 }));
 
+jest.mock("../hooks/useParents", () => ({
+  useParents: () => ({
+    data: [
+      {
+        _id: "parent-db-1",
+        name: "Guardian One",
+        parentId: "parent-1",
+        email: "guardian@example.com",
+        active: true,
+      },
+    ],
+    isLoading: false,
+    isError: false,
+  }),
+}));
+
+function selectGuardian() {
+  fireEvent.focus(screen.getByRole("combobox", { name: "Parent" }));
+  fireEvent.click(screen.getByRole("option", { name: /Guardian One/ }));
+}
+
 beforeEach(() => jest.clearAllMocks());
 
 test("row button opens a modal with the selected student ID and an empty guardian email", async () => {
@@ -58,8 +79,10 @@ test("row button opens a modal with the selected student ID and an empty guardia
   expect(within(modal).getByLabelText("Student ID")).toHaveAttribute(
     "readonly",
   );
-  expect(within(modal).getByLabelText("Guardian email")).toHaveValue("");
-  fireEvent.change(within(modal).getByLabelText("Guardian email"), {
+  expect(within(modal).getByRole("combobox", { name: "Parent" })).toHaveValue(
+    "",
+  );
+  fireEvent.change(within(modal).getByRole("combobox", { name: "Parent" }), {
     target: { value: "guardian@example.com" },
   });
   fireEvent.click(within(modal).getByRole("button", { name: "Cancel" }));
@@ -67,12 +90,12 @@ test("row button opens a modal with the selected student ID and an empty guardia
     screen.getByRole("button", { name: "Invite guardian for Second Student" }),
   );
   expect(screen.getByLabelText("Student ID")).toHaveValue("students-2");
-  expect(screen.getByLabelText("Guardian email")).toHaveValue("");
+  expect(screen.getByRole("combobox", { name: "Parent" })).toHaveValue("");
   expect(api.post).not.toHaveBeenCalled();
   await act(async () => {});
 });
 
-test("creates an invitation for the selected student and entered guardian email", async () => {
+test("sends an invitation for the selected student and selected parent", async () => {
   (api.post as jest.Mock).mockResolvedValue({
     data: {
       data: {
@@ -87,14 +110,12 @@ test("creates an invitation for the selected student and entered guardian email"
   fireEvent.click(
     screen.getByRole("button", { name: "Invite guardian for Second Student" }),
   );
-  fireEvent.change(screen.getByLabelText("Guardian email"), {
-    target: { value: "guardian@example.com" },
-  });
-  fireEvent.click(screen.getByRole("button", { name: "Create Invitation" }));
+  selectGuardian();
+  fireEvent.click(screen.getByRole("button", { name: "Send Invitation" }));
   expect(await screen.findByText("ABC123DEF456")).toBeInTheDocument();
   expect(api.post).toHaveBeenCalledWith("/parent/child/invitations", {
     childId: "student-db-2",
-    parentEmail: "guardian@example.com",
+    parentId: "parent-db-1",
   });
   await act(async () => {
     fireEvent.click(screen.getByRole("button", { name: "Done" }));
@@ -108,17 +129,13 @@ test("API failure retains the email and permits retry", async () => {
   fireEvent.click(
     screen.getByRole("button", { name: "Invite guardian for First Student" }),
   );
-  fireEvent.change(screen.getByLabelText("Guardian email"), {
-    target: { value: "guardian@example.com" },
-  });
-  fireEvent.click(screen.getByRole("button", { name: "Create Invitation" }));
+  selectGuardian();
+  fireEvent.click(screen.getByRole("button", { name: "Send Invitation" }));
   expect(await screen.findByRole("alert")).toHaveTextContent(
-    "Unable to create invitation",
+    "Unable to send invitation",
   );
-  expect(screen.getByLabelText("Guardian email")).toHaveValue(
-    "guardian@example.com",
+  expect(screen.getByRole("combobox", { name: "Parent" })).toHaveValue(
+    "Guardian One — guardian@example.com",
   );
-  expect(
-    screen.getByRole("button", { name: "Create Invitation" }),
-  ).toBeEnabled();
+  expect(screen.getByRole("button", { name: "Send Invitation" })).toBeEnabled();
 });
