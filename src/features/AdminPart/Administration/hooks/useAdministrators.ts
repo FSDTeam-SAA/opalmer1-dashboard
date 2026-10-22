@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createAdministrator,
+  deleteAdministrator,
   fetchAdministrators,
   fetchAdministratorDetails,
   setAdministratorState,
@@ -15,6 +16,18 @@ export const ADMIN_QUERY_KEYS = {
   all: ["administrators"] as const,
   detail: (id: string) => ["administrators", "detail", id] as const,
 };
+
+export function useDeleteAdministrator() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteAdministrator,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.all });
+      queryClient.invalidateQueries({ queryKey: ["schools"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    },
+  });
+}
 
 /**
  * useAdministrators

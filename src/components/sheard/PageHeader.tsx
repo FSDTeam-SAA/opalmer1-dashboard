@@ -25,14 +25,16 @@ export default function PageHeader({
   }, [title, setTitle]);
 
   return (
-    <div className="mb-6 flex w-full items-center gap-4">
+    <div className="mb-6 flex w-full items-center px-2 pt-4">
       {showBack && backHref && (
         <Link
           href={backHref}
           aria-label="Back"
-          className="inline-flex h-10 items-center gap-2 rounded-lg border border-purple-100 bg-white px-4 text-sm font-medium text-[#871dad] shadow-sm transition-colors hover:bg-purple-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#871dad]"
+          className="group inline-flex h-9 shrink-0 items-center gap-2 rounded-full border border-purple-200 bg-white py-1 pl-1.5 pr-4 text-[13px] font-semibold leading-none text-[#871dad] shadow-[0_2px_8px_rgba(49,15,65,0.08)] transition-colors hover:border-purple-300 hover:bg-purple-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#871dad]"
         >
-          <ArrowLeft size={18} aria-hidden="true" />
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-purple-50 transition-colors group-hover:bg-purple-100">
+            <ArrowLeft size={15} strokeWidth={2} aria-hidden="true" />
+          </span>
           Back
         </Link>
       )}

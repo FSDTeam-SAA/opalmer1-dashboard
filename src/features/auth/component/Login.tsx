@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { signIn, signOut, getSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -12,6 +13,8 @@ const ROLE_FORBIDDEN_MESSAGE =
 export default function Login() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const isAdministrator = searchParams.get("role") === "administrator";
+  const roleLabel = isAdministrator ? "Administrator" : "Admin";
   const [adminId, setAdminId] = useState("");
   const [password, setPassword] = useState("");
   const [challenge, setChallenge] = useState("");
@@ -42,11 +45,6 @@ export default function Login() {
         redirect: false,
       });
 
-      if (result?.error?.startsWith("2FA_REQUIRED:")) {
-        setChallenge(result.error.slice("2FA_REQUIRED:".length));
-        setOtp("");
-        return;
-      }
       if (result?.error?.startsWith("2FA_REQUIRED:")) {
         setChallenge(result.error.slice("2FA_REQUIRED:".length));
         setOtp("");
@@ -96,7 +94,7 @@ export default function Login() {
       {/* Login Card */}
       <div className="relative z-10 bg-white rounded-[20px] sm:rounded-[30px] w-full max-w-[440px] sm:max-w-[540px] lg:max-w-[658px] overflow-hidden shadow-2xl">
         {/* Card Header — purple wave section */}
-        <div className="relative h-[220px] sm:h-[260px] lg:h-[295px] overflow-hidden">
+        <div className="relative h-[170px] sm:h-[185px] lg:h-[200px] overflow-hidden">
           {/* Background image shape */}
           <Image
             src="/images/login-header.png"
@@ -108,12 +106,12 @@ export default function Login() {
           />
 
           {/* Text content */}
-          <div className="relative z-10 px-6 sm:px-10 lg:px-[72px] pt-8 sm:pt-12 lg:pt-[70px]">
+          <div className="relative z-10 px-6 sm:px-10 lg:px-[72px] pt-7 sm:pt-8 lg:pt-9">
             <h1 className="text-white text-[40px] sm:text-[50px] lg:text-[60px] font-bold leading-none">
               Log In
             </h1>
             <p className="text-[#f5f5f5] text-[14px] sm:text-[18px] lg:text-[20px] leading-[1.4] mt-2 sm:mt-3 max-w-[260px] sm:max-w-[320px]">
-              Login to your admin panel to proceed
+              Login to your {roleLabel.toLowerCase()} panel to proceed
             </p>
           </div>
         </div>
@@ -121,9 +119,9 @@ export default function Login() {
         {/* Card Body — form */}
         <form
           onSubmit={handleSubmit}
-          className="px-6 sm:px-10 lg:px-[72px] pt-6 sm:pt-8 pb-8 sm:pb-10"
+          className="px-6 sm:px-10 lg:px-[72px] pt-0 pb-6 sm:pb-8"
         >
-          <div className="mb-6 flex justify-center">
+          <div className="mb-4 flex justify-center">
             <Image
               src="/images/achieverplus-logo.png"
               alt="AchieverPlus logo"
@@ -142,15 +140,20 @@ export default function Login() {
 
           {/* Admin Id field */}
           <div className="mb-5 sm:mb-6">
-            <label className="block text-[#333] text-[15px] sm:text-[17px] lg:text-[18px] font-semibold capitalize mb-2">
-              Admin Id
+            <label
+              htmlFor="login-id"
+              className="block text-[#333] text-[15px] sm:text-[17px] lg:text-[18px] font-semibold mb-2"
+            >
+              {roleLabel} ID
             </label>
             <div className="relative">
               <input
+                id="login-id"
+                autoComplete="username"
                 type="text"
                 value={adminId}
                 onChange={(e) => setAdminId(e.target.value)}
-                placeholder="Enter your admin Id"
+                placeholder={`Enter your ${roleLabel.toLowerCase()} ID`}
                 required
                 className="w-full h-[48px] sm:h-[52px] lg:h-[56px] bg-[#f9f9f9] border border-[#08374d] rounded-[8px] px-4 pr-11 text-[14px] sm:text-[15px] lg:text-[16px] text-[#333] placeholder:text-[#999] outline-none focus:border-[#871dad] transition-colors"
               />
@@ -165,11 +168,16 @@ export default function Login() {
 
           {/* Password field */}
           <div className="mb-7 sm:mb-8">
-            <label className="block text-[#333] text-[15px] sm:text-[17px] lg:text-[18px] font-semibold capitalize mb-2">
+            <label
+              htmlFor="login-password"
+              className="block text-[#333] text-[15px] sm:text-[17px] lg:text-[18px] font-semibold capitalize mb-2"
+            >
               Password
             </label>
             <div className="relative">
               <input
+                id="login-password"
+                autoComplete="current-password"
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -227,6 +235,20 @@ export default function Login() {
           >
             {loading ? "Signing in..." : "Sign In"}
           </button>
+          <Link
+            href={isAdministrator ? "/login" : "/login?role=administrator"}
+            onClick={() => {
+              setAdminId("");
+              setPassword("");
+              setChallenge("");
+              setOtp("");
+              setError("");
+              setShowPassword(false);
+            }}
+            className="mt-4 flex h-11 w-full items-center justify-center rounded-[10px] border border-[#871dad] text-sm font-semibold text-[#871dad] transition-colors hover:bg-purple-50"
+          >
+            Login as {isAdministrator ? "Admin" : "Administrator"}
+          </Link>
         </form>
       </div>
     </div>

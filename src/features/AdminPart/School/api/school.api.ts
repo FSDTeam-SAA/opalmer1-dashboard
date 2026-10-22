@@ -12,8 +12,18 @@ import type {
  * Fetches the list of all schools.
  */
 export async function fetchSchools(): Promise<School[]> {
-  const { data } = await api.get<SchoolsResponse>("/school");
-  return data.data;
+  const schools: School[] = [];
+  let page = 1;
+  let totalPages = 1;
+  do {
+    const { data } = await api.get<SchoolsResponse>("/school", {
+      params: { page, limit: 100 },
+    });
+    schools.push(...data.data);
+    totalPages = data.meta?.totalPages ?? 1;
+    page++;
+  } while (page <= totalPages);
+  return schools;
 }
 
 /**

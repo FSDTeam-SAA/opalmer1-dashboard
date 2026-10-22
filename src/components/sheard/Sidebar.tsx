@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/dialog";
 
 const menuItems = [
-  { label: "Guardian invitations", href: "/admin/guardians", icon: BookMarked },
   {
     label: "Dashboard",
     href: "/admin/dashboard",

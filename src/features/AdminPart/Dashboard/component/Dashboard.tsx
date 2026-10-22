@@ -356,6 +356,15 @@ export default function Dashboard() {
     <div className="space-y-6">
       <PageHeader title="Main Dashboard" showBack={false} />
 
+      <div className="flex justify-end">
+        <Link
+          href="/login?role=administrator"
+          className="inline-flex h-11 items-center justify-center rounded-lg bg-white px-5 text-sm font-semibold text-[#871dad] shadow-sm transition-colors hover:bg-purple-50"
+        >
+          Login as Administrator
+        </Link>
+      </div>
+
       {/* Stat Cards */}
       <div className="flex gap-5">
         {stats.map((stat) => (

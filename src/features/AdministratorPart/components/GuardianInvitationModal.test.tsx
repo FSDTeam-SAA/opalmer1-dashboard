@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { StudentsView } from "./StudentsView";
 
@@ -70,7 +71,11 @@ function selectGuardian() {
 beforeEach(() => jest.clearAllMocks());
 
 test("row button opens a modal with the selected student ID and an empty guardian email", async () => {
-  render(<StudentsView />);
+  render(
+    <QueryClientProvider client={new QueryClient()}>
+      <StudentsView />
+    </QueryClientProvider>,
+  );
   fireEvent.click(
     screen.getByRole("button", { name: "Invite guardian for First Student" }),
   );
@@ -106,7 +111,11 @@ test("sends an invitation for the selected student and selected parent", async (
       },
     },
   });
-  render(<StudentsView />);
+  render(
+    <QueryClientProvider client={new QueryClient()}>
+      <StudentsView />
+    </QueryClientProvider>,
+  );
   fireEvent.click(
     screen.getByRole("button", { name: "Invite guardian for Second Student" }),
   );
@@ -125,7 +134,11 @@ test("sends an invitation for the selected student and selected parent", async (
 
 test("API failure retains the email and permits retry", async () => {
   (api.post as jest.Mock).mockRejectedValue(new Error("offline"));
-  render(<StudentsView />);
+  render(
+    <QueryClientProvider client={new QueryClient()}>
+      <StudentsView />
+    </QueryClientProvider>,
+  );
   fireEvent.click(
     screen.getByRole("button", { name: "Invite guardian for First Student" }),
   );

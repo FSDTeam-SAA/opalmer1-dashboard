@@ -3,7 +3,19 @@
 import { useMemo, useState } from "react";
 import Image from "@/components/ui/data-image";
 import { useRouter } from "next/navigation";
-import { Search, Users, UserCheck, UserX } from "lucide-react";
+import { Search, Users, UserCheck, UserX, Trash2, Upload } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { deleteSchoolUser } from "../../api/bulk-users.api";
+import { runSchoolBatch } from "@/features/AdminPart/School/lib/school-bulk";
+import BulkUserUpload from "./BulkUserUpload";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import type { ColumnDef } from "@tanstack/react-table";
 import PageHeader from "@/components/sheard/PageHeader";
 import { DataTable } from "./DataTable";
@@ -165,6 +177,62 @@ export function UserListView({
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [editing, setEditing] = useState<UserRow | null>(null);
+  const queryClient = useQueryClient();
+  const [showBulk, setShowBulk] = useState(false);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [deleting, setDeleting] = useState<UserRow[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(0);
+  const [deleteError, setDeleteError] = useState("");
+  const [message, setMessage] = useState("");
+  // Use the same searched rows for rendering and select-all.
+  const filteredData = useMemo(
+    () =>
+      data?.filter((u) =>
+        [
+          u.name,
+          u.userId,
+          u.badge,
+          u.phoneNumber,
+          u.active ? "active" : "inactive",
+        ].some((value) =>
+          value.toLowerCase().includes(query.trim().toLowerCase()),
+        ),
+      ),
+    [data, query],
+  );
+  const selectedUsers = data?.filter((u) => selected.includes(u._id)) ?? [];
+  const allVisibleSelected =
+    Boolean(filteredData?.length) &&
+    filteredData!.every((u) => selected.includes(u._id));
+
+  async function confirmDelete() {
+    setBusy(true);
+    setDone(0);
+    setDeleteError("");
+    try {
+      const outcome = await runSchoolBatch(
+        deleting,
+        (u) => deleteSchoolUser(config.type, u._id),
+        setDone,
+      );
+      const deleted = new Set(outcome.succeeded.map((u) => u._id));
+      setSelected((ids) => ids.filter((id) => !deleted.has(id)));
+      setMessage(
+        `${outcome.succeeded.length} deleted. ${outcome.failed.length} failed.`,
+      );
+      setDeleting(outcome.failed.map((f) => f.item));
+      setDeleteError(
+        outcome.failed.map((f) => `${f.item.name}: ${f.error}`).join("\n"),
+      );
+      await queryClient.invalidateQueries({ queryKey: ["administrator"] });
+      await queryClient.invalidateQueries({ queryKey: ["parents"] });
+      await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      onRefetch();
+    } finally {
+      setBusy(false);
+    }
+  }
 
   /* Stats */
   const stats = useMemo(() => {
@@ -179,6 +247,51 @@ export function UserListView({
   /* Columns */
   const columns = useMemo<ColumnDef<UserRow, unknown>[]>(
     () => [
+      {
+        id: "select",
+        size: 40,
+        header: () => (
+          <input
+            type="checkbox"
+            aria-label="Select all visible users"
+            checked={allVisibleSelected}
+            ref={(node) => {
+              if (node)
+                node.indeterminate =
+                  !allVisibleSelected &&
+                  Boolean(filteredData?.some((u) => selected.includes(u._id)));
+            }}
+            onChange={(e) =>
+              setSelected((ids) =>
+                e.target.checked
+                  ? [
+                      ...new Set([
+                        ...ids,
+                        ...(filteredData ?? []).map((u) => u._id),
+                      ]),
+                    ]
+                  : ids.filter(
+                      (id) => !filteredData?.some((u) => u._id === id),
+                    ),
+              )
+            }
+          />
+        ),
+        cell: ({ row }) => (
+          <input
+            type="checkbox"
+            aria-label={`Select ${row.original.name}`}
+            checked={selected.includes(row.original._id)}
+            onChange={(e) =>
+              setSelected((ids) =>
+                e.target.checked
+                  ? [...ids, row.original._id]
+                  : ids.filter((id) => id !== row.original._id),
+              )
+            }
+          />
+        ),
+      },
       {
         id: "no",
         header: "No",
@@ -335,12 +448,35 @@ export function UserListView({
               >
                 View
               </button>
+              <button
+                type="button"
+                aria-label={`Delete ${u.name}`}
+                title={`Delete ${config.type}`}
+                onClick={() => {
+                  setDeleting([u]);
+                  setDeleteError("");
+                  setMessage("");
+                }}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-[#e64540] hover:bg-red-50"
+              >
+                <Trash2 size={18} />
+              </button>
             </div>
           );
         },
       },
     ],
-    [config, isTogglePending, onToggle, router, onViewClick, onInviteGuardian],
+    [
+      config,
+      isTogglePending,
+      onToggle,
+      router,
+      onViewClick,
+      onInviteGuardian,
+      selected,
+      allVisibleSelected,
+      filteredData,
+    ],
   );
 
   return (
@@ -375,7 +511,7 @@ export function UserListView({
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <div className="flex flex-wrap items-stretch sm:items-center gap-3">
             {/* Search */}
             <div className="relative">
               <Search
@@ -391,6 +527,14 @@ export function UserListView({
               />
             </div>
 
+            <button
+              type="button"
+              onClick={() => setShowBulk(true)}
+              className="flex items-center justify-center gap-2 rounded-[10px] border border-[#871dad] px-4 py-2 text-sm font-semibold text-[#871dad] hover:bg-purple-50"
+            >
+              <Upload size={16} />
+              Bulk Upload
+            </button>
             {/* Add button */}
             <button
               type="button"
@@ -405,14 +549,44 @@ export function UserListView({
         {/* Divider */}
         <div className="h-px bg-gradient-to-r from-transparent via-[#871dad]/20 to-transparent mb-4" />
 
+        {message && (
+          <p role="status" className="mb-4 text-sm">
+            {message}
+          </p>
+        )}
+        {selectedUsers.length > 0 && (
+          <div className="mb-4 flex items-center gap-4">
+            <span>{selectedUsers.length} selected</span>
+            <button
+              type="button"
+              aria-label="Delete selected users"
+              title="Delete selected users"
+              onClick={() => {
+                setDeleting(selectedUsers);
+                setDeleteError("");
+                setMessage("");
+              }}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-[#e64540] hover:bg-red-50"
+            >
+              <Trash2 size={18} />
+            </button>
+            <button
+              type="button"
+              onClick={() => setSelected([])}
+              className="text-sm underline"
+            >
+              Clear Selection
+            </button>
+          </div>
+        )}
+
         <DataTable<UserRow>
-          data={data}
+          data={filteredData}
           columns={columns}
           isLoading={isLoading}
           isError={isError}
           error={error}
           onRetry={onRefetch}
-          globalFilter={query}
           minWidth={800}
           emptyMessage={config.emptyMessage}
           errorMessage={config.errorMessage}
@@ -421,6 +595,75 @@ export function UserListView({
 
       {/* Additional children (e.g., create modal) */}
       {children}
+      {showBulk && (
+        <BulkUserUpload
+          type={config.type}
+          onClose={() => setShowBulk(false)}
+          onComplete={onRefetch}
+        />
+      )}
+      <Dialog
+        open={deleting.length > 0}
+        onOpenChange={(open) => {
+          if (!open && !busy) {
+            setDeleting([]);
+            setDeleteError("");
+          }
+        }}
+      >
+        <DialogContent showCloseButton={false} className="sm:max-w-[440px]">
+          <DialogHeader>
+            <DialogTitle>
+              Delete{" "}
+              {deleting.length === 1
+                ? config.type
+                : `${deleting.length} ${config.type}s`}
+              ?
+            </DialogTitle>
+            <DialogDescription>
+              Are you sure? This cannot be undone. Accounts with linked class,
+              child, academic or chat records must be resolved first, or
+              deactivated.
+            </DialogDescription>
+          </DialogHeader>
+          <ul className="max-h-32 overflow-auto text-sm">
+            {deleting.map((u) => (
+              <li key={u._id}>
+                {u.name} ({u.userId})
+              </li>
+            ))}
+          </ul>
+          {deleteError && (
+            <p
+              role="alert"
+              className="max-h-40 overflow-auto whitespace-pre-line rounded-lg bg-red-50 p-3 text-sm text-red-600"
+            >
+              {deleteError}
+            </p>
+          )}
+          <DialogFooter className="gap-3">
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => {
+                setDeleting([]);
+                setDeleteError("");
+              }}
+              className="rounded-lg border px-5 py-2 disabled:opacity-50"
+            >
+              No
+            </button>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={confirmDelete}
+              className="rounded-lg bg-[#e64540] px-5 py-2 font-semibold text-white disabled:opacity-50"
+            >
+              {busy ? `Deleting ${done}/${deleting.length}...` : "Yes"}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Edit modal */}
       {editing && (

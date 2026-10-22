@@ -1,4 +1,8 @@
 import { api } from "@/lib/api";
+
+export async function deleteAdministrator(id: string): Promise<void> {
+  await api.delete(`/users/administrators/${id}`);
+}
 import type {
   Administrator,
   AdministratorResponse,
