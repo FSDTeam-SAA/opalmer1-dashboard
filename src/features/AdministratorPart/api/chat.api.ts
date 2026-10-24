@@ -51,12 +51,15 @@ export async function fetchChatMessages(
 export async function sendChatMessage(
   roomId: string,
   message: string,
-): Promise<ChatMessage> {
-  const { data } = await api.post<{ data: ChatMessage }>("/message", {
+): Promise<ChatMessage & { notificationWarning?: string }> {
+  const { data } = await api.post<{
+    data: ChatMessage;
+    notificationWarning?: string;
+  }>("/message", {
     roomId,
     message,
   });
-  return data.data;
+  return { ...data.data, notificationWarning: data.notificationWarning };
 }
 
 export function roomDetails(room: ChatRoom, currentUserId: string) {

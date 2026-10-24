@@ -1,6 +1,8 @@
 "use client";
 
 import { Menu } from "lucide-react";
+import Link from "next/link";
+import NotificationBell from "@/features/admin-workspace/NotificationBell";
 import { useNavbarTitle } from "./NavbarContext";
 
 export default function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
@@ -20,15 +22,15 @@ export default function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
         {title}
       </h1>
 
-      {/* Notification */}
-      {/* <div className="relative mt-2">
-        <div className="flex h-[39px] w-[39px] items-center justify-center rounded-full border-2 border-white/30">
-          <Bell size={24} className="text-white" />
-        </div>
-        <span className="absolute -right-1 -top-1 flex h-[17px] w-[17px] items-center justify-center rounded-full bg-[#4aa678] text-[11px] font-medium text-white">
-          5
-        </span>
-      </div> */}
+      <div className="flex shrink-0 items-start gap-2 sm:gap-3">
+        <Link
+          href="/login?role=administrator"
+          className="mt-2 inline-flex min-h-[46px] max-w-32 items-center justify-center rounded-xl border border-white/25 bg-white/10 px-3 py-2 text-center text-xs font-semibold text-white transition-colors hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:max-w-none sm:px-4 sm:text-sm"
+        >
+          Login as Administrator
+        </Link>
+        <NotificationBell />
+      </div>
     </header>
   );
 }

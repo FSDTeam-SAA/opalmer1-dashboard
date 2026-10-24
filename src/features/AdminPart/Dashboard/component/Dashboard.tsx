@@ -12,6 +12,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import PageHeader from "@/components/sheard/PageHeader";
+import AdminWorkspacePanel from "@/features/admin-workspace/AdminWorkspacePanel";
 import CreateAdminModal from "@/features/AdminPart/Administration/component/CreateAdminModal";
 import {
   useAdministrators,
@@ -58,7 +59,7 @@ type StatDisplay = {
 function StatCard({ stat }: { stat: StatDisplay }) {
   const Icon = stat.icon;
   return (
-    <div className="flex-1 rounded-[12px] mt-10 bg-white p-5 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
+    <div className="min-w-0 rounded-2xl border border-[#e9e7ee] bg-white p-5 shadow-[0_2px_8px_rgba(30,20,50,0.03)]">
       <div className="flex items-start justify-between">
         <div className="flex items-start gap-3">
           <div
@@ -119,7 +120,7 @@ function GrowthChart() {
     .join(" ");
 
   return (
-    <div className="flex-1 rounded-[20px] bg-white p-8 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
+    <div className="min-w-0 flex-1 rounded-2xl border border-[#e9e7ee] bg-white p-6 shadow-[0_2px_8px_rgba(30,20,50,0.03)]">
       <div className="flex items-center justify-between pb-4">
         <h2 className="text-[24px] font-semibold text-[#131313]">Growth</h2>
         <button className="flex items-center gap-1 text-[16px] text-[#454545]">
@@ -225,7 +226,7 @@ function StudentsDonut() {
   const maleArc = (malePct / 100) * circumference;
 
   return (
-    <div className="w-[274px] rounded-[20px] bg-white p-6 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
+    <div className="w-full rounded-2xl border border-[#e9e7ee] bg-white p-6 shadow-[0_2px_8px_rgba(30,20,50,0.03)] xl:w-[274px] xl:shrink-0">
       <h2 className="text-center text-[20px] font-medium text-[#333]">
         Students
       </h2>
@@ -355,37 +356,35 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <PageHeader title="Main Dashboard" showBack={false} />
+      <AdminWorkspacePanel />
 
-      <div className="flex justify-end">
-        <Link
-          href="/login?role=administrator"
-          className="inline-flex h-11 items-center justify-center rounded-lg bg-white px-5 text-sm font-semibold text-[#871dad] shadow-sm transition-colors hover:bg-purple-50"
-        >
-          Login as Administrator
-        </Link>
+      <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+        <h2 className="text-lg font-semibold tracking-tight text-gray-900">
+          School overview
+        </h2>
       </div>
 
       {/* Stat Cards */}
-      <div className="flex gap-5">
+      <div className="grid gap-4 md:grid-cols-3">
         {stats.map((stat) => (
           <StatCard key={stat.label} stat={stat} />
         ))}
       </div>
 
       {/* Charts Row */}
-      <div className="flex gap-5">
+      <div className="flex flex-col gap-4 xl:flex-row">
         <GrowthChart />
         <StudentsDonut />
       </div>
 
       {/* Administrator Table */}
-      <div className="rounded-[20px] bg-white p-8 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)]">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-[24px] font-semibold text-[#333]">
-            Administrator Id&apos;s
+      <div className="rounded-2xl border border-[#e9e7ee] bg-white p-5 shadow-[0_2px_8px_rgba(30,20,50,0.03)] sm:p-6">
+        <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+          <h2 className="text-lg font-semibold text-gray-900">
+            Administrators
           </h2>
-          <div className="flex items-center gap-4">
-            <div className="relative">
+          <div className="flex w-full flex-col gap-3 sm:flex-row xl:w-auto">
+            <div className="relative min-w-0 flex-1">
               <Search
                 size={20}
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-[#666]"
@@ -395,12 +394,12 @@ export default function Dashboard() {
                 placeholder="Enter administrator Id"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="h-[48px] w-[350px] rounded-[8px] border border-[#08374d] bg-[#f9f9f9] pl-10 pr-4 text-[16px] text-[#666] outline-none placeholder:text-[#666]"
+                className="h-11 w-full rounded-xl border border-[#e4e2ea] bg-[#f7f7fa] pl-10 pr-4 text-sm text-gray-700 outline-none placeholder:text-gray-400 focus:border-[#871dad] focus:ring-2 focus:ring-purple-100 sm:w-[280px]"
               />
             </div>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="rounded-[10px] bg-[#871dad] cursor-pointer px-5 py-[18px] text-[16px] font-bold text-white hover:bg-[#751a99] transition-colors"
+              className="min-h-11 shrink-0 cursor-pointer rounded-xl bg-[#871dad] px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#751a99]"
             >
               Add New Administrator
             </button>

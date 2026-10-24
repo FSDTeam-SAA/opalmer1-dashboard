@@ -15,6 +15,7 @@ import {
   X,
   ShieldUser,
   MessageCircle,
+  ClipboardList,
 } from "lucide-react";
 import {
   Dialog,
@@ -29,6 +30,11 @@ const menuItems = [
   { label: "Dashboard", href: "/administrator/dashboard", icon: Home },
   { label: "Students", href: "/administrator/students", icon: GraduationCap },
   { label: "Teachers", href: "/administrator/teachers", icon: Users },
+  {
+    label: "Teacher Behavior",
+    href: "/administrator/teacher-behavior",
+    icon: ClipboardList,
+  },
   { label: "Chat", href: "/administrator/chat", icon: MessageCircle },
   {
     label: "Parents",

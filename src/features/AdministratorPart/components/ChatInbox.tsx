@@ -56,10 +56,14 @@ function timestamp(value?: string, date = false) {
     : time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
-export default function ChatInbox() {
+export default function ChatInbox({
+  initialRoomId,
+}: { initialRoomId?: string } = {}) {
   const { data: session } = useSession();
   const userId = session?.user.id ?? "";
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(
+    initialRoomId ?? null,
+  );
   const [search, setSearch] = useState("");
   const rooms = useQuery({
     queryKey: ["administrator-chat", userId, "rooms"],

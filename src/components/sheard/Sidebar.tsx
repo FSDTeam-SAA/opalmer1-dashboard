@@ -5,7 +5,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { Home, BookMarked, Settings, LogOut, Building2, X } from "lucide-react";
+import {
+  Home,
+  BookMarked,
+  Settings,
+  LogOut,
+  Building2,
+  X,
+  ClipboardList,
+  MessageSquare,
+  Megaphone,
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -31,6 +41,13 @@ const menuItems = [
     href: "/admin/school",
     icon: Building2,
   },
+  {
+    label: "Teacher Behavior",
+    href: "/admin/teacher-behavior",
+    icon: ClipboardList,
+  },
+  { label: "Messages", href: "/admin/chat", icon: MessageSquare },
+  { label: "Announcements", href: "/admin/announcements", icon: Megaphone },
 ];
 
 export default function Sidebar({
