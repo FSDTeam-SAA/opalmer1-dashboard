@@ -3,6 +3,9 @@
 import styles from "@/components/ui/dashboard-modal.module.css";
 
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+import type { District } from "../types/school.types";
 import Image from "@/components/ui/data-image";
 import { ImageIcon, Upload, X } from "lucide-react";
 import { useCreateSchool, useUpdateSchool } from "../hooks/useSchools";
@@ -34,6 +37,16 @@ export default function CreateSchoolModal({
   school,
 }: CreateSchoolModalProps) {
   const isEditing = Boolean(school);
+  const [districtId, setDistrictId] = useState(
+    typeof school?.districtId === "string"
+      ? school.districtId
+      : (school?.districtId?._id ?? ""),
+  );
+  const districts = useQuery({
+    queryKey: ["school-districts"],
+    queryFn: async () =>
+      (await api.get<{ data: District[] }>("/school/districts")).data.data,
+  });
   const [name, setName] = useState(school?.name ?? "");
   const [code, setCode] = useState(school?.code ?? "");
   const [email, setEmail] = useState(school?.email ?? "");
@@ -79,6 +92,7 @@ export default function CreateSchoolModal({
     try {
       const payload = {
         name: name.trim(),
+        districtId,
         code: code.trim() || undefined,
         email: email.trim() || undefined,
         phone: phone.trim() || undefined,
@@ -123,6 +137,26 @@ export default function CreateSchoolModal({
         </h2>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+          <label className="block text-sm">
+            District
+            <select
+              aria-label="District"
+              value={districtId}
+              onChange={(e) => setDistrictId(e.target.value)}
+              disabled={districts.isLoading || districts.isError}
+              className="mt-2 block w-full rounded border p-3"
+            >
+              <option value="">Unassigned</option>
+              {districts.data?.map((d) => (
+                <option key={d._id} value={d._id}>
+                  {d.name} ({d.code})
+                </option>
+              ))}
+            </select>
+          </label>
+          {districts.isError && (
+            <p role="alert">Unable to load districts. Close and try again.</p>
+          )}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <input
               type="text"

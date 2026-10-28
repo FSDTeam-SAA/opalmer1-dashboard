@@ -5,7 +5,10 @@ export type SchoolAdministrator = {
   Id: string;
 };
 
+export type District = { _id: string; name: string; code: string };
+
 export type School = {
+  districtId?: District | string | null;
   _id: string;
   name: string;
   administrator: SchoolAdministrator;
@@ -44,6 +47,7 @@ export type SchoolResponse = {
 };
 
 export type CreateSchoolPayload = {
+  districtId?: string;
   name: string;
   code?: string;
   address?: string;

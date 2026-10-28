@@ -48,6 +48,8 @@ export default function SchoolTable() {
       (s) =>
         s.name.toLowerCase().includes(q) ||
         (s.code && s.code.toLowerCase().includes(q)) ||
+        (typeof s.districtId === "object" &&
+          s.districtId?.name.toLowerCase().includes(q)) ||
         s.administrator?.username.toLowerCase().includes(q),
     );
   }, [searchQuery, schools]);
@@ -297,6 +299,13 @@ export default function SchoolTable() {
                         </div>
                         <span className="text-[16px] font-light text-[#666]">
                           {school.name}
+                          {typeof school.districtId === "object" &&
+                            school.districtId && (
+                              <small className="block text-xs">
+                                {school.districtId.name} (
+                                {school.districtId.code})
+                              </small>
+                            )}
                         </span>
                       </div>
                     </td>
