@@ -1,6 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import ListPagination, {
+  useListPagination,
+} from "@/components/shared/ListPagination";
 import Link from "next/link";
 import {
   GraduationCap,
@@ -350,8 +353,9 @@ export default function Dashboard() {
       );
     }
 
-    return list.slice(0, 5);
+    return list;
   }, [admins, search]);
+  const pagination = useListPagination(filteredAdmins, search);
 
   return (
     <div className="space-y-6">
@@ -448,10 +452,10 @@ export default function Dashboard() {
               )}
               {!adminsLoading &&
                 !adminsError &&
-                filteredAdmins.map((admin: Administrator, idx: number) => (
+                pagination.items.map((admin: Administrator, idx: number) => (
                   <tr key={admin._id} className="border-b border-gray-100">
                     <td className="py-4 text-[16px] font-light text-[#666]">
-                      {idx + 1}
+                      {pagination.offset + idx + 1}
                     </td>
                     <td className="py-4">
                       <div className="flex items-center gap-2">
@@ -501,6 +505,7 @@ export default function Dashboard() {
                 ))}
             </tbody>
           </table>
+          {!adminsLoading && !adminsError && <ListPagination {...pagination} />}
         </div>
       </div>
 

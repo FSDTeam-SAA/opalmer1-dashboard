@@ -1,7 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import ListPagination, {
+  useListPagination,
+} from "@/components/shared/ListPagination";
+import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import CsvTemplateExample from "@/components/shared/CsvTemplateExample";
 import {
   Dialog,
   DialogContent,
@@ -86,6 +91,7 @@ export default function BulkSchoolUpload({ onClose }: { onClose: () => void }) {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<ImportResult | null>(null);
+  const pagination = useListPagination(result?.rows ?? [], kind);
 
   async function preview(text: string) {
     const { data } = await api.post<{ data: ImportResult }>("/school/import", {
@@ -108,6 +114,10 @@ export default function BulkSchoolUpload({ onClose }: { onClose: () => void }) {
         queryClient.invalidateQueries({ queryKey: schoolKeys.all }),
         queryClient.invalidateQueries({ queryKey: ["school-districts"] }),
       ]);
+      if (data.data.committed && data.data.failed === 0) {
+        toast.success(`${data.data.created} ${kind} imported successfully.`);
+        onClose();
+      }
     } catch (err) {
       // A lost response may follow a successful save. Re-preview before retrying.
       setResult(null);
@@ -165,6 +175,37 @@ export default function BulkSchoolUpload({ onClose }: { onClose: () => void }) {
         >
           Download CSV template
         </button>
+        <CsvTemplateExample
+          columns={columns[kind]}
+          requiredColumns={
+            kind === "schools"
+              ? ["name", "code", "districtCode"]
+              : ["name", "code"]
+          }
+          example={{
+            name: kind === "schools" ? "Example School" : "Example District",
+            code: kind === "schools" ? "SCH001" : "DIST001",
+            districtCode: districts.data?.[0]?.code ?? "DIST001",
+            email:
+              kind === "schools"
+                ? "school@example.com"
+                : "district@example.com",
+            phone: "0123456789",
+            address: "123 Main Road",
+            city: "Dhaka",
+            state: "Dhaka",
+            country: "Bangladesh",
+            postalCode: "1207",
+            establishedYear: "2010",
+          }}
+        />
+        {kind === "schools" && (
+          <p className="text-sm text-muted-foreground">
+            Use an existing code from Available district codes for districtCode.
+            DIST001 is only an example unless you have created that district.
+            Enter establishedYear as a four-digit year, such as 2010.
+          </p>
+        )}
         <p className="text-sm">
           Name and code are required. Schools also need an existing
           districtCode. New schools can also be linked to districts in Edit
@@ -246,7 +287,7 @@ export default function BulkSchoolUpload({ onClose }: { onClose: () => void }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {result.rows.map((r) => (
+                  {pagination.items.map((r) => (
                     <tr key={r.row} className="border-t">
                       <td className="p-2">{r.row}</td>
                       <td>{r.values.name}</td>
@@ -262,6 +303,7 @@ export default function BulkSchoolUpload({ onClose }: { onClose: () => void }) {
                 </tbody>
               </table>
             </div>
+            <ListPagination {...pagination} />
             {result.failed > 0 && (
               <button
                 type="button"

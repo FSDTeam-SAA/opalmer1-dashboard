@@ -1,6 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import ListPagination, {
+  useListPagination,
+} from "@/components/shared/ListPagination";
 import Image from "@/components/ui/data-image";
 import { Pencil, Plus, Search, Trash2, Upload } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -55,9 +58,11 @@ export default function SchoolTable() {
   }, [searchQuery, schools]);
 
   const selectedSchools = schools.filter((s) => selectedIds.includes(s._id));
+  const pagination = useListPagination(filteredSchools, searchQuery);
+  const visibleSchools = pagination.items;
   const allVisibleSelected =
-    filteredSchools.length > 0 &&
-    filteredSchools.every((s) => selectedIds.includes(s._id));
+    visibleSchools.length > 0 &&
+    visibleSchools.every((s) => selectedIds.includes(s._id));
   const deleteBusy = deleteSchool.isPending || bulkDeleting;
 
   const handleDeleteSchool = async () => {
@@ -222,7 +227,7 @@ export default function SchoolTable() {
                         if (node)
                           node.indeterminate =
                             !allVisibleSelected &&
-                            filteredSchools.some((s) =>
+                            visibleSchools.some((s) =>
                               selectedIds.includes(s._id),
                             );
                       }}
@@ -232,12 +237,12 @@ export default function SchoolTable() {
                             ? [
                                 ...new Set([
                                   ...ids,
-                                  ...filteredSchools.map((s) => s._id),
+                                  ...visibleSchools.map((s) => s._id),
                                 ]),
                               ]
                             : ids.filter(
                                 (id) =>
-                                  !filteredSchools.some((s) => s._id === id),
+                                  !visibleSchools.some((s) => s._id === id),
                               ),
                         )
                       }
@@ -267,7 +272,7 @@ export default function SchoolTable() {
                 </tr>
               </thead>
               <tbody>
-                {filteredSchools.map((school, idx) => (
+                {visibleSchools.map((school, idx) => (
                   <tr key={school._id} className="border-b border-gray-100">
                     <td className="py-4">
                       <input
@@ -284,7 +289,7 @@ export default function SchoolTable() {
                       />
                     </td>
                     <td className="py-4 text-[16px] font-light text-[#666]">
-                      {idx + 1}
+                      {pagination.offset + idx + 1}
                     </td>
                     <td className="py-4">
                       <div className="flex items-center gap-2">
@@ -352,6 +357,7 @@ export default function SchoolTable() {
           </div>
         )}
       </div>
+      {!isLoading && !isError && <ListPagination {...pagination} />}
       {showBulkUpload && (
         <BulkSchoolUpload onClose={() => setShowBulkUpload(false)} />
       )}

@@ -1,6 +1,9 @@
 ﻿"use client";
 
 import { useState } from "react";
+import ListPagination, {
+  useListPagination,
+} from "@/components/shared/ListPagination";
 import Link from "next/link";
 import Image from "@/components/ui/data-image";
 import { Plus, Search, Trash2, Pencil } from "lucide-react";
@@ -52,6 +55,7 @@ export default function Administration() {
   const describeError = (err: unknown) =>
     (err as { response?: { data?: { message?: string } } })?.response?.data
       ?.message || (err instanceof Error ? err.message : "Request failed");
+  const pagination = useListPagination(filtered, search);
 
   async function confirmDelete() {
     if (!deletingAdmin) return;
@@ -138,12 +142,12 @@ export default function Administration() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((admin, i) => (
+                {pagination.items.map((admin, i) => (
                   <tr
                     key={admin._id}
                     className="border-b border-gray-100 text-[#666]"
                   >
-                    <td className="py-4 pr-5">{i + 1}</td>
+                    <td className="py-4 pr-5">{pagination.offset + i + 1}</td>
                     <td className="py-4 pr-5">
                       <Link
                         href={`/admin/administration/${admin._id}`}
@@ -229,6 +233,7 @@ export default function Administration() {
           </div>
         )}
       </div>
+      {!isLoading && !isError && <ListPagination {...pagination} />}
       {showCreateModal && (
         <CreateAdminModal onClose={() => setShowCreateModal(false)} />
       )}
