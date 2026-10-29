@@ -10,11 +10,15 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import { ReactNode, useState } from "react";
+import ListPagination, {
+  useListPagination,
+} from "@/components/shared/ListPagination";
 import { ErrorFallback } from "./ErrorFallback";
 import { TableSkeletonRows } from "./Skeletons";
 
 type DataTableProps<TData> = {
   data: TData[] | undefined;
+  paginate?: boolean;
   columns: ColumnDef<TData, unknown>[];
   isLoading: boolean;
   isError: boolean;
@@ -44,6 +48,7 @@ type DataTableProps<TData> = {
  */
 export function DataTable<TData>({
   data,
+  paginate = true,
   columns,
   isLoading,
   isError,
@@ -64,13 +69,19 @@ export function DataTable<TData>({
     columns,
     state: { sorting, globalFilter: globalFilter ?? "" },
     onSortingChange: setSorting,
+    autoResetPageIndex: false,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
   });
 
   const columnCount = columns.length;
-  const rows = table.getRowModel().rows;
+  const allRows = table.getRowModel().rows;
+  const pagination = useListPagination(
+    allRows,
+    JSON.stringify([globalFilter, sorting]),
+  );
+  const rows = paginate ? pagination.items : allRows;
 
   if (isError) {
     return (
@@ -143,6 +154,7 @@ export function DataTable<TData>({
           )}
         </tbody>
       </table>
+      {!isLoading && paginate && <ListPagination {...pagination} />}
     </div>
   );
 }

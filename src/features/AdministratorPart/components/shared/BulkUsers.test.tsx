@@ -13,6 +13,9 @@ import {
 } from "./UserListView";
 import BulkUserUpload from "./BulkUserUpload";
 import { createSchoolUser, deleteSchoolUser } from "../../api/bulk-users.api";
+import { toast } from "sonner";
+
+jest.mock("sonner", () => ({ toast: { success: jest.fn() } }));
 
 jest.mock("../../api/bulk-users.api", () => ({
   createSchoolUser: jest.fn(),
@@ -44,7 +47,7 @@ const rows: UserRow[] = ["Alpha", "Beta"].map((name, i) => ({
   active: true,
   image: "",
 }));
-function list(type: UserListConfig["type"]) {
+function list(type: UserListConfig["type"], data = rows) {
   const config: UserListConfig = {
     type,
     title: "Users",
@@ -60,7 +63,7 @@ function list(type: UserListConfig["type"]) {
   return wrapper(
     <UserListView
       config={config}
-      data={rows}
+      data={data}
       isLoading={false}
       isError={false}
       onRefetch={jest.fn()}
@@ -73,6 +76,32 @@ function list(type: UserListConfig["type"]) {
   );
 }
 beforeEach(() => jest.clearAllMocks());
+
+it("selects only the current page and preserves selections while searching other pages", () => {
+  const data = Array.from({ length: 23 }, (_, index) => ({
+    ...rows[0],
+    _id: `user-${index}`,
+    name: `Student ${index + 1}`,
+  }));
+  list("student", data);
+  fireEvent.click(screen.getByLabelText("Select all visible users"));
+  expect(screen.getByText("10 selected")).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Next" }));
+  expect(screen.getByLabelText("Select Student 11")).not.toBeChecked();
+  expect(screen.getByLabelText("Select all visible users")).not.toBeChecked();
+  fireEvent.click(screen.getByLabelText("Select Student 11"));
+  expect(screen.getByText("11 selected")).toBeInTheDocument();
+  fireEvent.change(screen.getByPlaceholderText("Search users"), {
+    target: { value: "Student 23" },
+  });
+  expect(screen.getByLabelText("Select Student 23")).not.toBeChecked();
+  expect(screen.getByText("Page 1 of 1")).toBeInTheDocument();
+  fireEvent.change(screen.getByPlaceholderText("Search users"), {
+    target: { value: "" },
+  });
+  expect(screen.getByLabelText("Select Student 1")).toBeChecked();
+  expect(screen.getByText("11 selected")).toBeInTheDocument();
+});
 
 it.each(["student", "teacher", "parent"] as const)(
   "%s delete requires Yes and No cancels",
@@ -127,12 +156,13 @@ it("selects searched users only; bulk retry never deletes successful users again
 it.each(["student", "teacher", "parent"] as const)(
   "%s CSV preview uploads and retries only failed accounts",
   async (type) => {
+    const onClose = jest.fn();
     jest.mocked(createSchoolUser).mockImplementation(async (_, row) => {
       if (row.Id === "2") throw new Error("ID already exists");
       return {};
     });
     wrapper(
-      <BulkUserUpload type={type} onClose={jest.fn()} onComplete={jest.fn()} />,
+      <BulkUserUpload type={type} onClose={onClose} onComplete={jest.fn()} />,
     );
     const file = new File([""], "users.csv", { type: "text/csv" });
     Object.defineProperty(file, "text", {
@@ -145,6 +175,9 @@ it.each(["student", "teacher", "parent"] as const)(
     expect(screen.queryByText("secret")).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Upload Users" }));
     await screen.findByText("Beta: ID already exists");
+    expect(onClose).not.toHaveBeenCalled();
+    expect(toast.success).not.toHaveBeenCalled();
+    jest.mocked(createSchoolUser).mockResolvedValue({});
     fireEvent.click(screen.getByRole("button", { name: "Retry Failed Users" }));
     await waitFor(() => expect(createSchoolUser).toHaveBeenCalledTimes(3));
     expect(
@@ -156,5 +189,39 @@ it.each(["student", "teacher", "parent"] as const)(
       [type, "2"],
       [type, "2"],
     ]);
+    await waitFor(() => expect(onClose).toHaveBeenCalledTimes(1));
+    expect(toast.success).toHaveBeenCalledWith(
+      "1 users uploaded successfully.",
+    );
+  },
+);
+
+it.each(["student", "teacher", "parent"] as const)(
+  "%s CSV upload closes after all rows succeed",
+  async (type) => {
+    jest.mocked(createSchoolUser).mockResolvedValue({});
+    const onClose = jest.fn();
+    const onComplete = jest.fn();
+    wrapper(
+      <BulkUserUpload type={type} onClose={onClose} onComplete={onComplete} />,
+    );
+    fireEvent.change(screen.getByLabelText("Choose CSV file"), {
+      target: {
+        files: [
+          {
+            size: 50,
+            text: async () => "username,Id,password\nAlpha,1,secret",
+          },
+        ],
+      },
+    });
+    await screen.findByText("Alpha");
+    expect(onClose).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "Upload Users" }));
+    await waitFor(() => expect(onClose).toHaveBeenCalledTimes(1));
+    expect(onComplete).toHaveBeenCalledTimes(1);
+    expect(toast.success).toHaveBeenCalledWith(
+      "1 users uploaded successfully.",
+    );
   },
 );

@@ -1,6 +1,7 @@
 "use client";
 
 import PageHeader from "@/components/sheard/PageHeader";
+import ListPagination from "@/components/shared/ListPagination";
 
 import { useState, useMemo } from "react";
 import Image from "@/components/ui/data-image";
@@ -164,7 +165,7 @@ export default function TeachersTable({
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     initialState: {
-      pagination: { pageSize: 15 },
+      pagination: { pageSize: 10 },
     },
   });
 
@@ -261,31 +262,13 @@ export default function TeachersTable({
               </tbody>
             </table>
 
-            {/* Pagination */}
-            {table.getPageCount() > 1 && (
-              <div className="mt-6 flex items-center justify-between">
-                <p className="text-[14px] text-[#666]">
-                  Page {table.getState().pagination.pageIndex + 1} of{" "}
-                  {table.getPageCount()}
-                </p>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => table.previousPage()}
-                    disabled={!table.getCanPreviousPage()}
-                    className="rounded-[6px] border border-[#871dad] px-4 py-2 text-[14px] text-[#871dad] transition-colors hover:bg-[#871dad] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
-                  >
-                    Previous
-                  </button>
-                  <button
-                    onClick={() => table.nextPage()}
-                    disabled={!table.getCanNextPage()}
-                    className="rounded-[6px] border border-[#871dad] px-4 py-2 text-[14px] text-[#871dad] transition-colors hover:bg-[#871dad] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
-            )}
+            <ListPagination
+              page={table.getState().pagination.pageIndex + 1}
+              pageSize={table.getState().pagination.pageSize}
+              total={table.getFilteredRowModel().rows.length}
+              onPageChange={(page) => table.setPageIndex(page - 1)}
+              onPageSizeChange={(size) => table.setPageSize(size)}
+            />
           </div>
         )}
       </div>

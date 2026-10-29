@@ -1,6 +1,9 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import BulkSchoolUpload from "./BulkSchoolUpload";
 import { api } from "@/lib/api";
+import { toast } from "sonner";
+
+jest.mock("sonner", () => ({ toast: { success: jest.fn() } }));
 
 const invalidateQueries = jest.fn();
 jest.mock("@/lib/api", () => ({ api: { post: jest.fn() } }));
@@ -37,6 +40,7 @@ beforeEach(() => {
 });
 
 it("previews on the server before explicit commit and prevents resubmitting created records", async () => {
+  const onClose = jest.fn();
   jest
     .mocked(api.post)
     .mockResolvedValueOnce({
@@ -63,7 +67,7 @@ it("previews on the server before explicit commit and prevents resubmitting crea
         },
       },
     });
-  render(<BulkSchoolUpload onClose={jest.fn()} />);
+  render(<BulkSchoolUpload onClose={onClose} />);
   expect(screen.getByText("NORTH - North District")).toBeInTheDocument();
   expect(screen.getByText("Confirm import of valid rows")).toBeDisabled();
   selectFile();
@@ -89,7 +93,54 @@ it("previews on the server before explicit commit and prevents resubmitting crea
       queryKey: ["school-districts"],
     }),
   );
+  expect(onClose).not.toHaveBeenCalled();
+  expect(toast.success).not.toHaveBeenCalled();
 });
+
+it.each(["schools", "districts"] as const)(
+  "closes %s only after a successful import, not preview",
+  async (kind) => {
+    const onClose = jest.fn();
+    jest
+      .mocked(api.post)
+      .mockResolvedValueOnce({
+        data: {
+          data: {
+            committed: false,
+            total: 1,
+            ready: 1,
+            failed: 0,
+            created: 0,
+            rows: [rows[0]],
+          },
+        },
+      })
+      .mockResolvedValueOnce({
+        data: {
+          data: {
+            committed: true,
+            total: 1,
+            ready: 0,
+            failed: 0,
+            created: 1,
+            rows: [{ ...rows[0], status: "created" }],
+          },
+        },
+      });
+    render(<BulkSchoolUpload onClose={onClose} />);
+    fireEvent.change(screen.getByLabelText("Upload type"), {
+      target: { value: kind },
+    });
+    selectFile();
+    await screen.findByText("1 ready; 0 failed; 1 total.");
+    expect(onClose).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByText("Confirm import of valid rows"));
+    await waitFor(() => expect(onClose).toHaveBeenCalledTimes(1));
+    expect(toast.success).toHaveBeenCalledWith(
+      `1 ${kind} imported successfully.`,
+    );
+  },
+);
 
 it("requires a new preview after a lost commit response instead of blindly retrying", async () => {
   jest

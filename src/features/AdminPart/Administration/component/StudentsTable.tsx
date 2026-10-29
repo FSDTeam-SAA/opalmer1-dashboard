@@ -1,6 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import ListPagination, {
+  useListPagination,
+} from "@/components/shared/ListPagination";
 import Image from "@/components/ui/data-image";
 import Link from "next/link";
 import { Search } from "lucide-react";
@@ -64,6 +67,7 @@ export default function StudentsTable({
         s.studentId.toLowerCase().includes(q),
     );
   }, [searchQuery, students]);
+  const pagination = useListPagination(filteredStudents, searchQuery);
 
   return (
     <div className="mt-32 pt-10">
@@ -155,10 +159,10 @@ export default function StudentsTable({
                 </tr>
               </thead>
               <tbody>
-                {filteredStudents.map((student) => (
+                {pagination.items.map((student, index) => (
                   <tr key={student._id} className="border-b border-gray-100">
                     <td className="py-4 text-[16px] font-light text-[#666]">
-                      {student.id}
+                      {pagination.offset + index + 1}
                     </td>
                     <td className="py-4">
                       <div className="flex items-center gap-2">
@@ -204,6 +208,7 @@ export default function StudentsTable({
             </table>
           </div>
         )}
+        {!isLoading && !isError && <ListPagination {...pagination} />}
       </div>
     </div>
   );

@@ -1,7 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import ListPagination, {
+  useListPagination,
+} from "@/components/shared/ListPagination";
+import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
+import CsvTemplateExample from "@/components/shared/CsvTemplateExample";
 import {
   Dialog,
   DialogContent,
@@ -38,6 +43,7 @@ export default function BulkUserUpload({
   const [result, setResult] = useState<Awaited<
     ReturnType<typeof runSchoolBatch<BulkUserPayload>>
   > | null>(null);
+  const pagination = useListPagination(rows);
 
   function downloadTemplate() {
     const url = URL.createObjectURL(
@@ -77,6 +83,12 @@ export default function BulkUserUpload({
       await queryClient.invalidateQueries({ queryKey: ["parents"] });
       await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       onComplete();
+      if (outcome.failed.length === 0) {
+        toast.success(
+          `${outcome.succeeded.length} users uploaded successfully.`,
+        );
+        onClose();
+      }
     } finally {
       setBusy(false);
     }
@@ -115,6 +127,36 @@ export default function BulkUserUpload({
         >
           Download CSV template
         </button>
+        <CsvTemplateExample
+          columns={userCsvColumns(type)}
+          requiredColumns={["username", "Id", "password"]}
+          example={{
+            username:
+              type === "student"
+                ? "Maya Thompson"
+                : type === "teacher"
+                  ? "Example Teacher"
+                  : "Example Parent",
+            Id:
+              type === "student"
+                ? "6812047"
+                : type === "teacher"
+                  ? "TEACHER-001"
+                  : "PARENT-001",
+            password: "ChangeMe123!",
+            email: `${type}@example.com`,
+            phoneNumber: "0123456789",
+            gradeLevel: "6",
+            age: type === "teacher" ? "30" : "12",
+            gender: "female",
+          }}
+        />
+        {type !== "parent" && (
+          <p className="text-sm text-muted-foreground">
+            gradeLevel: use a number from 1 to 12 (for example, 6, not 6th).
+            age: use a number from 1 to 120. gender: use male, female or other.
+          </p>
+        )}
         <label className="space-y-2 text-sm">
           Choose CSV file
           <input
@@ -176,7 +218,7 @@ export default function BulkUserUpload({
                 </tr>
               </thead>
               <tbody>
-                {rows.map((r, i) => (
+                {pagination.items.map((r, i) => (
                   <tr key={i} className="border-t">
                     <td className="p-2">{r.username}</td>
                     <td className="p-2">{r.Id || "—"}</td>
@@ -185,6 +227,7 @@ export default function BulkUserUpload({
                 ))}
               </tbody>
             </table>
+            <ListPagination {...pagination} />
           </div>
         )}
         <div className="flex justify-end gap-3">

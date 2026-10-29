@@ -1,6 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import ListPagination, {
+  useListPagination,
+} from "@/components/shared/ListPagination";
 import Image from "@/components/ui/data-image";
 import { useRouter } from "next/navigation";
 import { Search, Users, UserCheck, UserX, Trash2, Upload } from "lucide-react";
@@ -202,9 +205,11 @@ export function UserListView({
     [data, query],
   );
   const selectedUsers = data?.filter((u) => selected.includes(u._id)) ?? [];
+  const pagination = useListPagination(filteredData ?? [], query);
+  const visibleUsers = pagination.items;
   const allVisibleSelected =
-    Boolean(filteredData?.length) &&
-    filteredData!.every((u) => selected.includes(u._id));
+    Boolean(visibleUsers.length) &&
+    visibleUsers.every((u) => selected.includes(u._id));
 
   async function confirmDelete() {
     setBusy(true);
@@ -259,20 +264,13 @@ export function UserListView({
               if (node)
                 node.indeterminate =
                   !allVisibleSelected &&
-                  Boolean(filteredData?.some((u) => selected.includes(u._id)));
+                  Boolean(visibleUsers.some((u) => selected.includes(u._id)));
             }}
             onChange={(e) =>
               setSelected((ids) =>
                 e.target.checked
-                  ? [
-                      ...new Set([
-                        ...ids,
-                        ...(filteredData ?? []).map((u) => u._id),
-                      ]),
-                    ]
-                  : ids.filter(
-                      (id) => !filteredData?.some((u) => u._id === id),
-                    ),
+                  ? [...new Set([...ids, ...visibleUsers.map((u) => u._id)])]
+                  : ids.filter((id) => !visibleUsers.some((u) => u._id === id)),
               )
             }
           />
@@ -298,7 +296,7 @@ export function UserListView({
         size: 60,
         cell: ({ row }) => (
           <span className="text-[16px] font-light text-[#666]">
-            {row.index + 1}
+            {pagination.offset + row.index + 1}
           </span>
         ),
       },
@@ -475,7 +473,8 @@ export function UserListView({
       onInviteGuardian,
       selected,
       allVisibleSelected,
-      filteredData,
+      visibleUsers,
+      pagination.offset,
     ],
   );
 
@@ -581,7 +580,8 @@ export function UserListView({
         )}
 
         <DataTable<UserRow>
-          data={filteredData}
+          data={visibleUsers}
+          paginate={false}
           columns={columns}
           isLoading={isLoading}
           isError={isError}
@@ -591,6 +591,7 @@ export function UserListView({
           emptyMessage={config.emptyMessage}
           errorMessage={config.errorMessage}
         />
+        {!isLoading && !isError && <ListPagination {...pagination} />}
       </div>
 
       {/* Additional children (e.g., create modal) */}

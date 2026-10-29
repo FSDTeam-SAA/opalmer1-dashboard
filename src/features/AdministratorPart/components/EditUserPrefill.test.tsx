@@ -57,11 +57,11 @@ test.each(["student", "teacher"])(
     expect(screen.getByDisplayValue("01234567890")).toBeInTheDocument();
     expect(screen.getByDisplayValue("12")).toBeInTheDocument();
     expect(screen.getByDisplayValue("6")).toBeInTheDocument();
-    expect(screen.getByRole("combobox")).toHaveValue("female");
+    expect(screen.getByDisplayValue("Female")).toHaveValue("female");
     fireEvent.change(screen.getByDisplayValue("12"), {
       target: { value: "13" },
     });
-    fireEvent.change(screen.getByRole("combobox"), {
+    fireEvent.change(screen.getByDisplayValue("Female"), {
       target: { value: "male" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Save Changes" }));
