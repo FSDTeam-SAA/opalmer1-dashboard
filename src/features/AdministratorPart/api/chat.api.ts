@@ -5,6 +5,7 @@ export type ChatUser = {
   username: string;
   avatar?: { url?: string };
   type?: string;
+  role?: string;
 };
 export type ChatMessage = {
   _id: string;
@@ -13,7 +14,7 @@ export type ChatMessage = {
   created_at: string;
   isDeleted?: boolean;
   isEdited?: boolean;
-  file?: { filename: string; url: string }[];
+  file?: { filename: string; url: string; downloadUrl?: string }[];
 };
 export type ChatRoom = {
   _id: string;
@@ -31,6 +32,37 @@ export type MessagePage = {
   data: ChatMessage[];
   meta: { page: number; totalPages: number };
 };
+
+export type ChatContact = {
+  id: string;
+  username: string;
+  Id?: string;
+  role: string;
+  type?: string;
+  avatar?: string;
+  email?: string;
+};
+
+export async function fetchChatContacts(
+  search: string,
+  role: string,
+  page: number,
+) {
+  const { data } = await api.get<{
+    data: ChatContact[];
+    meta: { page: number; totalPages: number };
+  }>("/users/contacts", {
+    params: { search, role: role || undefined, page, limit: 30 },
+  });
+  return data;
+}
+
+export async function createDirectChat(contactId: string): Promise<string> {
+  const { data } = await api.post<{ data: { _id: string } }>("/rooms", {
+    participants: [contactId],
+  });
+  return data.data._id;
+}
 
 export async function fetchChatRooms(): Promise<ChatRoom[]> {
   const { data } = await api.get<{ data: ChatRoom[] }>("/rooms/my-rooms");
@@ -75,7 +107,10 @@ export function roomDetails(room: ChatRoom, currentUserId: string) {
     : {
         name: peer?.username || "Participant unavailable",
         avatar: peer?.avatar?.url || "",
-        subtitle: peer?.type || "",
+        subtitle:
+          peer?.role === "administrator"
+            ? "administrator"
+            : peer?.type || peer?.role || "",
       };
 }
 

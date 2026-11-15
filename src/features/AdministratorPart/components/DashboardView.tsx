@@ -1,13 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import AccountGrowthChart from "@/components/shared/AccountGrowthChart";
 import Image from "@/components/ui/data-image";
 import {
-  ArrowDown,
-  ArrowUp,
   Building2,
   Briefcase,
-  ChevronDown,
   Edit3,
   GraduationCap,
   Mail,
@@ -30,8 +28,6 @@ type StatDisplay = {
   icon: typeof GraduationCap;
   color: string;
   bgColor: string;
-  change: string;
-  changeType: "up" | "down";
 };
 
 function StatCard({ stat }: { stat: StatDisplay }) {
@@ -58,128 +54,7 @@ function StatCard({ stat }: { stat: StatDisplay }) {
           <Icon size={24} style={{ color: stat.color }} />
         </div>
       </div>
-      <div className="mt-3 flex items-center gap-1">
-        {stat.changeType === "up" ? (
-          <ArrowUp size={16} className="text-[#5fb892]" />
-        ) : (
-          <ArrowDown size={16} className="text-[#ef3c50]" />
-        )}
-        <p className="text-[12px] text-[#666]">
-          <span
-            className={
-              stat.changeType === "up" ? "text-[#5fb892]" : "text-[#ef3c50]"
-            }
-          >
-            {stat.change}
-          </span>{" "}
-          Since last week
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function GrowthChart() {
-  const points = [
-    [0, 75],
-    [80, 65],
-    [160, 55],
-    [240, 50],
-    [320, 40],
-    [400, 45],
-    [480, 30],
-    [560, 25],
-    [600, 15],
-  ];
-
-  const pathD = points
-    .map((p, i) => `${i === 0 ? "M" : "L"} ${p[0]} ${p[1]}`)
-    .join(" ");
-
-  return (
-    <div className="flex-1 rounded-[20px] bg-white p-6 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)] sm:p-8">
-      <div className="flex items-center justify-between pb-4">
-        <h2 className="text-[20px] font-semibold text-[#131313] sm:text-[24px]">
-          Growth
-        </h2>
-        <button className="flex items-center gap-1 text-[14px] text-[#454545] sm:text-[16px]">
-          Yearly
-          <ChevronDown size={18} />
-        </button>
-      </div>
-      <div className="relative">
-        <div className="absolute left-0 top-0 flex h-[200px] flex-col justify-between text-[12px] font-medium text-[#7d7d7d]">
-          <span>100k</span>
-          <span>50k</span>
-          <span>20k</span>
-          <span>10k</span>
-          <span>0</span>
-        </div>
-        <div className="ml-12">
-          <svg
-            viewBox="0 0 600 100"
-            className="h-[200px] w-full"
-            preserveAspectRatio="none"
-          >
-            {[0, 25, 50, 75, 100].map((y) => (
-              <line
-                key={y}
-                x1="0"
-                y1={y}
-                x2="600"
-                y2={y}
-                stroke="#e5e5e5"
-                strokeWidth="0.5"
-                strokeDasharray="4 4"
-              />
-            ))}
-            <path
-              d={`${pathD} L 600 100 L 0 100 Z`}
-              fill="url(#growthGradient)"
-              opacity="0.3"
-            />
-            <path
-              d={pathD}
-              fill="none"
-              stroke="#871dad"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            {points.map((p, i) => (
-              <circle
-                key={i}
-                cx={p[0]}
-                cy={p[1]}
-                r="3"
-                fill="#871dad"
-                stroke="white"
-                strokeWidth="1.5"
-              />
-            ))}
-            <defs>
-              <linearGradient id="growthGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#871dad" stopOpacity="0.4" />
-                <stop offset="100%" stopColor="#871dad" stopOpacity="0.05" />
-              </linearGradient>
-            </defs>
-          </svg>
-          <div className="mt-2 flex justify-between text-[12px] font-medium text-[#7d7d7d]">
-            {[
-              "2016",
-              "2017",
-              "2018",
-              "2019",
-              "2020",
-              "2021",
-              "2022",
-              "2023",
-            ].map((year) => (
-              <span key={year}>{year}</span>
-            ))}
-          </div>
-        </div>
-      </div>
+      <p className="mt-3 text-xs text-gray-500">Current total</p>
     </div>
   );
 }
@@ -436,8 +311,6 @@ export function DashboardView() {
         icon: GraduationCap,
         color: "#3f99b4",
         bgColor: "rgba(63,153,180,0.1)",
-        change: "+6.5%",
-        changeType: "up",
       },
       {
         label: "Teachers",
@@ -445,8 +318,6 @@ export function DashboardView() {
         icon: Briefcase,
         color: "#4aa678",
         bgColor: "rgba(74,166,120,0.1)",
-        change: "-0.10%",
-        changeType: "down",
       },
       {
         label: "Parents",
@@ -454,8 +325,6 @@ export function DashboardView() {
         icon: Users,
         color: "#febd43",
         bgColor: "rgba(254,189,67,0.1)",
-        change: "-0.10%",
-        changeType: "down",
       },
     ],
     [userStats],
@@ -485,7 +354,7 @@ export function DashboardView() {
       </div>
 
       <div className="flex flex-col gap-5 lg:flex-row">
-        <GrowthChart />
+        <AccountGrowthChart />
         <StudentsDonut />
       </div>
 

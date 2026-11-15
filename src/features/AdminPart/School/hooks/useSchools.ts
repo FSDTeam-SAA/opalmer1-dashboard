@@ -28,7 +28,10 @@ export function useCreateSchool() {
   return useMutation({
     mutationFn: (payload: CreateSchoolPayload) => createSchool(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: schoolKeys.all });
+      return Promise.all([
+        queryClient.invalidateQueries({ queryKey: schoolKeys.all }),
+        queryClient.invalidateQueries({ queryKey: ["school-districts"] }),
+      ]);
     },
   });
 }
@@ -44,7 +47,10 @@ export function useUpdateSchool() {
       payload: UpdateSchoolPayload;
     }) => updateSchool(id, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: schoolKeys.all });
+      return Promise.all([
+        queryClient.invalidateQueries({ queryKey: schoolKeys.all }),
+        queryClient.invalidateQueries({ queryKey: ["school-districts"] }),
+      ]);
     },
   });
 }
@@ -54,7 +60,7 @@ export function useDeleteSchool() {
   return useMutation({
     mutationFn: (id: string) => deleteSchool(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: schoolKeys.all });
+      return queryClient.invalidateQueries({ queryKey: schoolKeys.all });
     },
   });
 }

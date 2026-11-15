@@ -1,19 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import AccountGrowthChart from "@/components/shared/AccountGrowthChart";
 import ListPagination, {
   useListPagination,
 } from "@/components/shared/ListPagination";
 import Link from "next/link";
-import {
-  GraduationCap,
-  Briefcase,
-  Users,
-  ArrowUp,
-  ArrowDown,
-  Search,
-  ChevronDown,
-} from "lucide-react";
+import { GraduationCap, Briefcase, Users, Search } from "lucide-react";
 import PageHeader from "@/components/sheard/PageHeader";
 import AdminWorkspacePanel from "@/features/admin-workspace/AdminWorkspacePanel";
 import CreateAdminModal from "@/features/AdminPart/Administration/component/CreateAdminModal";
@@ -55,8 +48,6 @@ type StatDisplay = {
   icon: typeof GraduationCap;
   color: string;
   bgColor: string;
-  change: string;
-  changeType: "up" | "down";
 };
 
 function StatCard({ stat }: { stat: StatDisplay }) {
@@ -83,132 +74,12 @@ function StatCard({ stat }: { stat: StatDisplay }) {
           <Icon size={24} style={{ color: stat.color }} />
         </div>
       </div>
-      <div className="mt-3 flex items-center gap-1">
-        {stat.changeType === "up" ? (
-          <ArrowUp size={16} className="text-[#5fb892]" />
-        ) : (
-          <ArrowDown size={16} className="text-[#ef3c50]" />
-        )}
-        <p className="text-[12px] text-[#666]">
-          <span
-            className={
-              stat.changeType === "up" ? "text-[#5fb892]" : "text-[#ef3c50]"
-            }
-          >
-            {stat.change}
-          </span>{" "}
-          Since last week
-        </p>
-      </div>
+      <p className="mt-3 text-xs text-gray-500">Current total</p>
     </div>
   );
 }
 
 /* ───── Growth Chart (SVG placeholder) ───── */
-function GrowthChart() {
-  const points = [
-    [0, 75],
-    [80, 65],
-    [160, 55],
-    [240, 50],
-    [320, 40],
-    [400, 45],
-    [480, 30],
-    [560, 25],
-    [600, 15],
-  ];
-
-  const pathD = points
-    .map((p, i) => `${i === 0 ? "M" : "L"} ${p[0]} ${p[1]}`)
-    .join(" ");
-
-  return (
-    <div className="min-w-0 flex-1 rounded-2xl border border-[#e9e7ee] bg-white p-6 shadow-[0_2px_8px_rgba(30,20,50,0.03)]">
-      <div className="flex items-center justify-between pb-4">
-        <h2 className="text-[24px] font-semibold text-[#131313]">Growth</h2>
-        <button className="flex items-center gap-1 text-[16px] text-[#454545]">
-          Yearly
-          <ChevronDown size={18} />
-        </button>
-      </div>
-      <div className="relative">
-        <div className="absolute left-0 top-0 flex h-[200px] flex-col justify-between text-[12px] font-medium text-[#7d7d7d]">
-          <span>100k</span>
-          <span>50k</span>
-          <span>20k</span>
-          <span>10k</span>
-          <span>0</span>
-        </div>
-        <div className="ml-12">
-          <svg
-            viewBox="0 0 600 100"
-            className="h-[200px] w-full"
-            preserveAspectRatio="none"
-          >
-            {[0, 25, 50, 75, 100].map((y) => (
-              <line
-                key={y}
-                x1="0"
-                y1={y}
-                x2="600"
-                y2={y}
-                stroke="#e5e5e5"
-                strokeWidth="0.5"
-                strokeDasharray="4 4"
-              />
-            ))}
-            <path
-              d={`${pathD} L 600 100 L 0 100 Z`}
-              fill="url(#growthGradient)"
-              opacity="0.3"
-            />
-            <path
-              d={pathD}
-              fill="none"
-              stroke="#871dad"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            {points.map((p, i) => (
-              <circle
-                key={i}
-                cx={p[0]}
-                cy={p[1]}
-                r="3"
-                fill="#871dad"
-                stroke="white"
-                strokeWidth="1.5"
-              />
-            ))}
-            <defs>
-              <linearGradient id="growthGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#871dad" stopOpacity="0.4" />
-                <stop offset="100%" stopColor="#871dad" stopOpacity="0.05" />
-              </linearGradient>
-            </defs>
-          </svg>
-          <div className="mt-2 flex justify-between text-[12px] font-medium text-[#7d7d7d]">
-            {[
-              "2016",
-              "2017",
-              "2018",
-              "2019",
-              "2020",
-              "2021",
-              "2022",
-              "2023",
-            ].map((year) => (
-              <span key={year}>{year}</span>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ───── Students Donut Chart ───── */
 function StudentsDonut() {
   const { data: genderStats, isLoading } = useStudentGenderStats();
 
@@ -304,8 +175,6 @@ export default function Dashboard() {
         icon: GraduationCap,
         color: "#3f99b4",
         bgColor: "rgba(63,153,180,0.1)",
-        change: "+6.5%",
-        changeType: "up",
       },
       {
         label: "Teachers",
@@ -315,8 +184,6 @@ export default function Dashboard() {
         icon: Briefcase,
         color: "#4aa678",
         bgColor: "rgba(74,166,120,0.1)",
-        change: "-0.10%",
-        changeType: "down",
       },
       {
         label: "Parents",
@@ -326,8 +193,6 @@ export default function Dashboard() {
         icon: Users,
         color: "#febd43",
         bgColor: "rgba(254,189,67,0.1)",
-        change: "-0.10%",
-        changeType: "down",
       },
     ],
     [statsLoading, userStats],
@@ -377,7 +242,7 @@ export default function Dashboard() {
 
       {/* Charts Row */}
       <div className="flex flex-col gap-4 xl:flex-row">
-        <GrowthChart />
+        <AccountGrowthChart />
         <StudentsDonut />
       </div>
 
@@ -422,7 +287,7 @@ export default function Dashboard() {
                   Administrator Name
                 </th>
                 <th className="pb-3 text-left text-[14px] font-light text-[#666]">
-                  Administrator I&apos;d
+                  Administrator ID
                 </th>
                 <th className="pb-3 text-left text-[14px] font-light text-[#666]">
                   Phone
@@ -471,7 +336,7 @@ export default function Dashboard() {
                       </div>
                     </td>
                     <td className="py-4 text-[16px] font-light text-[#666]">
-                      {admin._id}
+                      {admin.Id || "—"}
                     </td>
                     <td className="py-4 text-[16px] font-light text-[#666]">
                       {admin.phoneNumber ?? "—"}

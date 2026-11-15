@@ -47,6 +47,7 @@ export type SchoolResponse = {
 };
 
 export type CreateSchoolPayload = {
+  districtName?: string;
   districtId?: string;
   name: string;
   code?: string;

@@ -21,11 +21,12 @@ export function useDeleteAdministrator() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteAdministrator,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.all });
-      queryClient.invalidateQueries({ queryKey: ["schools"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-    },
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.all }),
+        queryClient.invalidateQueries({ queryKey: ["schools"] }),
+        queryClient.invalidateQueries({ queryKey: ["dashboard"] }),
+      ]),
   });
 }
 
@@ -51,10 +52,11 @@ export function useCreateAdministrator() {
   return useMutation({
     mutationFn: (payload: CreateAdministratorPayload) =>
       createAdministrator(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.all });
-      queryClient.invalidateQueries({ queryKey: ["schools"] });
-    },
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.all }),
+        queryClient.invalidateQueries({ queryKey: ["schools"] }),
+      ]),
   });
 }
 
@@ -73,10 +75,11 @@ export function useUpdateAdministrator() {
       id: string;
       payload: UpdateAdministratorPayload;
     }) => updateAdministrator(id, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.all });
-      queryClient.invalidateQueries({ queryKey: ["schools"] });
-    },
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.all }),
+        queryClient.invalidateQueries({ queryKey: ["schools"] }),
+      ]),
   });
 }
 
@@ -90,9 +93,10 @@ export function useToggleAdministratorState() {
   return useMutation({
     mutationFn: ({ id, state }: { id: string; state: "active" | "inactive" }) =>
       setAdministratorState(id, state),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.all });
-    },
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.all }),
+      ]),
   });
 }
 

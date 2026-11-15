@@ -53,6 +53,7 @@ test.each(["student", "teacher"])(
     );
     fireEvent.click(await screen.findByRole("button", { name: "Edit" }));
     expect(screen.getByDisplayValue("Saved User")).toBeInTheDocument();
+    expect(screen.getByLabelText("Age")).toHaveValue(12);
     expect(screen.getByDisplayValue("saved@example.com")).toBeInTheDocument();
     expect(screen.getByDisplayValue("01234567890")).toBeInTheDocument();
     expect(screen.getByDisplayValue("12")).toBeInTheDocument();

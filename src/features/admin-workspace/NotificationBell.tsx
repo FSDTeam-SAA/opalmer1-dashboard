@@ -25,7 +25,13 @@ function dateLabel(value?: string) {
 export default function NotificationBell() {
   const { data: session } = useSession();
   const userId = session?.user.id ?? "";
-  const enabled = session?.user.role === "admin" && Boolean(userId);
+  const enabled =
+    ["admin", "administrator"].includes(session?.user.role ?? "") &&
+    Boolean(userId);
+  const chatPath =
+    session?.user.role === "administrator"
+      ? "/administrator/chat"
+      : "/admin/chat";
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<{
     item: Notice;
@@ -36,7 +42,7 @@ export default function NotificationBell() {
     queryKey: ["workspace-notices", userId],
     queryFn: () => workspaceApi.notices(userId),
     enabled,
-    refetchInterval: 30000,
+    refetchInterval: 5000,
   });
   const unread = notices.data?.filter((item) => !item.isViewed).length ?? 0;
   const showNotice = useMutation({
@@ -140,7 +146,7 @@ export default function NotificationBell() {
               {selected.destination.kind === "message" &&
                 selected.destination.record._id && (
                   <Link
-                    href={`/admin/chat?room=${encodeURIComponent(selected.destination.record._id)}`}
+                    href={`${chatPath}?room=${encodeURIComponent(selected.destination.record._id)}`}
                     onClick={() => changeOpen(false)}
                     className={primaryClass}
                   >

@@ -35,10 +35,14 @@ export default function EditAdminModal({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const updateAdmin = useUpdateAdministrator();
-  const { data: schools = [], isLoading: schoolsLoading } = useSchools();
-  const availableSchools = schools.filter(
-    (school) => !school.administrator || school._id === schoolId,
-  );
+  const {
+    data: schools = [],
+    isLoading: schoolsLoading,
+    isError: schoolsError,
+    refetch: refetchSchools,
+  } = useSchools();
+  const originalSchoolId =
+    typeof admin.schoolId === "string" ? admin.schoolId : admin.schoolId?._id;
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -158,25 +162,51 @@ export default function EditAdminModal({
           </div>
 
           <div>
-            <label className="block text-[18px] font-semibold capitalize text-[#333]">
+            <label
+              htmlFor="edit-admin-school"
+              className="block text-[18px] font-semibold capitalize text-[#333]"
+            >
               School
             </label>
             <select
+              id="edit-admin-school"
               value={schoolId}
               onChange={(e) => setSchoolId(e.target.value)}
-              disabled={schoolsLoading}
+              disabled={schoolsLoading || schoolsError}
               className="mt-2 h-[56px] w-full rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-5 text-[16px] text-[#333] outline-none disabled:opacity-60"
             >
               <option value="">
                 {schoolsLoading ? "Loading schools..." : "No school assigned"}
               </option>
-              {availableSchools.map((school) => (
-                <option key={school._id} value={school._id}>
+              {schools.map((school) => (
+                <option
+                  key={school._id}
+                  value={school._id}
+                  disabled={
+                    Boolean(school.administrator) &&
+                    school._id !== originalSchoolId
+                  }
+                >
                   {school.name}
                   {school.code ? ` (${school.code})` : ""}
+                  {school.administrator && school._id !== originalSchoolId
+                    ? " — Administrator assigned"
+                    : ""}
                 </option>
               ))}
             </select>
+            {schoolsError && (
+              <p role="alert" className="mt-2 text-[13px] text-[#e64540]">
+                Unable to load schools.{" "}
+                <button
+                  type="button"
+                  onClick={() => refetchSchools()}
+                  className="underline"
+                >
+                  Retry
+                </button>
+              </p>
+            )}
           </div>
 
           <div>

@@ -143,11 +143,15 @@ export default function EditUserModal({
 
         <form onSubmit={handleSubmit} className={styles.fields}>
           <div className={styles.fullWidth}>
-            <label className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]">
+            <label
+              className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]"
+              htmlFor="edit-user-name"
+            >
               Name
             </label>
             <input
               type="text"
+              id="edit-user-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="mt-2 h-[48px] sm:h-[56px] w-full rounded-[8px] border border-[#08374d] bg-[#f9f9f9] px-4 sm:px-5 text-[15px] sm:text-[16px] text-[#333] outline-none placeholder:text-[#666]"
@@ -158,22 +162,30 @@ export default function EditUserModal({
             className={`${styles.fullWidth} grid grid-cols-1 gap-4 sm:grid-cols-2`}
           >
             <div>
-              <label className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]">
+              <label
+                className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]"
+                htmlFor="edit-user-email"
+              >
                 Email
               </label>
               <input
                 type="email"
+                id="edit-user-email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="mt-2 h-[48px] sm:h-[56px] w-full rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 sm:px-5 text-[15px] sm:text-[16px] text-[#333] outline-none placeholder:text-[#666]"
               />
             </div>
             <div>
-              <label className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]">
+              <label
+                className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]"
+                htmlFor="edit-user-phone"
+              >
                 Phone
               </label>
               <input
                 type="tel"
+                id="edit-user-phone"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 className="mt-2 h-[48px] sm:h-[56px] w-full rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 sm:px-5 text-[15px] sm:text-[16px] text-[#333] outline-none placeholder:text-[#666]"
@@ -185,34 +197,46 @@ export default function EditUserModal({
             className={`${styles.fullWidth} grid grid-cols-1 gap-4 sm:grid-cols-3`}
           >
             <div>
-              <label className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]">
+              <label
+                className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]"
+                htmlFor="edit-user-grade"
+              >
                 Grade Level
               </label>
               <input
                 type="number"
                 min="1"
+                id="edit-user-grade"
                 value={gradeLevel}
                 onChange={(e) => setGradeLevel(e.target.value)}
                 className="mt-2 h-[48px] sm:h-[56px] w-full rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 sm:px-5 text-[15px] sm:text-[16px] text-[#333] outline-none placeholder:text-[#666]"
               />
             </div>
             <div>
-              <label className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]">
+              <label
+                className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]"
+                htmlFor="edit-user-age"
+              >
                 Age
               </label>
               <input
                 type="number"
                 min="1"
+                id="edit-user-age"
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
                 className="mt-2 h-[48px] sm:h-[56px] w-full rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 sm:px-5 text-[15px] sm:text-[16px] text-[#333] outline-none placeholder:text-[#666]"
               />
             </div>
             <div>
-              <label className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]">
+              <label
+                className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]"
+                htmlFor="edit-user-gender"
+              >
                 Gender
               </label>
               <select
+                id="edit-user-gender"
                 value={gender}
                 onChange={(e) =>
                   setGender(e.target.value as "male" | "female" | "other" | "")

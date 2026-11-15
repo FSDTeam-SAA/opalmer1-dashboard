@@ -36,7 +36,7 @@ export function useCreateFeatureOrFAQ() {
     mutationFn: (payload: CreateFeatureQuestionPayload) =>
       createFeatureOrFAQ(payload),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
+      return queryClient.invalidateQueries({
         queryKey: variables.docType === "AppFeatures" ? FEATURES_KEY : FAQ_KEY,
       });
     },
@@ -57,7 +57,7 @@ export function useUpdateFeatureOrFAQ() {
       payload: UpdateFeatureQuestionPayload;
     }) => updateFeatureOrFAQ(id, payload),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
+      return queryClient.invalidateQueries({
         queryKey:
           variables.payload.docType === "FAQquestions" ? FAQ_KEY : FEATURES_KEY,
       });

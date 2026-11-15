@@ -48,10 +48,12 @@ export function useUpdateStudent() {
       payload: UpdateStudentPayload;
     }) => updateStudent(id, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: studentsKeys.all });
-      queryClient.invalidateQueries({
-        queryKey: ["administrator", "students", "detail"],
-      });
+      return Promise.all([
+        queryClient.invalidateQueries({ queryKey: studentsKeys.all }),
+        queryClient.invalidateQueries({
+          queryKey: ["administrator", "students", "detail"],
+        }),
+      ]);
     },
   });
 }
@@ -63,10 +65,12 @@ export function useToggleStudentState() {
     mutationFn: ({ id, state }: { id: string; state: "active" | "inactive" }) =>
       setStudentState(id, state),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: studentsKeys.all });
-      queryClient.invalidateQueries({
-        queryKey: ["administrator", "students", "detail"],
-      });
+      return Promise.all([
+        queryClient.invalidateQueries({ queryKey: studentsKeys.all }),
+        queryClient.invalidateQueries({
+          queryKey: ["administrator", "students", "detail"],
+        }),
+      ]);
     },
   });
 }

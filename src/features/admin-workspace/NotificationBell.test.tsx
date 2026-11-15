@@ -1,10 +1,12 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Navbar from "@/components/sheard/Navbar";
+import AdminHeader from "@/features/AdministratorPart/components/AdminHeader";
 import { workspaceApi } from "./api";
 
+let mockUser = { id: "admin", role: "admin" };
 jest.mock("next-auth/react", () => ({
-  useSession: () => ({ data: { user: { id: "admin", role: "admin" } } }),
+  useSession: () => ({ data: { user: mockUser } }),
 }));
 jest.mock("./api", () => ({
   ...jest.requireActual("./api"),
@@ -23,6 +25,7 @@ const notice = {
 };
 beforeEach(() => {
   jest.clearAllMocks();
+  mockUser = { id: "admin", role: "admin" };
   (workspaceApi.notices as jest.Mock).mockResolvedValue([notice]);
   (workspaceApi.openNotice as jest.Mock).mockResolvedValue({
     kind: "class",
@@ -30,13 +33,17 @@ beforeEach(() => {
   });
   (workspaceApi.markNoticesRead as jest.Mock).mockResolvedValue({});
 });
-function mount() {
+function mount(administrator = false) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
   const view = render(
     <QueryClientProvider client={client}>
-      <Navbar onMenuClick={jest.fn()} />
+      {administrator ? (
+        <AdminHeader onMenuClick={jest.fn()} />
+      ) : (
+        <Navbar onMenuClick={jest.fn()} />
+      )}
     </QueryClientProvider>,
   );
   return {
@@ -46,6 +53,41 @@ function mount() {
     },
   };
 }
+
+test.each(["administrator-A", "administrator-B"])(
+  "administrator header loads only %s notifications and links to their chat",
+  async (id) => {
+    mockUser = { id, role: "administrator" };
+    (workspaceApi.notices as jest.Mock).mockResolvedValue([
+      { ...notice, type: "message", message: "You have a new message." },
+    ]);
+    (workspaceApi.openNotice as jest.Mock).mockResolvedValue({
+      kind: "message",
+      record: { _id: "my-room" },
+    });
+    const view = mount(true);
+    const bell = await screen.findByRole("button", {
+      name: "Notifications (1 unread)",
+    });
+    expect(workspaceApi.notices).toHaveBeenCalledWith(id);
+    expect(workspaceApi.notices).not.toHaveBeenCalledWith(
+      id === "administrator-A" ? "administrator-B" : "administrator-A",
+    );
+    fireEvent.click(bell);
+    fireEvent.click(
+      await screen.findByRole("button", { name: /You have a new message/ }),
+    );
+    expect(
+      await screen.findByRole("link", { name: "Open conversation" }),
+    ).toHaveAttribute("href", "/administrator/chat?room=my-room");
+    fireEvent.click(screen.getByRole("button", { name: "All notifications" }));
+    fireEvent.click(screen.getByRole("button", { name: "Mark all as read" }));
+    await waitFor(() =>
+      expect(workspaceApi.markNoticesRead).toHaveBeenCalledWith(id),
+    );
+    view.cleanup();
+  },
+);
 test("header bell opens a right-hand drawer without navigating to the dashboard hash", async () => {
   const view = mount();
   const url = window.location.href;

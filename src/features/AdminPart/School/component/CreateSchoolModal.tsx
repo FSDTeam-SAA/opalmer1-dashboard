@@ -37,16 +37,18 @@ export default function CreateSchoolModal({
   school,
 }: CreateSchoolModalProps) {
   const isEditing = Boolean(school);
-  const [districtId, setDistrictId] = useState(
-    typeof school?.districtId === "string"
-      ? school.districtId
-      : (school?.districtId?._id ?? ""),
-  );
+  const [districtInput, setDistrictInput] = useState<string | null>(null);
   const districts = useQuery({
     queryKey: ["school-districts"],
     queryFn: async () =>
       (await api.get<{ data: District[] }>("/school/districts")).data.data,
   });
+  const districtName =
+    districtInput ??
+    (typeof school?.districtId === "object"
+      ? school.districtId?.name
+      : districts.data?.find((d) => d._id === school?.districtId)?.name) ??
+    "";
   const [name, setName] = useState(school?.name ?? "");
   const [code, setCode] = useState(school?.code ?? "");
   const [email, setEmail] = useState(school?.email ?? "");
@@ -90,9 +92,23 @@ export default function CreateSchoolModal({
     }
 
     try {
+      const enteredDistrict = districtName.trim();
+      const existingDistrict = districts.data?.find(
+        (d) => d.name.toLowerCase() === enteredDistrict.toLowerCase(),
+      );
+      const originalDistrictId =
+        typeof school?.districtId === "string"
+          ? school.districtId
+          : school?.districtId?._id;
       const payload = {
         name: name.trim(),
-        districtId,
+        ...(districtInput === null && originalDistrictId
+          ? { districtId: originalDistrictId }
+          : existingDistrict
+            ? { districtId: existingDistrict._id }
+            : enteredDistrict
+              ? { districtName: enteredDistrict }
+              : { districtId: "" }),
         code: code.trim() || undefined,
         email: email.trim() || undefined,
         phone: phone.trim() || undefined,
@@ -139,23 +155,33 @@ export default function CreateSchoolModal({
         <form onSubmit={handleSubmit} className="mt-6 space-y-5">
           <label className="block text-sm">
             District
-            <select
+            <input
               aria-label="District"
-              value={districtId}
-              onChange={(e) => setDistrictId(e.target.value)}
-              disabled={districts.isLoading || districts.isError}
+              list="school-district-options"
+              placeholder="Select or type a district name"
+              maxLength={120}
+              value={districtName}
+              onChange={(e) => setDistrictInput(e.target.value)}
+              disabled={isSaving}
               className="mt-2 block w-full rounded border p-3"
-            >
-              <option value="">Unassigned</option>
+            />
+            <datalist id="school-district-options">
               {districts.data?.map((d) => (
-                <option key={d._id} value={d._id}>
-                  {d.name} ({d.code})
+                <option key={d._id} value={d.name}>
+                  {d.code}
                 </option>
               ))}
-            </select>
+            </datalist>
+            <span className="mt-2 block text-xs text-gray-500">
+              Choose an existing district or type a new name. New districts are
+              added when you save. Leave blank for Unassigned.
+            </span>
           </label>
           {districts.isError && (
-            <p role="alert">Unable to load districts. Close and try again.</p>
+            <p role="alert">
+              Unable to load district suggestions. You can still type a district
+              name.
+            </p>
           )}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <input

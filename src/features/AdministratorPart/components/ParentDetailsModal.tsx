@@ -70,7 +70,7 @@ export default function ParentDetailsModal({
               <div className="flex justify-between items-center">
                 <span className="text-[#666] text-[15px]">Email</span>
                 <span className="text-[#333] font-medium">
-                  {parent.email !== "—" ? parent.email : "N/A"}
+                  {parent.email && parent.email !== "—" ? parent.email : "N/A"}
                 </span>
               </div>
             </div>

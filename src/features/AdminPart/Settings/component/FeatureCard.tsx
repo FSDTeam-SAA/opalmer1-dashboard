@@ -16,6 +16,7 @@ export default function FeatureCard({
       <div className="flex items-center justify-between">
         <h3 className="text-[22px] font-medium text-[#333]">{title}</h3>
         <button
+          aria-label={`Edit ${title}`}
           onClick={onEdit}
           className="cursor-pointer text-[#871dad] hover:text-[#751a99] transition-colors"
         >

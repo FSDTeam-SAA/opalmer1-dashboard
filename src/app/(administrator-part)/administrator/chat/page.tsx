@@ -1,5 +1,10 @@
 import ChatInbox from "@/features/AdministratorPart/components/ChatInbox";
 
-export default function AdministratorChatPage() {
-  return <ChatInbox />;
+export default async function AdministratorChatPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ room?: string }>;
+}) {
+  const { room } = await searchParams;
+  return <ChatInbox key={room ?? "inbox"} initialRoomId={room} />;
 }

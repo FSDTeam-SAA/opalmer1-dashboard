@@ -29,7 +29,7 @@ export function useCreateTeacher() {
   return useMutation({
     mutationFn: (payload: CreateTeacherPayload) => createTeacher(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: teachersKeys.all });
+      return queryClient.invalidateQueries({ queryKey: teachersKeys.all });
     },
   });
 }
@@ -46,7 +46,7 @@ export function useUpdateTeacher() {
       payload: UpdateTeacherPayload;
     }) => updateTeacher(id, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: teachersKeys.all });
+      return queryClient.invalidateQueries({ queryKey: teachersKeys.all });
     },
   });
 }
@@ -58,7 +58,7 @@ export function useToggleTeacherState() {
     mutationFn: ({ id, state }: { id: string; state: "active" | "inactive" }) =>
       setTeacherState(id, state),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: teachersKeys.all });
+      return queryClient.invalidateQueries({ queryKey: teachersKeys.all });
     },
   });
 }

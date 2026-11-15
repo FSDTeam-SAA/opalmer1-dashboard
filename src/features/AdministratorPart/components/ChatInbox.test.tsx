@@ -3,6 +3,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   fetchChatMessages,
   fetchChatRooms,
+  fetchChatContacts,
+  createDirectChat,
   sendChatMessage,
 } from "../api/chat.api";
 import ChatInbox from "./ChatInbox";
@@ -21,6 +23,8 @@ jest.mock("../api/chat.api", () => ({
   fetchChatRooms: jest.fn(),
   fetchChatMessages: jest.fn(),
   sendChatMessage: jest.fn(),
+  fetchChatContacts: jest.fn(),
+  createDirectChat: jest.fn(),
 }));
 
 const room = {
@@ -49,6 +53,62 @@ beforeEach(() => {
   jest.clearAllMocks();
   (fetchChatRooms as jest.Mock).mockResolvedValue([room]);
   (fetchChatMessages as jest.Mock).mockResolvedValue(page);
+  (fetchChatContacts as jest.Mock).mockResolvedValue({
+    data: [
+      {
+        id: "parent-1",
+        username: "Actual Parent",
+        role: "user",
+        type: "parent",
+        Id: "P-123",
+      },
+    ],
+    meta: { page: 1, totalPages: 1 },
+  });
+});
+
+test("finds contacts by role and search, then starts a conversation from an empty inbox", async () => {
+  (fetchChatRooms as jest.Mock).mockResolvedValue([]);
+  (createDirectChat as jest.Mock).mockImplementation(async () => {
+    (fetchChatRooms as jest.Mock).mockResolvedValue([room]);
+    return room._id;
+  });
+  const view = mount();
+  fireEvent.click(screen.getByRole("button", { name: "New chat" }));
+  await screen.findByRole("button", { name: /Actual Parent/ });
+  fireEvent.change(screen.getByLabelText("Role"), {
+    target: { value: "parent" },
+  });
+  fireEvent.change(screen.getByLabelText("Search by name, ID or email"), {
+    target: { value: "P-123" },
+  });
+  await waitFor(() =>
+    expect(fetchChatContacts).toHaveBeenCalledWith("P-123", "parent", 1),
+  );
+  fireEvent.click(await screen.findByRole("button", { name: /Actual Parent/ }));
+  await screen.findByRole("log");
+  expect(createDirectChat).toHaveBeenCalledWith("parent-1");
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  expect(screen.getByRole("textbox", { name: "Message" })).toBeEnabled();
+  view.unmount();
+  view.client.clear();
+});
+
+test("keeps contact picker open when starting a chat fails", async () => {
+  (createDirectChat as jest.Mock).mockRejectedValue(new Error("offline"));
+  const view = mount();
+  fireEvent.click(screen.getByRole("button", { name: "New chat" }));
+  // The existing inbox also contains this parent.
+  const buttons = await screen.findAllByRole("button", {
+    name: /Actual Parent/,
+  });
+  fireEvent.click(buttons.at(-1)!);
+  expect(await screen.findByRole("alert")).toHaveTextContent(
+    "Unable to start chat",
+  );
+  expect(screen.getByRole("dialog")).toBeInTheDocument();
+  view.unmount();
+  view.client.clear();
 });
 
 function mount() {

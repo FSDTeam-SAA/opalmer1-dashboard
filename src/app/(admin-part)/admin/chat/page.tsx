@@ -5,5 +5,5 @@ export default async function AdminChatPage({
   searchParams: Promise<{ room?: string }>;
 }) {
   const { room } = await searchParams;
-  return <ChatInbox initialRoomId={room} />;
+  return <ChatInbox key={room ?? "inbox"} initialRoomId={room} />;
 }

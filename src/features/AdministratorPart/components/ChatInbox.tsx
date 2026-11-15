@@ -12,6 +12,7 @@ import {
   ArrowLeft,
   LoaderCircle,
   MessageCircle,
+  Plus,
   Search,
   Send,
   UserRound,
@@ -19,8 +20,11 @@ import {
 import { isAxiosError } from "axios";
 import PageHeader from "@/components/sheard/PageHeader";
 import DataImage from "@/components/ui/data-image";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
   attachmentUrl,
+  createDirectChat,
+  fetchChatContacts,
   fetchChatMessages,
   fetchChatRooms,
   roomDetails,
@@ -65,6 +69,8 @@ export default function ChatInbox({
     initialRoomId ?? null,
   );
   const [search, setSearch] = useState("");
+  const [composing, setComposing] = useState(false);
+  const queryClient = useQueryClient();
   const rooms = useQuery({
     queryKey: ["administrator-chat", userId, "rooms"],
     enabled: Boolean(userId),
@@ -87,7 +93,15 @@ export default function ChatInbox({
           className={`${selected ? "hidden md:flex" : "flex"} w-full flex-col border-r border-gray-100 md:w-80 md:shrink-0`}
         >
           <div className="space-y-4 border-b border-gray-100 p-5">
-            <h2 className="text-xl font-semibold text-gray-800">Messages</h2>
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-xl font-semibold text-gray-800">Messages</h2>
+              <button
+                onClick={() => setComposing(true)}
+                className="flex items-center gap-1 rounded-lg bg-[#871dad] px-3 py-2 text-xs font-semibold text-white"
+              >
+                <Plus size={15} /> New chat
+              </button>
+            </div>
             <div className="relative">
               <Search
                 size={17}
@@ -120,7 +134,7 @@ export default function ChatInbox({
               <p className="p-5 text-sm text-gray-500">
                 {search
                   ? "No conversations match your search."
-                  : "No conversations yet. Messages sent to you from the app will appear here."}
+                  : "No conversations yet. Choose New chat to find someone and start messaging."}
               </p>
             )}
             {filtered.map((room) => {
@@ -173,7 +187,174 @@ export default function ChatInbox({
           )}
         </div>
       </div>
+      {composing && (
+        <NewChat
+          userId={userId}
+          onClose={() => setComposing(false)}
+          onCreated={async (roomId) => {
+            await queryClient.fetchQuery({
+              queryKey: ["administrator-chat", userId, "rooms"],
+              queryFn: fetchChatRooms,
+            });
+            setSelectedId(roomId);
+            setComposing(false);
+          }}
+        />
+      )}
     </div>
+  );
+}
+
+function NewChat({
+  userId,
+  onClose,
+  onCreated,
+}: {
+  userId: string;
+  onClose: () => void;
+  onCreated: (roomId: string) => Promise<void>;
+}) {
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [role, setRole] = useState("");
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search.trim()), 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+  const contacts = useInfiniteQuery({
+    queryKey: ["administrator-chat", userId, "contacts", debouncedSearch, role],
+    queryFn: ({ pageParam }) =>
+      fetchChatContacts(debouncedSearch, role, pageParam),
+    enabled: Boolean(userId),
+    initialPageParam: 1,
+    getNextPageParam: (page) =>
+      page.meta.page < page.meta.totalPages ? page.meta.page + 1 : undefined,
+  });
+  const start = useMutation({
+    mutationFn: async (contactId: string) => {
+      const roomId = await createDirectChat(contactId);
+      await onCreated(roomId);
+    },
+  });
+  const rows = contacts.data?.pages.flatMap((page) => page.data) ?? [];
+  return (
+    <Dialog
+      open
+      onOpenChange={(open) => {
+        if (!open && !start.isPending) onClose();
+      }}
+    >
+      <DialogContent
+        showCloseButton={false}
+        aria-describedby={undefined}
+        className="flex max-h-[80dvh] flex-col gap-0 rounded-2xl bg-white p-5"
+      >
+        <div className="mb-4 flex items-center justify-between">
+          <DialogTitle>New chat</DialogTitle>
+          <button
+            autoFocus
+            onClick={onClose}
+            disabled={start.isPending}
+            className="rounded-lg px-3 py-2 text-sm text-gray-600"
+          >
+            Close
+          </button>
+        </div>
+        <label className="mb-2 text-sm" htmlFor="contact-search">
+          Search by name, ID or email
+        </label>
+        <input
+          id="contact-search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search people..."
+          className="mb-3 rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-[#871dad]"
+        />
+        <label className="mb-2 text-sm" htmlFor="contact-role">
+          Role
+        </label>
+        <select
+          id="contact-role"
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+          className="mb-3 rounded-lg border border-gray-200 px-3 py-2 text-sm"
+        >
+          <option value="">All roles</option>
+          <option value="parent">Parent</option>
+          <option value="student">Student</option>
+          <option value="teacher">Teacher</option>
+          <option value="administrator">Administrator</option>
+        </select>
+        {start.isError && (
+          <p role="alert" className="mb-3 text-sm text-red-600">
+            {isAxiosError(start.error)
+              ? start.error.response?.data?.message ||
+                "Unable to start chat. Please try again."
+              : "Unable to start chat. Please try again."}
+          </p>
+        )}
+        <div className="min-h-0 overflow-y-auto" aria-label="Contacts">
+          {contacts.isLoading && (
+            <p role="status" className="p-4 text-sm text-gray-500">
+              Loading contacts...
+            </p>
+          )}
+          {contacts.isError && (
+            <p role="alert" className="p-4 text-sm text-red-600">
+              Unable to load contacts.{" "}
+              <button onClick={() => contacts.refetch()} className="underline">
+                Retry
+              </button>
+            </p>
+          )}
+          {!contacts.isLoading && !contacts.isError && rows.length === 0 && (
+            <p className="p-4 text-sm text-gray-500">
+              No contacts found. Try another name or role.
+            </p>
+          )}
+          {rows.map((contact) => (
+            <button
+              key={contact.id}
+              disabled={start.isPending}
+              onClick={() => start.mutate(contact.id)}
+              className="flex w-full items-center gap-3 rounded-xl p-3 text-left hover:bg-purple-50 disabled:opacity-50"
+            >
+              <Avatar url={contact.avatar || ""} name={contact.username} />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-semibold">
+                  {contact.username}
+                </span>
+                <span className="block truncate text-xs capitalize text-gray-500">
+                  {contact.role === "administrator"
+                    ? "Administrator"
+                    : contact.type}
+                  {contact.Id ? ` · ${contact.Id}` : ""}
+                </span>
+                {contact.email && (
+                  <span className="block truncate text-xs text-gray-500">
+                    {contact.email}
+                  </span>
+                )}
+              </span>
+              {start.isPending && start.variables === contact.id && (
+                <LoaderCircle size={18} className="animate-spin" />
+              )}
+            </button>
+          ))}
+          {contacts.hasNextPage && (
+            <button
+              disabled={contacts.isFetchingNextPage}
+              onClick={() => contacts.fetchNextPage()}
+              className="w-full p-3 text-sm text-[#871dad]"
+            >
+              {contacts.isFetchingNextPage
+                ? "Loading..."
+                : "Load more contacts"}
+            </button>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -332,7 +513,7 @@ function Conversation({
                       </p>
                     )}
                     {message.file?.map((file, index) => {
-                      const href = attachmentUrl(file.url);
+                      const href = attachmentUrl(file.downloadUrl || file.url);
                       return href ? (
                         <a
                           key={index}
