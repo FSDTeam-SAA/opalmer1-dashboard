@@ -5,7 +5,7 @@ import ListPagination, {
   useListPagination,
 } from "@/components/shared/ListPagination";
 import Link from "next/link";
-import Image from "@/components/ui/data-image";
+import UserAvatar from "@/components/sheard/UserAvatar";
 import { Plus, Search, Trash2, Pencil } from "lucide-react";
 import CreateAdminModal from "./CreateAdminModal";
 import EditAdminModal from "./EditAdminModal";
@@ -153,12 +153,10 @@ export default function Administration() {
                         href={`/admin/administration/${admin._id}`}
                         className="flex items-center gap-3 hover:text-[#871dad]"
                       >
-                        <Image
-                          src={admin.avatar?.url || ""}
-                          alt=""
-                          width={36}
-                          height={36}
-                          className="h-9 w-9 rounded-full object-cover"
+                        <UserAvatar
+                          name={admin.username}
+                          src={admin.avatar?.url}
+                          size={36}
                         />
                         <span className="whitespace-nowrap font-medium text-[#333]">
                           {admin.username}

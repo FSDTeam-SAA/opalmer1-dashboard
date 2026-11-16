@@ -8,6 +8,7 @@ import ListPagination, {
 import Link from "next/link";
 import { GraduationCap, Briefcase, Users, Search } from "lucide-react";
 import PageHeader from "@/components/sheard/PageHeader";
+import UserAvatar from "@/components/sheard/UserAvatar";
 import AdminWorkspacePanel from "@/features/admin-workspace/AdminWorkspacePanel";
 import CreateAdminModal from "@/features/AdminPart/Administration/component/CreateAdminModal";
 import {
@@ -324,9 +325,11 @@ export default function Dashboard() {
                     </td>
                     <td className="py-4">
                       <div className="flex items-center gap-2">
-                        <div className="h-6 w-6 rounded-full bg-gray-300 overflow-hidden">
-                          <div className="h-full w-full bg-gradient-to-br from-purple-300 to-purple-500" />
-                        </div>
+                        <UserAvatar
+                          name={admin.username}
+                          src={admin.avatar?.url}
+                          size={32}
+                        />
                         <Link
                           href={`/admin/administration/${admin._id}`}
                           className="text-[16px] font-light text-[#666] hover:text-[#871dad] transition-colors"
