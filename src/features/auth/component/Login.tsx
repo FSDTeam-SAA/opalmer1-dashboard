@@ -101,16 +101,16 @@ export default function Login() {
             alt=""
             fill
             sizes="(max-width: 440px) 440px, (max-width: 540px) 540px, 658px"
-            className="object-cover object-left-bottom"
+            className="object-cover object-top-left"
             priority
           />
 
           {/* Text content */}
           <div className="relative z-10 px-6 sm:px-10 lg:px-[72px] pt-7 sm:pt-8 lg:pt-9">
-            <h1 className="text-white text-[40px] sm:text-[50px] lg:text-[60px] font-bold leading-none">
+            <h1 className="text-white text-[40px] sm:text-[50px] lg:text-[60px] font-bold leading-none drop-shadow-sm">
               Log In
             </h1>
-            <p className="text-[#f5f5f5] text-[14px] sm:text-[18px] lg:text-[20px] leading-[1.4] mt-2 sm:mt-3 max-w-[260px] sm:max-w-[320px]">
+            <p className="text-white drop-shadow-sm text-[14px] sm:text-[18px] lg:text-[20px] leading-[1.4] mt-2 sm:mt-3 max-w-[260px] sm:max-w-[320px]">
               Login to your {roleLabel.toLowerCase()} panel to proceed
             </p>
           </div>

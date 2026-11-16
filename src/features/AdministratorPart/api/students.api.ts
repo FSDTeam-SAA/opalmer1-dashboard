@@ -1,4 +1,5 @@
 import { api } from "@/lib/api";
+import { toUserUpdateBody } from "./update-body";
 import type {
   CreateStudentPayload,
   StudentRecord,
@@ -82,7 +83,10 @@ export async function updateStudent(
   id: string,
   payload: UpdateStudentPayload,
 ): Promise<StudentRecord> {
-  const { data } = await api.put<StudentResponse>(`/users/${id}`, payload);
+  const { data } = await api.put<StudentResponse>(
+    `/users/${id}`,
+    toUserUpdateBody(payload),
+  );
   return data.data;
 }
 

@@ -30,6 +30,7 @@ export type UpdateParentPayload = Partial<{
   phoneNumber: string;
   email: string;
   state: "active" | "inactive";
+  image: File | null;
 }>;
 
 export type CreateParentPayload = {

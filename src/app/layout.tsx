@@ -27,8 +27,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${poppins.variable} antialiased`}>
+    // Browser extensions (ColorZilla, Bitdefender, etc.) inject attributes into
+    // <html>/<body> before React hydrates; ignore those attribute mismatches.
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${poppins.variable} antialiased`}
+        suppressHydrationWarning
+      >
         <MainProviders>
           <Provider> {children} </Provider>
         </MainProviders>

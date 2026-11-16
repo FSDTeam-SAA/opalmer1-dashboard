@@ -418,21 +418,19 @@ export function UserListView({
           return (
             <div className="flex items-center justify-center gap-2">
               {config.type !== "parent" && (
-                <>
-                  <ToggleSwitch
-                    active={u.active}
-                    disabled={isTogglePending}
-                    onChange={() => onToggle(u._id, u.active)}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setEditing(u)}
-                    className="rounded-[6px] border border-[#871dad] px-[12px] py-[6px] text-[13px] font-medium text-[#871dad] hover:bg-[#faf2f9] transition-colors cursor-pointer"
-                  >
-                    Edit
-                  </button>
-                </>
+                <ToggleSwitch
+                  active={u.active}
+                  disabled={isTogglePending}
+                  onChange={() => onToggle(u._id, u.active)}
+                />
               )}
+              <button
+                type="button"
+                onClick={() => setEditing(u)}
+                className="rounded-[6px] border border-[#871dad] px-[12px] py-[6px] text-[13px] font-medium text-[#871dad] hover:bg-[#faf2f9] transition-colors cursor-pointer"
+              >
+                Edit
+              </button>
               <button
                 type="button"
                 onClick={() => {
@@ -680,8 +678,10 @@ export function UserListView({
             gender: editing.gender,
             gradeLevel: editing.gradeLevel,
             state: editing.active ? "active" : "inactive",
+            image: editing.image,
           }}
           isPending={isUpdatePending}
+          showProfileFields={config.type !== "parent"}
           onSubmit={(payload) => onUpdate(editing._id, payload)}
           onClose={() => setEditing(null)}
         />

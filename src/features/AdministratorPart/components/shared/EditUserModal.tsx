@@ -2,8 +2,9 @@
 
 import styles from "@/components/ui/dashboard-modal.module.css";
 
-import { useState } from "react";
-import { X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import Image from "@/components/ui/data-image";
+import { Camera, X } from "lucide-react";
 
 /**
  * Shared edit modal for teachers and students.
@@ -23,9 +24,13 @@ export type EditableUser = {
   age?: number;
   gender?: "male" | "female" | "other" | "";
   state?: "active" | "inactive";
+  /** Current profile photo URL, if any. */
+  image?: string;
 };
 
 export type EditUserPayload = Partial<{
+  /** New profile photo; sent as multipart "image". */
+  image: File | null;
   username: string;
   phoneNumber: string;
   email: string;
@@ -41,6 +46,8 @@ type EditUserModalProps = {
   isPending: boolean;
   onSubmit: (payload: EditUserPayload) => Promise<unknown> | void;
   onClose: () => void;
+  /** Grade level, age and gender — hidden for parents. Defaults to true. */
+  showProfileFields?: boolean;
 };
 
 function describeError(err: unknown): string {
@@ -63,6 +70,7 @@ export default function EditUserModal({
   isPending,
   onSubmit,
   onClose,
+  showProfileFields = true,
 }: EditUserModalProps) {
   const [name, setName] = useState(user.name);
   const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber ?? "");
@@ -82,6 +90,31 @@ export default function EditUserModal({
     user.state ?? "active",
   );
   const [formError, setFormError] = useState<string | null>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Release the object URL of the picked photo when it changes or on close.
+  useEffect(() => {
+    return () => {
+      if (avatarPreview) URL.revokeObjectURL(avatarPreview);
+    };
+  }, [avatarPreview]);
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setFormError("Please choose an image file.");
+      return;
+    }
+    setFormError(null);
+    setAvatarFile(file);
+    setAvatarPreview(URL.createObjectURL(file));
+  };
+
+  const shownAvatar = avatarPreview ?? user.image ?? "";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,6 +139,7 @@ export default function EditUserModal({
     if (age !== "" && Number(age) !== user.age) {
       payload.age = Number(age);
     }
+    if (avatarFile) payload.image = avatarFile;
 
     if (Object.keys(payload).length === 0) {
       onClose();
@@ -140,6 +174,48 @@ export default function EditUserModal({
         <p className="mt-1 text-center text-[14px] text-[#666]">
           Id: <span className="font-medium text-[#333]">{user.Id}</span>
         </p>
+
+        {/* Profile photo */}
+        <div className="mt-5 flex justify-center">
+          <div className="relative">
+            <div className="h-20 w-20 overflow-hidden rounded-full border-[3px] border-[#871dad] sm:h-24 sm:w-24">
+              {shownAvatar ? (
+                <Image
+                  src={shownAvatar}
+                  alt={`${user.name} photo`}
+                  width={150}
+                  height={150}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-gray-100 text-[32px] font-semibold text-[#871dad]">
+                  {user.name?.charAt(0).toUpperCase() || "?"}
+                </div>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              aria-label="Change photo"
+              title="Change photo"
+              className="absolute bottom-1 right-1 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-[#871dad] text-white transition-colors hover:bg-[#751a99]"
+            >
+              <Camera size={14} />
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleAvatarChange}
+            />
+          </div>
+        </div>
+        {avatarFile && (
+          <p className="mt-2 text-center text-[13px] text-[#666]">
+            New photo selected — click Save to upload.
+          </p>
+        )}
 
         <form onSubmit={handleSubmit} className={styles.fields}>
           <div className={styles.fullWidth}>
@@ -193,63 +269,67 @@ export default function EditUserModal({
             </div>
           </div>
 
-          <div
-            className={`${styles.fullWidth} grid grid-cols-1 gap-4 sm:grid-cols-3`}
-          >
-            <div>
-              <label
-                className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]"
-                htmlFor="edit-user-grade"
-              >
-                Grade Level
-              </label>
-              <input
-                type="number"
-                min="1"
-                id="edit-user-grade"
-                value={gradeLevel}
-                onChange={(e) => setGradeLevel(e.target.value)}
-                className="mt-2 h-[48px] sm:h-[56px] w-full rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 sm:px-5 text-[15px] sm:text-[16px] text-[#333] outline-none placeholder:text-[#666]"
-              />
+          {showProfileFields && (
+            <div
+              className={`${styles.fullWidth} grid grid-cols-1 gap-4 sm:grid-cols-3`}
+            >
+              <div>
+                <label
+                  className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]"
+                  htmlFor="edit-user-grade"
+                >
+                  Grade Level
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  id="edit-user-grade"
+                  value={gradeLevel}
+                  onChange={(e) => setGradeLevel(e.target.value)}
+                  className="mt-2 h-[48px] sm:h-[56px] w-full rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 sm:px-5 text-[15px] sm:text-[16px] text-[#333] outline-none placeholder:text-[#666]"
+                />
+              </div>
+              <div>
+                <label
+                  className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]"
+                  htmlFor="edit-user-age"
+                >
+                  Age
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  id="edit-user-age"
+                  value={age}
+                  onChange={(e) => setAge(e.target.value)}
+                  className="mt-2 h-[48px] sm:h-[56px] w-full rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 sm:px-5 text-[15px] sm:text-[16px] text-[#333] outline-none placeholder:text-[#666]"
+                />
+              </div>
+              <div>
+                <label
+                  className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]"
+                  htmlFor="edit-user-gender"
+                >
+                  Gender
+                </label>
+                <select
+                  id="edit-user-gender"
+                  value={gender}
+                  onChange={(e) =>
+                    setGender(
+                      e.target.value as "male" | "female" | "other" | "",
+                    )
+                  }
+                  className="mt-2 h-[48px] sm:h-[56px] w-full rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 sm:px-5 text-[15px] sm:text-[16px] text-[#333] outline-none"
+                >
+                  <option value="">Select…</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
             </div>
-            <div>
-              <label
-                className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]"
-                htmlFor="edit-user-age"
-              >
-                Age
-              </label>
-              <input
-                type="number"
-                min="1"
-                id="edit-user-age"
-                value={age}
-                onChange={(e) => setAge(e.target.value)}
-                className="mt-2 h-[48px] sm:h-[56px] w-full rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 sm:px-5 text-[15px] sm:text-[16px] text-[#333] outline-none placeholder:text-[#666]"
-              />
-            </div>
-            <div>
-              <label
-                className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]"
-                htmlFor="edit-user-gender"
-              >
-                Gender
-              </label>
-              <select
-                id="edit-user-gender"
-                value={gender}
-                onChange={(e) =>
-                  setGender(e.target.value as "male" | "female" | "other" | "")
-                }
-                className="mt-2 h-[48px] sm:h-[56px] w-full rounded-[8px] border border-[#c7c7c7] bg-[#f9f9f9] px-4 sm:px-5 text-[15px] sm:text-[16px] text-[#333] outline-none"
-              >
-                <option value="">Select…</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-          </div>
+          )}
 
           <div className={styles.fullWidth}>
             <label className="block text-[15px] sm:text-[18px] font-semibold capitalize text-[#333]">

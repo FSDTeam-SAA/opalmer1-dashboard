@@ -83,6 +83,7 @@ export type UpdateStudentPayload = Partial<{
   gender: "male" | "female" | "other";
   age: number;
   gradeLevel: number;
+  image: File | null;
 }>;
 
 export type StudentDetailsSubject = {

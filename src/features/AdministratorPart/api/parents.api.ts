@@ -1,4 +1,5 @@
 import { api } from "@/lib/api";
+import { toUserUpdateBody } from "./update-body";
 import type {
   ParentRecord,
   ParentResponse,
@@ -62,7 +63,10 @@ export async function updateParent(
   id: string,
   payload: UpdateParentPayload,
 ): Promise<ParentRecord> {
-  const { data } = await api.put<ParentResponse>(`/users/${id}`, payload);
+  const { data } = await api.put<ParentResponse>(
+    `/users/${id}`,
+    toUserUpdateBody(payload),
+  );
   return data.data;
 }
 

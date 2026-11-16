@@ -84,4 +84,5 @@ export type UpdateTeacherPayload = Partial<{
   gender: "male" | "female" | "other";
   age: number;
   gradeLevel: number;
+  image: File | null;
 }>;
